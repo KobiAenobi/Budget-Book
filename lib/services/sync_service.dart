@@ -94,7 +94,7 @@ Future<void> migrateUuidToDateTimeIds() async {
   final keysToDelete = <dynamic>[];
 
   for (final key in box.keys) {
-    final item = box.get(key);
+    final item = box.get(key) as BudgetItem?;
     if (item == null) continue;
 
     // New ID from dateTime

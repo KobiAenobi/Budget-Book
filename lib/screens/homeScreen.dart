@@ -1,14 +1,12 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:budget_book_app/apis/api.dart';
 import 'package:budget_book_app/helper/appBar.dart';
 import 'package:budget_book_app/models/budget_item.dart';
 import 'package:budget_book_app/services/firestore_service.dart';
 import 'package:budget_book_app/services/sync_service.dart';
 import 'package:budget_book_app/widgets/add_item_dialog_box.dart';
 import 'package:budget_book_app/widgets/item_card.dart';
-import 'package:budget_book_app/widgets/month_card.dart';
 import 'package:budget_book_app/widgets/top_card1.dart';
 import 'package:budget_book_app/widgets/top_card2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -73,31 +71,7 @@ class _HomescreenState extends State<Homescreen> {
   //   }
   // }
 
-  //FORMMATTED MONTH AND YEAR FOR THE LISTVIEWBUILDER
-  String formatMonth(String key) {
-    final year = int.parse(key.split('-')[0]);
-    final month = int.parse(key.split('-')[1]);
-
-    const monthNames = [
-      "", // index 0 unused
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-
-    return "${monthNames[month]} $year";
-  }
-
-  void _editItem(BudgetItem item) async {
+  void _editItem(BudgetItem item, int index) async {
     final BudgetItem? updated = await showDialog(
       context: context,
       builder: (_) => AddItemDialogBox(
@@ -147,9 +121,9 @@ class _HomescreenState extends State<Homescreen> {
       _handleDeepLink();
 
       // NEW: start local-to-cloud sync listener
-      if (FirebaseAuth.instance.currentUser != null) {
-        listenForLocalChanges();
-      }
+    if (FirebaseAuth.instance.currentUser != null) {
+      listenForLocalChanges();
+    }
     });
 
     // =============================================================
@@ -202,15 +176,6 @@ class _HomescreenState extends State<Homescreen> {
           final items = box.values.toList()
             ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
 
-          final grouped = Api.groupItemsByMonth(items);
-
-          final List<dynamic> displayList = [];
-
-          grouped.forEach((monthKey, monthItem) {
-            displayList.add(monthKey);
-            displayList.addAll(monthItem);
-          });
-
           // =========================================================
           // MAIN COLUMN
           // =========================================================
@@ -245,93 +210,78 @@ class _HomescreenState extends State<Homescreen> {
                 flex: 7,
                 child: ListView.builder(
                   padding: EdgeInsets.only(bottom: 80, top: 5),
-                  itemCount: displayList.length,
+                  itemCount: items.length,
                   itemBuilder: (context, index) {
-                    // final item = items[index];
+                    final item = items[index];
 
-                    final entry = displayList[index];
+                    // ===================================================
+                    // WRAPPED IN SLIDABLE → Swipe Left for Edit/Delete
+                    // ===================================================
+                    return Slidable(
+                      key: ValueKey(item.id),
 
-                    //IF THE entry IS A STRING MEANING THE MONTH AND YEAR STRING FORM displayList
-                    if (entry is String) {
-                      // Hide the first month header
-                      if (index == 0) {
-                        return SizedBox.shrink();
-                      }
-                      return MonthCard(month: formatMonth(entry));
-                    }
-                    //IF THE entry IS A ITEM FROM BudgetItem
-                    else {
-                      final item = entry;
-
-                      // ===================================================
-                      // WRAPPED IN SLIDABLE → Swipe Left for Edit/Delete
-                      // ===================================================
-                      return Slidable(
-                        key: ValueKey(item.id),
-
-                        endActionPane: ActionPane(
-                          motion: const DrawerMotion(),
-                          extentRatio: 0.25,
-                          children: [
-                            // EDIT
-                            SlidableAction(
-                              onPressed: (context) => _editItem(item),
-                              backgroundColor: const Color.fromARGB(
-                                255,
-                                44,
-                                16,
-                                16,
-                              ),
-                              foregroundColor: Colors.white,
-                              icon: Icons.edit,
-                              label: 'Edit',
+                      endActionPane: ActionPane(
+                        motion: const DrawerMotion(),
+                        extentRatio: 0.25,
+                        children: [
+                          // EDIT
+                          SlidableAction(
+                            onPressed: (context) => _editItem(item, index),
+                            backgroundColor: const Color.fromARGB(
+                              255,
+                              44,
+                              16,
+                              16,
                             ),
-                          ],
-                        ),
-                        startActionPane: ActionPane(
-                          motion: const DrawerMotion(),
-                          extentRatio: 0.25,
-                          children: [
-                            // DELETE
-                            SlidableAction(
-                              onPressed: (context) async {
-                                // itemsBox.delete(item.key);
-                                itemsBox.delete(item.id); // local
+                            foregroundColor: Colors.white,
+                            icon: Icons.edit,
+                            label: 'Edit',
+                          ),
+                        ],
+                      ),
+                      startActionPane: ActionPane(
+                        motion: const DrawerMotion(),
+                        extentRatio: 0.25,
+                        children: [
+                          // DELETE
+                          SlidableAction(
+                            onPressed: (context) async {
+                              // itemsBox.delete(item.key);
+                              itemsBox.delete(item.id); // local
 
-                                // remote
-                                try {
-                                  final service =
-                                      await FirestoreService.forCurrentUser();
-                                  await service.deleteItem(item.id);
-                                } catch (e) {
-                                  log('Failed remote delete: $e');
-                                }
-                              },
-                              backgroundColor: const Color.fromARGB(
-                                255,
-                                44,
-                                16,
-                                16,
-                              ),
-                              foregroundColor: Colors.white,
-                              icon: Icons.delete,
-                              label: 'Delete',
+                              // remote
+                              try {
+                                final service =
+                                    await FirestoreService.forCurrentUser();
+                                await service.deleteItem(item.id);
+                              } catch (e) {
+                                log('Failed remote delete: $e');
+                              }
+                            },
+                            backgroundColor: const Color.fromARGB(
+                              255,
+                              44,
+                              16,
+                              16,
                             ),
-                          ],
-                        ),
+                            foregroundColor: Colors.white,
+                            icon: Icons.delete,
+                            label: 'Delete',
+                          ),
+                        ],
+                      ),
 
-                        // ITEM UI CARD (Custom Widget)
-                        child: ItemCard(
-                          name: item.name,
-                          date: item.dateTime,
-                          quantity: item.quantity,
-                          price: item.price,
-                          onEdit: () {
-                            _editItem(item);
-                          },
-                        ),
-                      );
-                    }
+                      // ITEM UI CARD (Custom Widget)
+                      child: ItemCard(
+                        name: item.name,
+                        date: item.dateTime,
+                        quantity: item.quantity,
+                        price: item.price,
+                        onEdit: () {
+                          _editItem(item, index);
+                        },
+                      ),
+                    );
                   },
                 ),
               ),
