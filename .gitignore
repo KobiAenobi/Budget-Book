@@ -48,11 +48,3 @@ app.*.map.json
 google-services.json
 GoogleService-Info.plist
 lib/firebase_options.dart
-
-
-# Android signing keys
-*.jks
-*.keystore
-
-# Environment files
-.env
