@@ -1,0 +1,141 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.kobi.budget_book">
+
+    <!-- ===========================
+         Permissions
+         ===========================
+         - SYSTEM_ALERT_WINDOW: required for drawing overlays (floating bubble/expanded UI).
+           Note: this is a special permission that users grant in Settings (Android shows a specific UI).
+         - FOREGROUND_SERVICE_SPECIAL_USE: declared because your overlay service uses
+           android:foregroundServiceType="specialUse" (Android 14+). Declaring this permission
+           matches the service declaration; the platform may require it for special-use foreground services.
+    -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!-- <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_ALERT_WINDOW" /> -->
+
+
+
+    <!-- ===========================
+         Application
+         ===========================
+         - android:name=".MyApplication" -> custom Application that pre-warms a FlutterEngine
+           (you used this to cache a shared engine so overlay/background services can reuse it).
+         - Do NOT remove android:name if you rely on that pre-initialized engine.
+    -->
+    <application
+    android:label="Budget Book"
+    android:name=".MyApplication"
+    android:icon="@mipmap/ic_launcher">
+
+    <!-- Default notification icon for FCM -->
+    <meta-data
+        android:name="com.google.firebase.messaging.default_notification_icon"
+        android:resource="@drawable/notification_dot_icon" />
+
+
+
+        <!-- ===========================
+             MainActivity (Flutter host)
+             ===========================
+             - launchMode="singleTop" prevents duplicate MainActivity instances when launching from an intent.
+             - taskAffinity="" forces this Activity to not share the default task (often used to isolate launcher/task behavior).
+             - configChanges lists many flags so Flutter handles them instead of Android restarting the Activity.
+             - NormalTheme meta-data: theme applied after Flutter UI initializes.
+        -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+            <!-- Theme that remains visible while Flutter initializes and as window background -->
+            <meta-data
+              android:name="io.flutter.embedding.android.NormalTheme"
+              android:resource="@style/NormalTheme"
+              />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+
+            <!-- Deep link for opening AddItemDialogBox -->
+<intent-filter>
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+
+    <!-- budgetbook://dialog/addItem -->
+    <data
+        android:scheme="budgetbook"
+        android:host="dialog"
+        android:path="/addItem" />
+</intent-filter>
+
+        </activity>
+
+        <!-- This meta-data is required by the Flutter tooling to indicate v2 embedding. DO NOT REMOVE. -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+
+
+        <!-- ===========================
+             Accessibility Service
+             ===========================
+             - android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+               ensures only the system can bind to this service.
+             - exported="false" keeps it non-exported (only system can bind with the permission).
+             - meta-data references @xml/accessibility_service_config which defines how the service behaves.
+        -->
+            <service
+            android:name=".MyAccessibilityService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+        <!-- ===========================
+             Overlay Service (Floating Bubble)
+             ===========================
+             - This is the service that draws the floating bubble and expanded overlay.
+             - exported="false" means other apps cannot start/bind it directly.
+             - foregroundServiceType="specialUse" indicates a special-use foreground service (Android 14+).
+               You also declared the matching permission above.
+             - Ensure you request SYSTEM_ALERT_WINDOW from the user UI before starting overlay.
+        -->
+        <service
+    android:name=".MyOverlayService"
+    android:exported="false"
+    android:foregroundServiceType="specialUse"
+    android:permission="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
+    
+
+
+    </application>
+
+    <!-- ===========================
+         Queries (Package visibility)
+         ===========================
+         - Required for ACTION_PROCESS_TEXT support (used by Flutter's ProcessTextPlugin).
+         - Keeps the app able to query which apps can handle processing text.
+         - This section is important on Android 11+ where package visibility is restricted.
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+    </queries>
+</manifest>

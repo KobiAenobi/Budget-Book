@@ -1,0 +1,66 @@
+name: budget_book_app
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  google_fonts: ^6.3.2
+
+  # HIVE (correct)
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+  # File paths & images
+  path_provider: ^2.0.15
+  image_picker: ^1.0.0
+
+  # UUID (for unique IDs)
+  uuid: ^4.5.2
+  intl: ^0.20.2
+  flutter_slidable: ^4.0.3
+  numberpicker: ^2.1.2
+  marquee: ^2.3.0
+  flutter_overlay_window: ^0.5.0
+  change_app_package_name: ^1.5.0
+  firebase_core: ^4.2.1
+  google_sign_in: ^7.2.0
+  firebase_auth: ^6.1.2
+  cloud_firestore: ^6.1.0
+  flutter_launcher_icons: ^0.14.4
+  lottie: ^3.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+  hive_generator: ^2.0.1
+  build_runner: 2.4.13
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/bb_icon_3.png"
+
+flutter:
+  assets:
+    - assets/lottie/book_pen_write.json
+
+  uses-material-design: true
+
+  fonts:
+    - family: Impact
+      fonts:
+        - asset: assets/fonts/impact.ttf
+
+    - family: Airone
+      fonts:
+        - asset: assets/fonts/AironeFont.ttf    
