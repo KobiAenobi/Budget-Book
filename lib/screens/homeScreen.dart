@@ -206,7 +206,18 @@ class _HomescreenState extends State<Homescreen> {
 
           final List<dynamic> displayList = [];
 
+          final Map<String, int> monthlyTotal ={};
+
+          // grouped.forEach((monthKey, montItem){
+          //   montlyTotal.add(monthKey);
+          //   montlyTotal.addAll(montItem.price)
+          // });
+
           grouped.forEach((monthKey, monthItem) {
+
+            int total = monthItem.fold(0, (sum, item)=> sum + (item.price* item.quantity));
+            monthlyTotal[monthKey]=total;
+
             displayList.add(monthKey);
             displayList.addAll(monthItem);
           });
@@ -257,7 +268,8 @@ class _HomescreenState extends State<Homescreen> {
                       if (index == 0) {
                         return SizedBox.shrink();
                       }
-                      return MonthCard(month: formatMonth(entry));
+                      // return MonthCard(month: formatMonth(entry));
+                      return MonthCard(month: formatMonth(entry), total: monthlyTotal[entry]??0);
                     }
                     //IF THE entry IS A ITEM FROM BudgetItem
                     else {

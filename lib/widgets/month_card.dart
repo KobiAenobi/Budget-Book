@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MonthCard extends StatefulWidget {
-
   final String month;
-  const MonthCard({super.key, required this.month});
+  final int total;
+  const MonthCard({super.key, required this.month, required this.total});
 
   @override
   State<MonthCard> createState() => _MonthCardState();
@@ -13,7 +14,6 @@ class _MonthCardState extends State<MonthCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
-
       // Space between cards in list
       margin: EdgeInsets.only(bottom: 1, top: 1, left: 0, right: 0),
 
@@ -21,23 +21,35 @@ class _MonthCardState extends State<MonthCard> {
       //   side: BorderSide(color: const Color.fromARGB(255, 105, 99, 97)),
       //   borderRadius: BorderRadius.circular(10),
       // ),
-
       color: const Color.fromARGB(255, 44, 16, 16),
 
       child: Padding(
         padding: const EdgeInsets.all(16.0),
 
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-
             // ==================================================================
             // 🛒 ITEM ICON
             // ==================================================================
             Container(
-              child: Text(widget.month),
+              // decoration: BoxDecoration(color: Colors.black),
+              constraints: BoxConstraints(
+                maxHeight: 45,
+                maxWidth: MediaQuery.of(context).size.width * 0.5,
+              ),
+              child: FittedBox(
+                child: Text(
+                  widget.month,
+                  // style: TextStyle(fontSize: 500, color: Colors.white54, fontFamily: 'Impact',),
+                  style: GoogleFonts.prociono(
+                    fontSize: 500,
+                    color: Colors.white54,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
             ),
-
 
             // ==================================================================
             // 📝 ITEM NAME + DATE SECTION
@@ -81,7 +93,6 @@ class _MonthCardState extends State<MonthCard> {
             //   ),
             // ),
 
-
             // ==================================================================
             // 📦 QUANTITY DISPLAY
             // ==================================================================
@@ -92,14 +103,26 @@ class _MonthCardState extends State<MonthCard> {
             //   ),
             // ),
 
-
             // ==================================================================
             // 💰 PRICE DISPLAY (price × quantity)
             // ==================================================================
             Container(
-              child: Text("Total this Month",
-                textAlign: TextAlign.right,
-                style: TextStyle(color: Colors.white),
+              // decoration: BoxDecoration(color: Colors.amber),
+              constraints: BoxConstraints(maxHeight: 30, maxWidth: MediaQuery.of(context).size.width*0.4),
+              child: FittedBox(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "₹${widget.total.toString()}",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontFamily: GoogleFonts.workSans().fontFamily,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 500,
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
