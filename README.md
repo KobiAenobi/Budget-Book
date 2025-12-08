@@ -5,16 +5,20 @@ So here comes the idea:
 
 An Android app for budget management that works with Google Pay.
 
-Basically, I wanted an app that will automatically open when I complete a transaction because it's a hassle to manually open a app and make and entry.
-This app pops up an overlay bubble after a transaction, and all you have to do is enter name, quantity & price, and it will create a new entry.
+Basically, I wanted an app that would automatically open when I complete a transaction because it's a hassle to manually open an app and make an entry.
+This app pops up an overlay bubble after a transaction, and all you have to do is enter the item name, quantity & price, and it will create a new entry.
 
 
 
 ## Installation Instructions
 
-Now, sadly, if you want the automatic functionality, you have to jump through some hoops. Because the app uses accessibility settings for automatic detection of transaction completion and Lord Google doesn't like that, So:
+Download the APK.
+Install the app with the internet off because Google Play flags the app as Suspicious as it asks for Accessibility permissions./ Or Adb sideload if you can.
 
-Just turn off the internet and install, it works.
-Turn on accessibility settings.
-or adb sideload if you can. If you just want to use the basic budget management functionality, you can install it by disabling Play Protect for a sec. 
-But then that's not really the point of the app, but it's still a cool app.
+Go to settings and give the necessary permissions.
+
+For the automatic overlay pop-up and notification on Google Pay transactions, you need to give Accessibility permission.
+
+Log in for online cloud save.
+
+ 
