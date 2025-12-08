@@ -39,6 +39,7 @@ class AccountSettingsDialog {
                       // Navigator.pop(context);
 
                       // Navigator.pop(context);
+
                       log("user name clicked");
                     },
                     child: Row(
@@ -89,7 +90,10 @@ class AccountSettingsDialog {
                       //   context,
                       //   MaterialPageRoute(builder: (_) => Homescreen()),
                       // );
-                      Navigator.pop(context, MaterialPageRoute(builder: (_)=> Homescreen()));
+                      Navigator.pop(
+                        context,
+                        MaterialPageRoute(builder: (_) => Homescreen()),
+                      );
 
                       // Navigator.pop(context);
                       log("Manage account");
@@ -122,7 +126,6 @@ class AccountSettingsDialog {
                   // SizedBox(height: 16),
                   Divider(),
 
-                  
                   Row(
                     children: [
                       // ===== SIGN OUT =====
@@ -131,7 +134,7 @@ class AccountSettingsDialog {
                           borderRadius: BorderRadius.circular(7),
                           onTap: () {
                             signOut();
-                        
+
                             Navigator.pop(context);
                             log("Sign out Clicked");
                           },
@@ -151,37 +154,35 @@ class AccountSettingsDialog {
                         ),
                       ),
 
-                      SizedBox(width: 10,),
+                      SizedBox(width: 10),
                       // ===== Sync =====
-                  Flexible(
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(7),
-                      onTap: () {
-                        syncLocalItemsToCloud();
-                        // migrateKeysToId();
-                    
-                        Navigator.pop(context);
-                        log("Sync Data Clicked");
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: SizedBox(
-                          // width: double.infinity,
-                          child: Text(
-                            "Sync Data",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
+                      Flexible(
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(7),
+                          onTap: () {
+                            syncLocalItemsToCloud();
+                            // migrateKeysToId();
+
+                            Navigator.pop(context);
+                            log("Sync Data Clicked");
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: SizedBox(
+                              // width: double.infinity,
+                              child: Text(
+                                "Sync Data",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
                     ],
                   ),
-
-                  
                 ],
               ),
             ),

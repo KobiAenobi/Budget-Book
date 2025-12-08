@@ -14,7 +14,9 @@ import 'package:budget_book_app/widgets/top_card2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:lottie/lottie.dart';
 
 /// ===============================================================
 /// HOMESCREEN (Main Dashboard UI)
@@ -153,7 +155,7 @@ class _HomescreenState extends State<Homescreen> {
     });
 
     // =============================================================
-    // ⏱ Periodic UI refresh
+    // Periodic UI refresh
     // -------------------------------------------------------------
     // This triggers every minute to update timestamps like:
     // "Added 5 minutes ago", "Added 1 hour ago", etc.
@@ -193,7 +195,32 @@ class _HomescreenState extends State<Homescreen> {
           // Empty State
           // ---------------------------------------------------------
           if (box.isEmpty) {
-            return Center(child: Text("No Items Yet"));
+            return Align(
+              alignment: Alignment.center,
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.3,
+                // color: Colors.amber,
+                // alignment: Alignment.center,
+                child: Column(
+                  children: [
+                    Flexible(
+                      child: Lottie.asset(
+                        "assets/lottie/cat_in_the_box.json",
+                        // height: 120,
+                      ),
+                    ),
+                    Text(
+                      "No Items found",
+                      style: TextStyle(
+                        fontFamily: GoogleFonts.workSans().fontFamily,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Expanded(child: SizedBox(height: 0)),
+                  ],
+                ),
+              ),
+            );
           }
 
           // ---------------------------------------------------------
@@ -206,7 +233,7 @@ class _HomescreenState extends State<Homescreen> {
 
           final List<dynamic> displayList = [];
 
-          final Map<String, int> monthlyTotal ={};
+          final Map<String, int> monthlyTotal = {};
 
           // grouped.forEach((monthKey, montItem){
           //   montlyTotal.add(monthKey);
@@ -214,9 +241,11 @@ class _HomescreenState extends State<Homescreen> {
           // });
 
           grouped.forEach((monthKey, monthItem) {
-
-            int total = monthItem.fold(0, (sum, item)=> sum + (item.price* item.quantity));
-            monthlyTotal[monthKey]=total;
+            int total = monthItem.fold(
+              0,
+              (sum, item) => sum + (item.price * item.quantity),
+            );
+            monthlyTotal[monthKey] = total;
 
             displayList.add(monthKey);
             displayList.addAll(monthItem);
@@ -230,8 +259,8 @@ class _HomescreenState extends State<Homescreen> {
               // =======================================================
               // TOP CARD → Total Expense Summary
               // =======================================================
-              Expanded(
-                flex: 3,
+              Container(
+                height: MediaQuery.of(context).size.height * 0.27,
                 child: Card(
                   margin: EdgeInsets.only(bottom: 0, top: 5, left: 0, right: 0),
                   shape: RoundedRectangleBorder(
@@ -253,7 +282,7 @@ class _HomescreenState extends State<Homescreen> {
               // BOTTOM — LIST OF ITEMS
               // =======================================================
               Expanded(
-                flex: 7,
+                // flex: 7,
                 child: ListView.builder(
                   padding: EdgeInsets.only(bottom: 80, top: 5),
                   itemCount: displayList.length,
@@ -269,7 +298,10 @@ class _HomescreenState extends State<Homescreen> {
                         return SizedBox.shrink();
                       }
                       // return MonthCard(month: formatMonth(entry));
-                      return MonthCard(month: formatMonth(entry), total: monthlyTotal[entry]??0);
+                      return MonthCard(
+                        month: formatMonth(entry),
+                        total: monthlyTotal[entry] ?? 0,
+                      );
                     }
                     //IF THE entry IS A ITEM FROM BudgetItem
                     else {
@@ -356,7 +388,7 @@ class _HomescreenState extends State<Homescreen> {
       // ➕ FLOATING ACTION BUTTON (Add New Item)
       // =============================================================
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.green[700],
+        backgroundColor: const Color.fromARGB(255, 0, 201, 104),
         foregroundColor: Colors.white,
         child: Icon(Icons.add),
 

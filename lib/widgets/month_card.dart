@@ -30,7 +30,7 @@ class _MonthCardState extends State<MonthCard> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // ==================================================================
-            // 🛒 ITEM ICON
+            // ITEM ICON
             // ==================================================================
             Container(
               // decoration: BoxDecoration(color: Colors.black),
@@ -52,7 +52,7 @@ class _MonthCardState extends State<MonthCard> {
             ),
 
             // ==================================================================
-            // 📝 ITEM NAME + DATE SECTION
+            // ITEM NAME + DATE SECTION
             // ==================================================================
             // Container(
             //   child: SizedBox(
@@ -94,7 +94,7 @@ class _MonthCardState extends State<MonthCard> {
             // ),
 
             // ==================================================================
-            // 📦 QUANTITY DISPLAY
+            // QUANTITY DISPLAY
             // ==================================================================
             // Container(
             //   child: SizedBox(
@@ -104,11 +104,14 @@ class _MonthCardState extends State<MonthCard> {
             // ),
 
             // ==================================================================
-            // 💰 PRICE DISPLAY (price × quantity)
+            // PRICE DISPLAY (price × quantity)
             // ==================================================================
             Container(
               // decoration: BoxDecoration(color: Colors.amber),
-              constraints: BoxConstraints(maxHeight: 30, maxWidth: MediaQuery.of(context).size.width*0.4),
+              constraints: BoxConstraints(
+                maxHeight: 30,
+                maxWidth: MediaQuery.of(context).size.width * 0.4,
+              ),
               child: FittedBox(
                 child: Align(
                   alignment: Alignment.centerLeft,
@@ -117,8 +120,8 @@ class _MonthCardState extends State<MonthCard> {
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       color: Colors.green,
-                      fontFamily: GoogleFonts.workSans().fontFamily,
-                      fontWeight: FontWeight.w900,
+                      fontFamily: GoogleFonts.prociono().fontFamily,
+                      fontWeight: FontWeight.w600,
                       fontSize: 500,
                     ),
                   ),

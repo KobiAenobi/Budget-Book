@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:budget_book_app/helper/date_time_helper.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 /// ============================================================================
-/// 🧾 ITEM CARD WIDGET
+/// ITEM CARD WIDGET
 /// ----------------------------------------------------------------------------
 /// A UI card that displays:
 ///  • Item name
@@ -18,10 +17,10 @@ import 'package:google_fonts/google_fonts.dart';
 /// NOTHING modified — only comments added.
 /// ============================================================================
 class ItemCard extends StatefulWidget {
-  final String name;         // Item name
-  final DateTime date;       // Purchase date
-  final int quantity;        // Quantity of item
-  final int price;           // Price per unit
+  final String name; // Item name
+  final DateTime date; // Purchase date
+  final int quantity; // Quantity of item
+  final int price; // Price per unit
 
   final VoidCallback? onEdit; // Optional edit callback
 
@@ -73,14 +72,12 @@ class _ItemCardState extends State<ItemCard> {
   //   "Dec",
   // ];
 
-
   /// ========================================================================
   /// 🖥 BUILD METHOD — Constructs the card UI
   /// ========================================================================
   @override
   Widget build(BuildContext context) {
     return Card(
-
       // Space between cards in list
       margin: EdgeInsets.only(bottom: 1, top: 1, left: 0, right: 0),
 
@@ -97,7 +94,6 @@ class _ItemCardState extends State<ItemCard> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-
             // ==================================================================
             // 🛒 ITEM ICON
             // ==================================================================
@@ -107,7 +103,6 @@ class _ItemCardState extends State<ItemCard> {
                 child: Icon(Icons.shopping_cart, color: Colors.white54),
               ),
             ),
-
 
             // ==================================================================
             // 📝 ITEM NAME + DATE SECTION
@@ -119,7 +114,6 @@ class _ItemCardState extends State<ItemCard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     // SINGLE-LINE SCROLLABLE ITEM NAME
                     Api.oneLineScroll(
                       widget.name,
@@ -151,7 +145,6 @@ class _ItemCardState extends State<ItemCard> {
               ),
             ),
 
-
             // ==================================================================
             // 📦 QUANTITY DISPLAY
             // ==================================================================
@@ -161,7 +154,6 @@ class _ItemCardState extends State<ItemCard> {
                 child: Text("qty: ${widget.quantity}"),
               ),
             ),
-
 
             // ==================================================================
             // 💰 PRICE DISPLAY (price × quantity)
@@ -176,7 +168,6 @@ class _ItemCardState extends State<ItemCard> {
                 ),
               ),
             ),
-
 
             // ==================================================================
             // COMMENTED OUT EDIT ICON BUTTON (Kept untouched)

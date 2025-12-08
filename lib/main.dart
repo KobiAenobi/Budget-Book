@@ -12,8 +12,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'models/budget_item.dart';
 import 'screens/homeScreen.dart';
-
-
+import 'package:budget_book_app/screens/homeScreen.dart';
 
 // // ===============================================================
 // // overlayEntryPoint()
@@ -40,7 +39,6 @@ import 'screens/homeScreen.dart';
 // // NOTHING here is changed — only documented.
 // // ===============================================================
 
-
 // ==============================
 // This function runs for both:
 // - Main UI engine
@@ -53,8 +51,7 @@ Future<void> overlayEntryPoint() async {
   // await Hive.initFlutter();
 
   final path = await getExternalHivePath();
-Hive.init(path);
-
+  Hive.init(path);
 
   Hive.registerAdapter(BudgetItemAdapter());
   await Hive.openBox<BudgetItem>('itemsBox');
@@ -80,14 +77,13 @@ Hive.init(path);
     // }
 
     // ======================================================
-    // 🔥 FIXED : ALWAYS SAVE USING item.id AS THE HIVE KEY
+    // FIXED : ALWAYS SAVE USING item.id AS THE HIVE KEY
     // ======================================================
     if (call.method == "addItemFromOverlay") {
       final data = Map<String, dynamic>.from(call.arguments);
 
       final id = DateTime.now().millisecondsSinceEpoch.toString();
       // final id = const Uuid().v4();
-
 
       final item = BudgetItem(
         id: id,
@@ -98,19 +94,23 @@ Hive.init(path);
         imagePath: "",
       );
 
-      // ⛔ Old: box.add(item);  → creates duplicate
-      // ✅ New (correct):
+      // Old: box.add(item);  → creates duplicate
+      // New (correct):
       await box.put(item.id, item);
 
       return {"savedId": item.id};
     }
 
     if (call.method == "getSuggestions") {
-      return box.values.map((item) => {
-            "name": item.name,
-            "quantity": item.quantity,
-            "price": item.price,
-          }).toList();
+      return box.values
+          .map(
+            (item) => {
+              "name": item.name,
+              "quantity": item.quantity,
+              "price": item.price,
+            },
+          )
+          .toList();
     }
 
     return null;
@@ -118,15 +118,13 @@ Hive.init(path);
 }
 
 // ==============================
-// 🎉 Normal UI main() function
+// Normal UI main() function
 // ==============================
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // 1) Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // 2) Initialize Hive (your overlayEntryPoint handles this)
   await overlayEntryPoint();
@@ -138,7 +136,6 @@ Future<void> main() async {
 
   // // 4) Sync Firestore → Hive before UI shows
   // await initialSync();                    // <-- EXACT CORRECT SPOT
-  
 
   // 5) Start app
   runApp(MyApp());
@@ -147,11 +144,10 @@ Future<void> main() async {
 // Future<void> main() async {
 //     WidgetsFlutterBinding.ensureInitialized();
 
-
 //   await Firebase.initializeApp(
 //     options: DefaultFirebaseOptions.currentPlatform,
 //   );
-//   await overlayEntryPoint(); // 🔥 important: shared with background engine
+//   await overlayEntryPoint(); // important: shared with background engine
 
 // //   final path = await getExternalHivePath();
 // // Hive.init(path);
@@ -163,9 +159,11 @@ Future<void> main() async {
 // }
 
 Future<String> getExternalHivePath() async {
-  // final dir = await getExternalStorageDirectory(); 
+  // final dir = await getExternalStorageDirectory();
   // /storage/emulated/0/Android/data/<package>/files
-  final hiveDir = Directory("/storage/emulated/0/Android/media/com.kobi.budget_book/hive");
+  final hiveDir = Directory(
+    "/storage/emulated/0/Android/media/com.kobi.budget_book/hive",
+  );
 
   if (!hiveDir.existsSync()) {
     hiveDir.createSync(recursive: true);
@@ -173,7 +171,6 @@ Future<String> getExternalHivePath() async {
 
   return hiveDir.path;
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -200,5 +197,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-

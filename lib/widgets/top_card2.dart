@@ -39,23 +39,23 @@ class _TopCard2State extends State<TopCard2> {
       child: Column(
         children: [
           //Top Expense Container
-          Container(
-            padding: EdgeInsets.only(left: 5, right: 5),
-            alignment: Alignment.centerLeft,
-            child: FittedBox(
-              child: Text(
-                "Top Expense",
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontFamily: "Impact",
-                  fontWeight: FontWeight.bold,
-                  fontSize: 50,
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.only(left: 5, right: 5),
+              alignment: Alignment.centerLeft,
+              child: FittedBox(
+                child: Text(
+                  "Top Expense",
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontFamily: "Impact",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 50,
+                  ),
                 ),
               ),
             ),
           ),
-
-
         ],
       ),
     );
