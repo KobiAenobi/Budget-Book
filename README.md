@@ -21,4 +21,6 @@ For the automatic overlay pop-up and notification on Google Pay transactions, yo
 
 Log in for online cloud save.
 
+⚠️ NOTE: On brands like Oppo, Realme, etc (the non-stock phones), the system tries to kill app Foreground services, so unrestricting battery optimization might help and do a quick reboot. 
+
  
