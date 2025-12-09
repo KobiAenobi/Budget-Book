@@ -1,18 +1,14 @@
 import 'dart:io';
 
 import 'package:budget_book_app/firebase_options.dart';
-import 'package:budget_book_app/services/sync_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'models/budget_item.dart';
 import 'screens/homeScreen.dart';
-import 'package:budget_book_app/screens/homeScreen.dart';
 
 // // ===============================================================
 // // overlayEntryPoint()
@@ -137,6 +133,10 @@ Future<void> main() async {
   // // 4) Sync Firestore → Hive before UI shows
   // await initialSync();                    // <-- EXACT CORRECT SPOT
 
+  // >>> CLEAR NOTIFICATIONS ON APP OPEN
+  const MethodChannel("clear_notifications").invokeMethod("clearAll");
+  // <<< CLEAR NOTIFICATIONS
+
   // 5) Start app
   runApp(MyApp());
 }
@@ -162,7 +162,7 @@ Future<String> getExternalHivePath() async {
   // final dir = await getExternalStorageDirectory();
   // /storage/emulated/0/Android/data/<package>/files
   final hiveDir = Directory(
-    "/storage/emulated/0/Android/media/com.kobi.budget_book/hive",
+    "/storage/emulated/0/Android/media/com.kobi.budget_book_test_version/hive",
   );
 
   if (!hiveDir.existsSync()) {
