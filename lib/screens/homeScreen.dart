@@ -1,11 +1,17 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:animations/animations.dart';
 import 'package:budget_book_app/apis/api.dart';
 import 'package:budget_book_app/helper/appBar.dart';
+import 'package:budget_book_app/helper/my_colors.dart';
+import 'package:budget_book_app/helper/my_theme.dart';
 import 'package:budget_book_app/models/budget_item.dart';
+import 'package:budget_book_app/screens/activities.dart';
+import 'package:budget_book_app/screens/itemDataScreen.dart';
 import 'package:budget_book_app/services/firestore_service.dart';
 import 'package:budget_book_app/services/sync_service.dart';
+import 'package:budget_book_app/widgets/account_settings_dialog.dart';
 import 'package:budget_book_app/widgets/add_item_dialog_box.dart';
 import 'package:budget_book_app/widgets/item_card.dart';
 import 'package:budget_book_app/widgets/month_card.dart';
@@ -13,6 +19,8 @@ import 'package:budget_book_app/widgets/top_card1.dart';
 import 'package:budget_book_app/widgets/top_card2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_launcher_icons/xml_templates.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -37,6 +45,14 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
+  Color get backgroundColorOfCards {
+    final theme = Theme.of(context);
+    return isRight ? theme.colorScheme.surface : theme.scaffoldBackgroundColor;
+  }
+
+  // final currUser = FirebaseAuth.instance.currentUser;
+  // Color backgroudColorofCards = const Color.fromRGBO(0, 0, 0, 0); // transparent
+
   //Page view controller
   final _pageViewController = PageController();
 
@@ -141,11 +157,21 @@ class _HomescreenState extends State<Homescreen> {
   /// Periodic UI update timer (for timestamp refresh)
   Timer? _timer;
 
+  double mainContainerHeight = 0;
+  double mainContainerWidth = 0;
+  bool isRight = false;
+  // bool isOpen = false;
+
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        mainContainerHeight = MediaQuery.of(context).size.height;
+        mainContainerWidth = MediaQuery.of(context).size.width;
+        // backgroudColorofCards = Theme.of(context).scaffoldBackgroundColor;
+      });
       _handleDeepLink();
 
       // NEW: start local-to-cloud sync listener
@@ -169,6 +195,7 @@ class _HomescreenState extends State<Homescreen> {
   void dispose() {
     // Cancel periodic refresh timer
     _timer?.cancel();
+    _pageViewController.dispose();
     super.dispose();
   }
 
@@ -177,267 +204,1068 @@ class _HomescreenState extends State<Homescreen> {
   /// =============================================================
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 44, 16, 16),
+    final myThemeVar = Theme.of(context);
+    int duration = 400;
+    int colorDuration = duration + (duration * .2).toInt();
 
-      // =============================================================
-      // APP BAR (Custom Widget)
-      // =============================================================
-      appBar: customAppBar(title: "Budget Book"),
+    return Stack(
+      children: [
+        //BOTTOM LAYER
+        // Scaffold(
+        //   appBar: AppBar(
+        //     backgroundColor: myThemeVar.colorScheme.surface,
+        //     // backgroundColor: Colors.white,
+        //     surfaceTintColor: Colors.transparent,
 
-      // =============================================================
-      // BODY — Item List + Summary Card
-      // =============================================================
-      body: ValueListenableBuilder(
-        valueListenable: itemsBox.listenable(), // Rebuild on Hive change
-        builder: (context, Box<BudgetItem> box, _) {
-          // ---------------------------------------------------------
-          // Empty State
-          // ---------------------------------------------------------
-          if (box.isEmpty) {
-            return Align(
-              alignment: Alignment.center,
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.3,
-                // color: Colors.amber,
-                // alignment: Alignment.center,
-                child: Column(
-                  children: [
-                    Flexible(
-                      child: Lottie.asset(
-                        "assets/lottie/cat_in_the_box.json",
-                        // height: 120,
-                      ),
-                    ),
-                    Text(
-                      "No Items found",
-                      style: TextStyle(
-                        fontFamily: GoogleFonts.workSans().fontFamily,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Expanded(child: SizedBox(height: 0)),
-                  ],
-                ),
-              ),
-            );
-          }
+        //     // toolbarHeight: 30,
+        //     leading: IconButton(
+        //       color: myThemeVar.iconTheme.color,
+        //       icon: const Icon(Icons.clear),
+        //       onPressed: () {
+        //         setState(() {
+        //           if (backgroudColorofCards ==
+        //               myThemeVar.scaffoldBackgroundColor) {
+        //             backgroudColorofCards = myThemeVar.colorScheme.surface;
+        //           } else {
+        //             backgroudColorofCards = myThemeVar.scaffoldBackgroundColor;
+        //           }
+        //           if (isRight) {
+        //             mainContainerHeight = MediaQuery.of(context).size.height;
+        //             mainContainerWidth = MediaQuery.of(context).size.width;
+        //           } else {
+        //             mainContainerHeight =
+        //                 MediaQuery.of(context).size.height * 0.7;
+        //             mainContainerWidth =
+        //                 MediaQuery.of(context).size.width * 0.7;
+        //           }
 
-          // ---------------------------------------------------------
-          // Convert Hive box to list & sort newest → oldest
-          // ---------------------------------------------------------
-          final items = box.values.toList()
-            ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
+        //           isRight = !isRight;
+        //           // isOpen = !isOpen;
 
-          final grouped = Api.groupItemsByMonth(items);
+        //           // if (isRight) {
+        //           //   isRight = false;
+        //           // } else {
+        //           //   isRight = true;
+        //           // }
+        //         });
+        //       },
+        //     ),
+        //   ),
 
-          final List<dynamic> displayList = [];
+        //   // bottomNavigationBar: PreferredSize(
+        //   //   preferredSize: const Size.fromHeight(30),
+        //   //   child: SafeArea(
+        //   //     top: false,
+        //   //     child: AppBar(
+        //   //       backgroundColor: Colors.blue,
+        //   //       surfaceTintColor: Colors.transparent,
+        //   //       toolbarHeight: 30,
+        //   //       automaticallyImplyLeading: false,
+        //   //     ),
+        //   //   ),
+        //   // ),
+        //   body:
+        Material(
+          color: Colors.blue,
+          child: Container(
+            // decoration: BoxDecoration(
+            //   gradient: LinearGradient(
+            //     colors: [
+            //       myThemeVar.colorScheme.surface,
+            //       myThemeVar.brightness == Brightness.dark
+            //           ? MyAppTheme.scaffoldBackgroundColorSecondaryDark
+            //           : MyAppTheme.scaffoldBackgroundColorSecondaryLight,
+            //     ],
+            //     begin: Alignment.topLeft,
+            //     end: Alignment.bottomLeft,
+            //   ),
+            // ),
+            color: myThemeVar.colorScheme.surface,
+            width: MediaQuery.of(context).size.width,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: AnimatedScale(
+                scale: 1,
+                duration: Duration(milliseconds: duration),
+                curve: Curves.linear,
+                child: AnimatedSlide(
+                  offset: isRight ? const Offset(0, 0) : Offset(-1, 0),
+                  duration: Duration(milliseconds: duration),
+                  curve: Curves.linear,
 
-          final Map<String, int> monthlyTotal = {};
-
-          // grouped.forEach((monthKey, montItem){
-          //   montlyTotal.add(monthKey);
-          //   montlyTotal.addAll(montItem.price)
-          // });
-
-          grouped.forEach((monthKey, monthItem) {
-            int total = monthItem.fold(
-              0,
-              (sum, item) => sum + (item.price * item.quantity),
-            );
-            monthlyTotal[monthKey] = total;
-
-            displayList.add(monthKey);
-            displayList.addAll(monthItem);
-          });
-
-          // =========================================================
-          // MAIN COLUMN
-          // =========================================================
-          return Column(
-            children: [
-              // =======================================================
-              // TOP CARD → Total Expense Summary
-              // =======================================================
-              Container(
-                height: MediaQuery.of(context).size.height * 0.27,
-                child: Card(
-                  margin: EdgeInsets.only(bottom: 0, top: 5, left: 0, right: 0),
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(
-                      color: const Color.fromARGB(255, 105, 99, 97),
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  color: const Color.fromARGB(255, 24, 8, 2),
-                  //PAGEVIEW
-                  child: PageView(
-                    controller: _pageViewController,
-                    children: [TopCard1(), TopCard2()],
-                  ),
-                ),
-              ),
-
-              // =======================================================
-              // BOTTOM — LIST OF ITEMS
-              // =======================================================
-              Expanded(
-                // flex: 7,
-                child: ListView.builder(
-                  padding: EdgeInsets.only(bottom: 80, top: 5),
-                  itemCount: displayList.length,
-                  itemBuilder: (context, index) {
-                    // final item = items[index];
-
-                    final entry = displayList[index];
-
-                    //IF THE entry IS A STRING MEANING THE MONTH AND YEAR STRING FORM displayList
-                    if (entry is String) {
-                      // Hide the first month header
-                      if (index == 0) {
-                        return SizedBox.shrink();
-                      }
-                      // return MonthCard(month: formatMonth(entry));
-                      return MonthCard(
-                        month: formatMonth(entry),
-                        total: monthlyTotal[entry] ?? 0,
-                      );
-                    }
-                    //IF THE entry IS A ITEM FROM BudgetItem
-                    else {
-                      final item = entry;
-
-                      // ===================================================
-                      // WRAPPED IN SLIDABLE → Swipe Left for Edit/Delete
-                      // ===================================================
-                      return Slidable(
-                        key: ValueKey(item.id),
-
-                        endActionPane: ActionPane(
-                          motion: const DrawerMotion(),
-                          extentRatio: 0.25,
-                          children: [
-                            // EDIT
-                            SlidableAction(
-                              onPressed: (context) => _editItem(item),
-                              backgroundColor: const Color.fromARGB(
-                                255,
-                                44,
-                                16,
-                                16,
-                              ),
-                              foregroundColor: Colors.white,
-                              icon: Icons.edit,
-                              label: 'Edit',
-                            ),
-                          ],
+                  //DRAWER BUTTONS
+                  child: Container(
+                    margin: EdgeInsets.only(left: 20),
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    height: MediaQuery.of(context).size.height,
+                    color: Colors.transparent,
+                    child: Column(
+                      key: ValueKey(isRight),
+                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.08,
                         ),
-                        startActionPane: ActionPane(
-                          motion: const DrawerMotion(),
-                          extentRatio: 0.25,
-                          children: [
-                            // DELETE
-                            SlidableAction(
-                              onPressed: (context) async {
-                                // itemsBox.delete(item.key);
-                                itemsBox.delete(item.id); // local
+                        IconButton(
+                          color: myThemeVar.iconTheme.color,
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            setState(() {
+                              // if (backgroudColorofCards ==
+                              //     myThemeVar.scaffoldBackgroundColor) {
+                              //   backgroudColorofCards =
+                              //       myThemeVar.colorScheme.surface;
+                              // } else {
+                              //   backgroudColorofCards =
+                              //       myThemeVar.scaffoldBackgroundColor;
+                              // }
+                              // if (isRight) {
+                              //   mainContainerHeight = MediaQuery.of(
+                              //     context,
+                              //   ).size.height;
+                              //   mainContainerWidth = MediaQuery.of(
+                              //     context,
+                              //   ).size.width;
+                              // } else {
+                              //   mainContainerHeight =
+                              //       MediaQuery.of(context).size.height * 0.7;
+                              //   mainContainerWidth =
+                              //       MediaQuery.of(context).size.width * 0.7;
+                              // }
 
-                                // remote
-                                try {
-                                  final service =
-                                      await FirestoreService.forCurrentUser();
-                                  await service.deleteItem(item.id);
-                                } catch (e) {
-                                  log('Failed remote delete: $e');
-                                }
-                              },
-                              backgroundColor: const Color.fromARGB(
-                                255,
-                                44,
-                                16,
-                                16,
-                              ),
-                              foregroundColor: Colors.white,
-                              icon: Icons.delete,
-                              label: 'Delete',
-                            ),
-                          ],
-                        ),
+                              isRight = !isRight;
+                              // isOpen = !isOpen;
 
-                        // ITEM UI CARD (Custom Widget)
-                        child: ItemCard(
-                          name: item.name,
-                          date: item.dateTime,
-                          quantity: item.quantity,
-                          price: item.price,
-                          onEdit: () {
-                            _editItem(item);
+                              // if (isRight) {
+                              //   isRight = false;
+                              // } else {
+                              //   isRight = true;
+                              // }
+                            });
                           },
                         ),
-                      );
-                    }
-                  },
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.02,
+                        ),
+                        //USER CONTAINER
+                        StreamBuilder<User?>(
+                          stream: FirebaseAuth.instance.userChanges(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const SizedBox(
+                                height: 52,
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                              );
+                            }
+
+                            final user = snapshot.data;
+                            return Container(
+                              // width: double.infinity,
+                              width: MediaQuery.of(context).size.width * 0.55,
+                              height: MediaQuery.of(context).size.height * .1,
+
+                              // height: double.infinity,
+                              // color: Colors.red,
+                              margin: EdgeInsets.only(left: 0, right: 0),
+
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(7),
+                                onTap: () {
+                                  // Navigator.pop(context);
+
+                                  // Navigator.pop(context);
+                                  user == null
+                                      ? {
+                                          handleLoginButtonClick(),
+                                          isRight = !isRight,
+                                        }
+                                      : log("already logged");
+
+                                  log("user name clicked");
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 5),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 26,
+                                        backgroundColor: Colors.black
+                                            .withOpacity(0.3),
+
+                                        // backgroundImage:NetworkImage(currUser!.photoURL.toString()),
+                                        // child:Icon(Icons.person),
+                                        backgroundImage: user?.photoURL != null
+                                            ? NetworkImage(user!.photoURL!)
+                                            : null,
+                                        child: user?.photoURL == null
+                                            ? Icon(
+                                                Icons.person,
+                                                color: Colors.white,
+                                              )
+                                            : null,
+                                      ),
+                                      SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            FittedBox(
+                                              child: Text(
+                                                user?.displayName ?? "",
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: myThemeVar
+                                                      .colorScheme
+                                                      .primary,
+                                                ),
+                                              ),
+                                            ),
+                                            FittedBox(
+                                              child: Text(
+                                                user?.email ?? "",
+                                                style: TextStyle(
+                                                  color: myThemeVar
+                                                      .colorScheme
+                                                      .secondary,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+
+                        ...[
+                              Material(
+                                // color: Colors.green,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(7),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => Activities(),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    alignment: Alignment.centerLeft,
+                                    padding: EdgeInsets.only(left: 5, right: 2),
+                                    height:
+                                        MediaQuery.of(context).size.width * .1,
+                                    width:
+                                        MediaQuery.of(context).size.width * .5,
+                                    // color: Colors.blue,
+                                    child: FittedBox(
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.calendar_month,
+                                            color: myThemeVar
+                                                .colorScheme
+                                                .onPrimary,
+                                          ),
+                                          SizedBox(width: 10),
+                                          Text(
+                                            "Button 1",
+                                            style: TextStyle(
+                                              color: myThemeVar
+                                                  .colorScheme
+                                                  .onPrimary,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(7),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => Activities(),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    alignment: Alignment.centerLeft,
+                                    padding: EdgeInsets.only(left: 5, right: 2),
+                                    height:
+                                        MediaQuery.of(context).size.width * .1,
+                                    width:
+                                        MediaQuery.of(context).size.width * .5,
+                                    // color: Colors.blue,
+                                    child: FittedBox(
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.settings,
+                                            color: myThemeVar
+                                                .colorScheme
+                                                .onPrimary,
+                                          ),
+                                          SizedBox(width: 10),
+                                          Text(
+                                            "Settings",
+                                            style: TextStyle(
+                                              color: myThemeVar
+                                                  .colorScheme
+                                                  .onPrimary,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(7),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => Activities(),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    alignment: Alignment.centerLeft,
+                                    padding: EdgeInsets.only(left: 5, right: 2),
+                                    height:
+                                        MediaQuery.of(context).size.width * .1,
+                                    width:
+                                        MediaQuery.of(context).size.width * .5,
+                                    // color: Colors.blue,
+                                    child: FittedBox(
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.format_list_bulleted_outlined,
+                                            color: myThemeVar
+                                                .colorScheme
+                                                .onPrimary,
+                                          ),
+                                          SizedBox(width: 10),
+                                          Text(
+                                            "Button 3",
+                                            style: TextStyle(
+                                              color: myThemeVar
+                                                  .colorScheme
+                                                  .onPrimary,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(7),
+                                  onTap: () async {
+                                    // Navigator.pop(context);
+
+                                    setState(() {
+                                      isRight = !isRight;
+                                    });
+                                    try {
+                                      await signOut();
+
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "Logged Out",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          backgroundColor: Color.fromARGB(
+                                            255,
+                                            83,
+                                            83,
+                                            83,
+                                          ),
+                                        ),
+                                      );
+                                    } catch (e) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            "Error: $e",
+                                            style: TextStyle(color: Colors.red),
+                                          ),
+                                          backgroundColor: Color.fromARGB(
+                                            255,
+                                            83,
+                                            83,
+                                            83,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    log("Sign out Clicked");
+
+                                    // Navigator.push(
+                                    //   context,
+                                    //   MaterialPageRoute(
+                                    //     builder: (_) => Activities(),
+                                    //   ),
+                                    // );
+                                  },
+                                  child: Container(
+                                    alignment: Alignment.centerLeft,
+                                    padding: EdgeInsets.only(left: 5, right: 2),
+                                    height:
+                                        MediaQuery.of(context).size.width * .1,
+                                    width:
+                                        MediaQuery.of(context).size.width * .5,
+                                    // color: Colors.blue,
+                                    child: FittedBox(
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.logout,
+                                            color: myThemeVar
+                                                .colorScheme
+                                                .onPrimary,
+                                          ),
+                                          SizedBox(width: 10),
+                                          Text(
+                                            "Log Out",
+                                            style: TextStyle(
+                                              color: myThemeVar
+                                                  .colorScheme
+                                                  .onPrimary,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ]
+                            .animate(
+                              interval: (duration * 0.25).ms,
+                              onPlay: (c) =>
+                                  isRight ? c.forward() : c.forward(),
+                            )
+                            .slideX(begin: -1, end: 0), //DRAWER ANIMATION
+
+                        Container(
+                          // color: Colors.red,
+                          width: double.infinity,
+                          // height:
+                          //     (MediaQuery.of(context).size.height * .3) + 30,
+                          child: Text(""),
+                        ),
+                      ],
+                    ),
+                    // child: Text(""),
+                  ),
+                  // //
                 ),
               ),
-            ],
-          );
-        },
-      ),
+            ),
+          ),
+        ),
+        // ),
 
-      // =============================================================
-      // ➕ FLOATING ACTION BUTTON (Add New Item)
-      // =============================================================
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color.fromARGB(255, 0, 201, 104),
-        foregroundColor: Colors.white,
-        child: Icon(Icons.add),
+        // SECOND LAYER BORDER CONTAINER
+        AnimatedScale(
+          scale: isRight ? 0.71 : 1.0,
+          duration: Duration(milliseconds: duration),
+          curve: Curves.linear,
+          child: AnimatedSlide(
+            offset: isRight ? const Offset(0.65, 0) : Offset.zero,
+            duration: Duration(milliseconds: duration),
+            curve: Curves.linear,
+            child: Material(
+              color: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(color: myThemeVar.dividerColor),
+              ),
+              child: Container(
+                color: Colors.transparent,
+                child: Center(child: Text("")),
+              ),
+            ),
+          ),
+        ),
 
-        // onPressed: () async {
-        //   final result = await showDialog(
-        //     context: context,
-        //     builder: (_) => AddItemDialogBox(),
-        //   );
+        //MAIN SCAFFOLD
+        AnimatedScale(
+          scale: isRight ? 0.7 : 1.0,
+          duration: Duration(milliseconds: duration),
+          curve: Curves.linear,
+          child: AnimatedSlide(
+            offset: isRight ? const Offset(0.67, 0) : Offset.zero,
+            duration: Duration(milliseconds: duration),
+            curve: Curves.linear,
+            child: AnimatedContainer(
+              duration: Duration(milliseconds: colorDuration),
+              curve: Curves.easeInOutCubic,
 
-        //   if (result != null) {
-        //     final item = BudgetItem(
-        //       id: DateTime.now().millisecondsSinceEpoch.toString(),
-        //       name: result["name"],
-        //       quantity: result["quantity"],
-        //       price: result["price"],
-        //       dateTime: result["date"],
-        //       imagePath: "",
-        //     );
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: backgroundColorOfCards,
+                // color: backgroudColorofCards,
+              ),
+              // color: Colors.amber,
+              child: ClipRRect(
+                borderRadius: isRight
+                    ? BorderRadius.circular(16)
+                    : BorderRadius.circular(0),
+                child: GestureDetector(
+                  onTap: isRight
+                      ? () {
+                          setState(() {
+                            // if (backgroudColorofCards ==
+                            //     myThemeVar.scaffoldBackgroundColor) {
+                            //   backgroudColorofCards =
+                            //       myThemeVar.colorScheme.surface;
+                            // } else {
+                            //   backgroudColorofCards =
+                            //       myThemeVar.scaffoldBackgroundColor;
+                            // }
+                            // if (isRight) {
+                            //   mainContainerHeight = MediaQuery.of(
+                            //     context,
+                            //   ).size.height;
+                            //   mainContainerWidth = MediaQuery.of(
+                            //     context,
+                            //   ).size.width;
+                            // } else {
+                            //   mainContainerHeight =
+                            //       MediaQuery.of(context).size.height * 0.7;
+                            //   mainContainerWidth =
+                            //       MediaQuery.of(context).size.width * 0.7;
+                            // }
 
-        //     itemsBox.add(item); // Save to Hive
-        //     log('Saved item: ${item.id}');
+                            isRight = !isRight;
+                            // isOpen = !isOpen;
+                          });
+                        }
+                      : null,
+                  onHorizontalDragUpdate: isRight
+                      ? (details) {
+                          if (details.delta.dx < -8) {
+                            setState(() => isRight = !isRight);
+                          }
+                        }
+                      : null,
+                  child: Scaffold(
+                    // backgroundColor: const Color.fromARGB(255, 44, 16, 16),
+                    backgroundColor: Colors.transparent,
 
-        //     setState(() {}); // Refresh UI
-        //   }
-        // },
-        onPressed: () async {
-          final BudgetItem? item = await showDialog(
-            context: context,
-            builder: (_) => AddItemDialogBox(isEditing: false),
-          );
+                    // =============================================================
+                    // APP BAR (Custom Widget)
+                    // =============================================================
+                    // appBar: customAppBar(title: "Budget Book"),
+                    appBar: PreferredSize(
+                      preferredSize: const Size.fromHeight(kToolbarHeight),
+                      child: StreamBuilder<User?>(
+                        stream: FirebaseAuth.instance.userChanges(),
+                        builder: (context, snapshot) {
+                          final user = snapshot.data;
 
-          if (item != null) {
-            // Save locally first
-            itemsBox.put(item.id, item); // Save using ID as key
-            log('Saved item: ${item.id}');
-            setState(() {});
+                          if (isRight == false) {
+                            return AppBar(
+                              backgroundColor: myThemeVar.cardColor,
+                              surfaceTintColor: Colors.transparent,
+                              leading: IconButton(
+                                color: myThemeVar.iconTheme.color,
+                                icon: const Icon(Icons.menu),
+                                onPressed: () {
+                                  setState(() {
+                                    // if (backgroudColorofCards ==
+                                    //     myThemeVar.scaffoldBackgroundColor) {
+                                    //   backgroudColorofCards =
+                                    //       myThemeVar.colorScheme.surface;
+                                    // } else {
+                                    //   backgroudColorofCards =
+                                    //       myThemeVar.scaffoldBackgroundColor;
+                                    // }
+                                    // if (isRight) {
+                                    //   mainContainerHeight = MediaQuery.of(
+                                    //     context,
+                                    //   ).size.height;
+                                    //   mainContainerWidth = MediaQuery.of(
+                                    //     context,
+                                    //   ).size.width;
+                                    // } else {
+                                    //   mainContainerHeight =
+                                    //       MediaQuery.of(context).size.height *
+                                    //       0.7;
+                                    //   mainContainerWidth =
+                                    //       MediaQuery.of(context).size.width *
+                                    //       0.7;
+                                    // }
 
-            // Then upload in background
-            try {
-              final service = await FirestoreService.forCurrentUser();
-              await service.uploadItem(item);
-              log('Uploaded item ${item.id} to Firestore');
-            } catch (e) {
-              log('Failed upload: $e');
-              // optionally mark item as pending in Hive
-            }
-          }
-        },
-      ),
+                                    isRight = !isRight;
+                                    // isOpen = !isOpen;
+
+                                    // if (isRight) {
+                                    //   isRight = false;
+                                    // } else {
+                                    //   isRight = true;
+                                    // }
+                                  });
+                                },
+                              ),
+                              // iconTheme: const IconThemeData(color: Colors.white70),
+                              title: Text(
+                                "Budget Book",
+                                style: TextStyle(
+                                  color: myThemeVar.colorScheme.primary,
+                                  fontFamily: GoogleFonts.workSans().fontFamily,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 24,
+                                ),
+                              ),
+                              actions: [
+                                GestureDetector(
+                                  onTap: () {
+                                    log("photo url: ${user?.photoURL}");
+                                    AccountSettingsDialog()
+                                        .showAccountSettingDialog(context);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 12),
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.transparent,
+                                      backgroundImage: user?.photoURL != null
+                                          ? NetworkImage(user!.photoURL!)
+                                          : null,
+                                      child: user?.photoURL == null
+                                          ? Icon(
+                                              Icons.person,
+                                              color: myThemeVar.iconTheme.color,
+                                            )
+                                          : null,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          } else {
+                            return AppBar(
+                              backgroundColor: myThemeVar.cardColor,
+                              surfaceTintColor: Colors.transparent,
+                              title: Text(
+                                "Budget Book",
+                                style: TextStyle(
+                                  color: myThemeVar.colorScheme.primary,
+                                  fontFamily: GoogleFonts.workSans().fontFamily,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 24,
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+
+                    body: IgnorePointer(
+                      ignoring: isRight,
+
+                      // =============================================================
+                      // BODY — Item List + Summary Card
+                      // =============================================================
+                      child: ValueListenableBuilder(
+                        valueListenable: itemsBox
+                            .listenable(), // Rebuild on Hive change
+                        builder: (context, Box<BudgetItem> box, _) {
+                          // ---------------------------------------------------------
+                          // Empty State
+                          // ---------------------------------------------------------
+
+                          if (box.isEmpty) {
+                            return Container(
+                              color: myThemeVar.cardColor,
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Container(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.3,
+                                  // color: Colors.amber,
+                                  // alignment: Alignment.center,
+                                  child: Column(
+                                    children: [
+                                      Flexible(
+                                        child: Lottie.asset(
+                                          "assets/lottie/cat_in_the_box.json",
+                                          // height: 120,
+                                        ),
+                                      ),
+                                      Text(
+                                        "No Items found",
+                                        style: TextStyle(
+                                          fontFamily:
+                                              GoogleFonts.workSans().fontFamily,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Expanded(child: SizedBox(height: 0)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+
+                          // ---------------------------------------------------------
+                          // Convert Hive box to list & sort newest → oldest
+                          // ---------------------------------------------------------
+                          final items = box.values.toList()
+                            ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
+
+                          final grouped = Api.groupItemsByMonth(items);
+
+                          final List<dynamic> displayList = [];
+
+                          final Map<String, int> monthlyTotal = {};
+
+                          // grouped.forEach((monthKey, montItem){
+                          //   montlyTotal.add(monthKey);
+                          //   montlyTotal.addAll(montItem.price)
+                          // });
+
+                          grouped.forEach((monthKey, monthItem) {
+                            int total = monthItem.fold(
+                              0,
+                              (sum, item) => sum + (item.price * item.quantity),
+                            );
+                            monthlyTotal[monthKey] = total;
+
+                            displayList.add(monthKey);
+                            displayList.addAll(monthItem);
+                          });
+
+                          // =========================================================
+                          // MAIN COLUMN
+                          // =========================================================
+
+                          return Container(
+                            margin: EdgeInsets.only(left: 0, right: 0, top: 0),
+                            // No animated width/height → boosts FPS massively
+                            height: MediaQuery.of(context).size.height,
+                            width: MediaQuery.of(context).size.width,
+
+                            // color: const Color.fromARGB(255, 44, 16, 16),
+                            // color: const Color.fromRGBO(34, 40, 49, 1.000),
+                            child: Column(
+                              children: [
+                                // =======================================================
+                                // TOP CARD
+                                // =======================================================
+                                Stack(
+                                  children: [
+                                    //LAYER BOTTOM BELOW TOP CARD
+                                    Container(
+                                      color: myThemeVar.cardColor,
+                                      height: 40,
+                                      width: MediaQuery.of(context).size.width,
+                                    ),
+
+                                    //TOP LAYER   TOP CARD
+                                    Container(
+                                      // decoration: BoxDecoration(
+                                      //   border: Border(
+                                      //     bottom: BorderSide(
+                                      //       color: myThemeVar.dividerColor,
+                                      //     ),
+                                      //   ),
+                                      // ),
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                          0.27,
+                                      width: double.infinity,
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: Card(
+                                          elevation: 0,
+                                          margin: const EdgeInsets.only(
+                                            bottom: 0,
+                                            top: 0,
+                                            left: 0,
+                                            right: 0,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            // side: BorderSide(
+                                            //   color: !isRight
+                                            //       ? myThemeVar.dividerColor
+                                            //       : Colors.transparent,
+                                            // ),
+                                            borderRadius: isRight
+                                                ? BorderRadiusGeometry.only(
+                                                    bottomLeft: Radius.circular(
+                                                      0,
+                                                    ),
+                                                    bottomRight:
+                                                        Radius.circular(0),
+                                                  )
+                                                : BorderRadiusGeometry.zero,
+                                          ),
+                                          color: myThemeVar.cardColor,
+                                          // color: const Color.fromARGB(255, 44, 90, 163),
+                                          child: PageView(
+                                            controller: _pageViewController,
+                                            children: [
+                                              TopCard1(
+                                                containeHeight: 600,
+                                                containeWidth: 250,
+                                              ),
+                                              TopCard2(),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    //
+                                  ],
+                                ),
+
+                                // =======================================================
+                                // ITEM LIST
+                                // =======================================================
+                                Expanded(
+                                  child: Container(
+                                    margin: EdgeInsets.only(left: 0, right: 0),
+                                    child: ListView.builder(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 80,
+                                        top: 5,
+                                      ),
+                                      itemCount: displayList.length,
+                                      itemBuilder: (context, index) {
+                                        final entry = displayList[index];
+
+                                        if (entry is String) {
+                                          if (index == 0) {
+                                            return const SizedBox.shrink();
+                                          }
+
+                                          return MonthCard(
+                                            month: formatMonth(entry),
+                                            total: monthlyTotal[entry] ?? 0,
+                                            containerHeight: MediaQuery.of(
+                                              context,
+                                            ).size.height,
+                                            containerWidth: MediaQuery.of(
+                                              context,
+                                            ).size.width,
+                                            monthCardColor: Colors.transparent,
+                                            colorDuration: colorDuration,
+                                          );
+                                        } else {
+                                          final item = entry;
+
+                                          return Slidable(
+                                            key: ValueKey(item.id),
+
+                                            endActionPane: ActionPane(
+                                              motion: const DrawerMotion(),
+                                              extentRatio: 0.25,
+                                              children: [
+                                                SlidableAction(
+                                                  onPressed: (context) =>
+                                                      _editItem(item),
+                                                  backgroundColor:
+                                                      Colors.transparent,
+                                                  foregroundColor: myThemeVar
+                                                      .colorScheme
+                                                      .onPrimary,
+                                                  icon: Icons.edit,
+                                                  label: 'Edit',
+                                                ),
+                                              ],
+                                            ),
+
+                                            startActionPane: ActionPane(
+                                              motion: const DrawerMotion(),
+                                              extentRatio: 0.25,
+                                              children: [
+                                                SlidableAction(
+                                                  onPressed: (context) async {
+                                                    itemsBox.delete(item.id);
+
+                                                    try {
+                                                      final service =
+                                                          await FirestoreService.forCurrentUser();
+                                                      await service.deleteItem(
+                                                        item.id,
+                                                      );
+                                                    } catch (e) {
+                                                      log(
+                                                        'Failed remote delete: $e',
+                                                      );
+                                                    }
+                                                  },
+                                                  backgroundColor:
+                                                      Colors.transparent,
+                                                  foregroundColor: myThemeVar
+                                                      .colorScheme
+                                                      .onPrimary,
+                                                  icon: Icons.delete,
+                                                  label: 'Delete',
+                                                ),
+                                              ],
+                                            ),
+
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadiusGeometry.circular(
+                                                    0,
+                                                  ),
+                                              child: OpenContainer(
+                                                closedElevation:
+                                                    0, // remove shadow in closed state
+                                                openElevation:
+                                                    0, // remove shadow when opening
+                                                closedColor: Colors.transparent,
+                                                transitionDuration:
+                                                    const Duration(
+                                                      milliseconds: 500,
+                                                    ),
+                                                closedBuilder:
+                                                    (context, action) {
+                                                      return ItemCard(
+                                                        name: item.name,
+                                                        date: item.dateTime,
+                                                        quantity: item.quantity,
+                                                        price: item.price,
+                                                        onEdit: () =>
+                                                            _editItem(item),
+                                                        containerHeight:
+                                                            MediaQuery.of(
+                                                              context,
+                                                            ).size.height,
+                                                        containerWidth:
+                                                            MediaQuery.of(
+                                                              context,
+                                                            ).size.width,
+                                                        isRight: isRight,
+                                                      );
+                                                    },
+                                                openBuilder: (context, action) {
+                                                  return Itemdatascreen();
+                                                },
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+
+                    // =============================================================
+                    // ➕ FLOATING ACTION BUTTON (Add New Item)
+                    // =============================================================
+                    floatingActionButton: FloatingActionButton(
+                      backgroundColor:
+                          myThemeVar.floatingActionButtonTheme.backgroundColor,
+                      foregroundColor:
+                          myThemeVar.floatingActionButtonTheme.foregroundColor,
+                      child: Icon(Icons.add),
+
+                      // onPressed: () async {
+                      //   final result = await showDialog(
+                      //     context: context,
+                      //     builder: (_) => AddItemDialogBox(),
+                      //   );
+
+                      //   if (result != null) {
+                      //     final item = BudgetItem(
+                      //       id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      //       name: result["name"],
+                      //       quantity: result["quantity"],
+                      //       price: result["price"],
+                      //       dateTime: result["date"],
+                      //       imagePath: "",
+                      //     );
+
+                      //     itemsBox.add(item); // Save to Hive
+                      //     log('Saved item: ${item.id}');
+
+                      //     setState(() {}); // Refresh UI
+                      //   }
+                      // },
+                      onPressed: () async {
+                        final BudgetItem? item = await showDialog(
+                          context: context,
+                          builder: (_) => AddItemDialogBox(isEditing: false),
+                        );
+
+                        if (item != null) {
+                          // Save locally first
+                          itemsBox.put(item.id, item); // Save using ID as key
+                          log('Saved item: ${item.id}');
+                          setState(() {});
+
+                          // Then upload in background
+                          try {
+                            final service =
+                                await FirestoreService.forCurrentUser();
+                            await service.uploadItem(item);
+                            log('Uploaded item ${item.id} to Firestore');
+                          } catch (e) {
+                            log('Failed upload: $e');
+                            // optionally mark item as pending in Hive
+                          }
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

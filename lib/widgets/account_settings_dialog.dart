@@ -1,5 +1,6 @@
 import 'dart:developer' show log;
 
+import 'package:budget_book_app/helper/my_theme.dart';
 import 'package:budget_book_app/screens/activities.dart';
 import 'package:budget_book_app/screens/homeScreen.dart';
 import 'package:budget_book_app/services/sync_service.dart';
@@ -12,12 +13,13 @@ class AccountSettingsDialog {
 
   // static ChatUser me;
   void showAccountSettingDialog(BuildContext context) {
+    final myThemeVar = Theme.of(context);
     showDialog(
       context: context,
-      barrierColor: Colors.black54,
+      barrierColor: const Color.fromARGB(135, 0, 0, 0),
       builder: (context) {
         return Dialog(
-          backgroundColor: const Color.fromARGB(255, 24, 8, 2),
+          backgroundColor: myThemeVar.cardColor,
           insetPadding: EdgeInsets.only(top: 60, right: 10),
           alignment: Alignment.topRight,
           shape: RoundedRectangleBorder(
@@ -53,7 +55,10 @@ class AccountSettingsDialog {
                               ? NetworkImage(currUser!.photoURL!)
                               : null,
                           child: currUser?.photoURL == null
-                              ? Icon(Icons.person, color: Colors.white70)
+                              ? Icon(
+                                  Icons.person,
+                                  color: myThemeVar.iconTheme.color,
+                                )
                               : null,
                         ),
                         SizedBox(width: 12),
@@ -65,11 +70,14 @@ class AccountSettingsDialog {
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
+                                color: myThemeVar.colorScheme.primary,
                               ),
                             ),
                             Text(
                               currUser?.email ?? "guest",
-                              style: TextStyle(color: Colors.grey[700]),
+                              style: TextStyle(
+                                color: myThemeVar.colorScheme.secondary,
+                              ),
                             ),
                           ],
                         ),
@@ -84,7 +92,7 @@ class AccountSettingsDialog {
                   InkWell(
                     borderRadius: BorderRadius.circular(7),
                     onTap: () {
-                      _handleLoginButtonClick();
+                      handleLoginButtonClick();
 
                       // Navigator.pushReplacement(
                       //   context,
@@ -194,6 +202,7 @@ class AccountSettingsDialog {
 }
 
 Widget otherTile(String name, IconData Iconss, BuildContext context, screen) {
+  final myThemeVar = Theme.of(context);
   return InkWell(
     borderRadius: BorderRadius.circular(7),
     onTap: () {
@@ -201,10 +210,10 @@ Widget otherTile(String name, IconData Iconss, BuildContext context, screen) {
       Navigator.of(context).push(MaterialPageRoute(builder: (_) => screen));
     },
     child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(Iconss, color: Colors.white60),
+          Icon(Iconss, color: myThemeVar.iconTheme.color),
           SizedBox(width: 14),
           Text(
             name,
@@ -217,7 +226,7 @@ Widget otherTile(String name, IconData Iconss, BuildContext context, screen) {
 }
 
 /// --------------------- Login Logic ---------------------
-_handleLoginButtonClick() {
+void handleLoginButtonClick() {
   signInWithGoogle().then((user) async {
     if (user != null) {
       log('\nUser: ${user.user}');

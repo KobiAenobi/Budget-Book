@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:budget_book_app/firebase_options.dart';
+import 'package:budget_book_app/helper/my_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -179,21 +180,40 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Budget Book',
-      theme: ThemeData(
-        textTheme: GoogleFonts.workSansTextTheme().apply(
-          bodyColor: Colors.white70,
-          displayColor: Colors.white,
-        ),
-        appBarTheme: AppBarTheme(
-          color: const Color.fromARGB(255, 24, 8, 2),
-          titleTextStyle: GoogleFonts.workSans(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-          ),
-        ),
-      ),
+      // theme: ThemeData(
+      //   textTheme: GoogleFonts.workSansTextTheme().apply(
+      //     bodyColor: const Color.fromARGB(179, 151, 0, 0),
+      //     displayColor: const Color.fromARGB(255, 182, 58, 58),
+      //   ),
+      //   appBarTheme: AppBarTheme(
+      //     backgroundColor: const Color.fromRGBO(250, 243, 225, 1.000),
+      //     titleTextStyle: GoogleFonts.workSans(
+      //       color: const Color.fromARGB(255, 34, 0, 0),
+      //       fontWeight: FontWeight.bold,
+      //       fontSize: 24,
+      //     ),
+      //   ),
+      // ),
+      theme: MyAppTheme.lightTheme,
+      darkTheme: MyAppTheme.darkTheme,
+      themeMode: ThemeMode.system,
+
+      
       home: Homescreen(),
     );
   }
 }
+
+// class RootApp extends StatefulWidget {
+//   const RootApp({super.key});
+
+//   @override
+//   State<RootApp> createState() => _RootAppState();
+// }
+
+// class _RootAppState extends State<RootApp> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MyApp();
+//   }
+// }

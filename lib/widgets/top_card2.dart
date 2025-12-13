@@ -28,6 +28,7 @@ class _TopCard2State extends State<TopCard2> {
     for (var item in items) {
       grandTotal += item.price * item.quantity;
     }
+    final myThemeVar = Theme.of(context);
     //Top Card Design
     return Container(
       // margin: EdgeInsets.only(bottom: 0, top: 5, left: 0, right: 0),
@@ -35,7 +36,7 @@ class _TopCard2State extends State<TopCard2> {
       //   side: BorderSide(color: const Color.fromARGB(255, 105, 99, 97)),
       //   borderRadius: BorderRadius.circular(10),
       // ),
-      color: const Color.fromARGB(255, 24, 8, 2),
+      // color: const Color.fromARGB(255, 24, 8, 2),
       child: Column(
         children: [
           //Top Expense Container
@@ -47,7 +48,7 @@ class _TopCard2State extends State<TopCard2> {
                 child: Text(
                   "Top Expense",
                   style: TextStyle(
-                    color: Colors.white70,
+                    color: myThemeVar.colorScheme.primary,
                     fontFamily: "Impact",
                     fontWeight: FontWeight.bold,
                     fontSize: 50,

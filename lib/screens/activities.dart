@@ -145,7 +145,6 @@ class _ActivitiesState extends State<Activities> {
     }
   }
 
-
   Future<void> openNotificationSettings() async {
     await platform.invokeMethod('openNotificationSettings');
   }
@@ -161,9 +160,14 @@ class _ActivitiesState extends State<Activities> {
   /// ==========================================================================
   @override
   Widget build(BuildContext context) {
+    final mytheme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 44, 16, 16),
-      appBar: AppBar(title: Text("Budget Book")),
+      backgroundColor: mytheme.cardColor,
+      appBar: AppBar(
+        backgroundColor: mytheme.cardColor,
+        surfaceTintColor: Colors.transparent,
+        title: Text("Budget Book"),
+      ),
 
       body: Center(
         child: Column(
@@ -171,15 +175,7 @@ class _ActivitiesState extends State<Activities> {
           children: [
             /// Button → Open accessibility settings
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(
-                  255,
-                  24,
-                  8,
-                  2,
-                ), // Button color
-                foregroundColor: Colors.white70, // Text/Icon color
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
               onPressed: openAccessibilitySettings,
               child: Text("Enable Accessibility Service"),
             ),

@@ -8,7 +8,7 @@ void startRemoteListener() async {
   final box = Hive.box<BudgetItem>('itemsBox');
 
   FirebaseFirestore.instance
-      .collection('users')
+      .collection('users_test')
       .doc(uid)
       .collection('budgets')
       .snapshots()
