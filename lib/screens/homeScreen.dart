@@ -6,15 +6,18 @@ import 'package:budget_book_app/apis/api.dart';
 import 'package:budget_book_app/helper/appBar.dart';
 import 'package:budget_book_app/helper/my_colors.dart';
 import 'package:budget_book_app/helper/my_theme.dart';
+import 'package:budget_book_app/helper/fab_speed_dial.dart';
 import 'package:budget_book_app/models/budget_item.dart';
 import 'package:budget_book_app/screens/activities.dart';
 import 'package:budget_book_app/screens/itemDataScreen.dart';
+import 'package:budget_book_app/screens/top_expenses_screen.dart';
 import 'package:budget_book_app/services/firestore_service.dart';
 import 'package:budget_book_app/services/sync_service.dart';
 import 'package:budget_book_app/widgets/account_settings_dialog.dart';
 import 'package:budget_book_app/widgets/add_item_dialog_box.dart';
 import 'package:budget_book_app/widgets/item_card.dart';
 import 'package:budget_book_app/widgets/month_card.dart';
+import 'package:budget_book_app/widgets/set_budget_dialog_box.dart';
 import 'package:budget_book_app/widgets/top_card1.dart';
 import 'package:budget_book_app/widgets/top_card2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,6 +25,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_launcher_icons/xml_templates.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:lottie/lottie.dart';
@@ -45,51 +49,31 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
+  final Box settingsBox = Hive.box('appSettings');
+
+  int monthlyBudget = 0;
+  void openSetBudgetDialog() async {
+    final int? newBudget = await showDialog<int>(
+      context: context,
+      builder: (_) => SetBudgetDialogBox(currentBudget: monthlyBudget),
+    );
+    log(newBudget.toString());
+
+    if (newBudget != null) {
+      settingsBox.put('monthlyBudget', newBudget); // ✅ SAVE
+      setState(() {
+        monthlyBudget = newBudget;
+      });
+    }
+  }
+
   Color get backgroundColorOfCards {
     final theme = Theme.of(context);
     return isRight ? theme.colorScheme.surface : theme.scaffoldBackgroundColor;
   }
 
-  // final currUser = FirebaseAuth.instance.currentUser;
-  // Color backgroudColorofCards = const Color.fromRGBO(0, 0, 0, 0); // transparent
-
   //Page view controller
   final _pageViewController = PageController();
-
-  // ---------------------------------------------------------------
-  // (COMMENTED OUT) Android overlay channel:
-  // This is the MethodChannel used to receive data from overlay.
-  // It's currently disabled, but kept intact as you requested.
-  // ---------------------------------------------------------------
-  // static const overlayChannel = MethodChannel("overlay_channel");
-
-  /// =============================================================
-  /// EDIT ITEM FUNCTION
-  /// -------------------------------------------------------------
-  /// Opens the AddItemDialogBox in "edit mode".
-  /// After editing, updates the Hive object directly.
-  /// Hive objects are linked — `item.save()` triggers auto-update.
-  /// =============================================================
-  // void _editItem(BudgetItem item, int index) async {
-  //   final result = await showDialog(
-  //     context: context,
-  //     builder: (_) => AddItemDialogBox(
-  //       existingName: item.name,
-  //       existingQuantity: item.quantity.toString(),
-  //       existingPrice: item.price.toString(),
-  //       isEditing: true, // <- Dialog knows this is an update
-  //     ),
-  //   );
-
-  //   if (result != null) {
-  //     // Apply updates to the existing Hive object
-  //     item.name = result["name"];
-  //     item.quantity = result["quantity"];
-  //     item.price = result["price"];
-
-  //     item.save(); // <-- HIVE AUTO-UPDATE
-  //   }
-  // }
 
   //FORMMATTED MONTH AND YEAR FOR THE LISTVIEWBUILDER
   String formatMonth(String key) {
@@ -166,6 +150,10 @@ class _HomescreenState extends State<Homescreen> {
   void initState() {
     super.initState();
 
+    monthlyBudget = settingsBox.get('monthlyBudget', defaultValue: 0);
+
+    log('Loaded monthly budget: $monthlyBudget');
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         mainContainerHeight = MediaQuery.of(context).size.height;
@@ -205,66 +193,12 @@ class _HomescreenState extends State<Homescreen> {
   @override
   Widget build(BuildContext context) {
     final myThemeVar = Theme.of(context);
-    int duration = 400;
+    int duration = 300;
     int colorDuration = duration + (duration * .2).toInt();
 
     return Stack(
       children: [
-        //BOTTOM LAYER
-        // Scaffold(
-        //   appBar: AppBar(
-        //     backgroundColor: myThemeVar.colorScheme.surface,
-        //     // backgroundColor: Colors.white,
-        //     surfaceTintColor: Colors.transparent,
-
-        //     // toolbarHeight: 30,
-        //     leading: IconButton(
-        //       color: myThemeVar.iconTheme.color,
-        //       icon: const Icon(Icons.clear),
-        //       onPressed: () {
-        //         setState(() {
-        //           if (backgroudColorofCards ==
-        //               myThemeVar.scaffoldBackgroundColor) {
-        //             backgroudColorofCards = myThemeVar.colorScheme.surface;
-        //           } else {
-        //             backgroudColorofCards = myThemeVar.scaffoldBackgroundColor;
-        //           }
-        //           if (isRight) {
-        //             mainContainerHeight = MediaQuery.of(context).size.height;
-        //             mainContainerWidth = MediaQuery.of(context).size.width;
-        //           } else {
-        //             mainContainerHeight =
-        //                 MediaQuery.of(context).size.height * 0.7;
-        //             mainContainerWidth =
-        //                 MediaQuery.of(context).size.width * 0.7;
-        //           }
-
-        //           isRight = !isRight;
-        //           // isOpen = !isOpen;
-
-        //           // if (isRight) {
-        //           //   isRight = false;
-        //           // } else {
-        //           //   isRight = true;
-        //           // }
-        //         });
-        //       },
-        //     ),
-        //   ),
-
-        //   // bottomNavigationBar: PreferredSize(
-        //   //   preferredSize: const Size.fromHeight(30),
-        //   //   child: SafeArea(
-        //   //     top: false,
-        //   //     child: AppBar(
-        //   //       backgroundColor: Colors.blue,
-        //   //       surfaceTintColor: Colors.transparent,
-        //   //       toolbarHeight: 30,
-        //   //       automaticallyImplyLeading: false,
-        //   //     ),
-        //   //   ),
-        //   // ),
-        //   body:
+        // bottom layer
         Material(
           color: Colors.blue,
           child: Container(
@@ -280,7 +214,17 @@ class _HomescreenState extends State<Homescreen> {
             //     end: Alignment.bottomLeft,
             //   ),
             // ),
-            color: myThemeVar.colorScheme.surface,
+            // color: myThemeVar.colorScheme.surface,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  myThemeVar.cardColor,
+                  myThemeVar.scaffoldBackgroundColor,
+                ],
+              ),
+            ),
             width: MediaQuery.of(context).size.width,
             child: Align(
               alignment: Alignment.centerLeft,
@@ -298,402 +242,451 @@ class _HomescreenState extends State<Homescreen> {
                     margin: EdgeInsets.only(left: 20),
                     width: MediaQuery.of(context).size.width * 0.6,
                     height: MediaQuery.of(context).size.height,
-                    color: Colors.transparent,
-                    child: Column(
-                      key: ValueKey(isRight),
-                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.08,
-                        ),
-                        IconButton(
-                          color: myThemeVar.iconTheme.color,
-                          icon: const Icon(Icons.clear),
-                          onPressed: () {
-                            setState(() {
-                              // if (backgroudColorofCards ==
-                              //     myThemeVar.scaffoldBackgroundColor) {
-                              //   backgroudColorofCards =
-                              //       myThemeVar.colorScheme.surface;
-                              // } else {
-                              //   backgroudColorofCards =
-                              //       myThemeVar.scaffoldBackgroundColor;
-                              // }
-                              // if (isRight) {
-                              //   mainContainerHeight = MediaQuery.of(
-                              //     context,
-                              //   ).size.height;
-                              //   mainContainerWidth = MediaQuery.of(
-                              //     context,
-                              //   ).size.width;
-                              // } else {
-                              //   mainContainerHeight =
-                              //       MediaQuery.of(context).size.height * 0.7;
-                              //   mainContainerWidth =
-                              //       MediaQuery.of(context).size.width * 0.7;
-                              // }
+                    // color: Colors.purple,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        key: ValueKey(isRight),
+                        // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.08,
+                          ),
+                          IconButton(
+                            color: myThemeVar.iconTheme.color,
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              setState(() {
+                                // if (backgroudColorofCards ==
+                                //     myThemeVar.scaffoldBackgroundColor) {
+                                //   backgroudColorofCards =
+                                //       myThemeVar.colorScheme.surface;
+                                // } else {
+                                //   backgroudColorofCards =
+                                //       myThemeVar.scaffoldBackgroundColor;
+                                // }
+                                // if (isRight) {
+                                //   mainContainerHeight = MediaQuery.of(
+                                //     context,
+                                //   ).size.height;
+                                //   mainContainerWidth = MediaQuery.of(
+                                //     context,
+                                //   ).size.width;
+                                // } else {
+                                //   mainContainerHeight =
+                                //       MediaQuery.of(context).size.height * 0.7;
+                                //   mainContainerWidth =
+                                //       MediaQuery.of(context).size.width * 0.7;
+                                // }
 
-                              isRight = !isRight;
-                              // isOpen = !isOpen;
+                                isRight = !isRight;
+                                // isOpen = !isOpen;
 
-                              // if (isRight) {
-                              //   isRight = false;
-                              // } else {
-                              //   isRight = true;
-                              // }
-                            });
-                          },
-                        ),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.02,
-                        ),
-                        //USER CONTAINER
-                        StreamBuilder<User?>(
-                          stream: FirebaseAuth.instance.userChanges(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const SizedBox(
-                                height: 52,
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
+                                // if (isRight) {
+                                //   isRight = false;
+                                // } else {
+                                //   isRight = true;
+                                // }
+                              });
+                            },
+                          ),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.02,
+                          ),
+                          //USER CONTAINER
+                          StreamBuilder<User?>(
+                            stream: FirebaseAuth.instance.userChanges(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const SizedBox(
+                                  height: 52,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              final user = snapshot.data;
+                              return Container(
+                                // width: double.infinity,
+                                width: MediaQuery.of(context).size.width * 0.55,
+                                // height: MediaQuery.of(context).size.height * .1,
+
+                                // height: double.infinity,
+                                // color: Colors.red,
+                                margin: EdgeInsets.only(left: 0, right: 0),
+
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(7),
+                                  onTap: () {
+                                    // Navigator.pop(context);
+
+                                    // Navigator.pop(context);
+                                    user == null
+                                        ? {
+                                            handleLoginButtonClick(),
+                                            isRight = !isRight,
+                                          }
+                                        : log("already logged");
+
+                                    log("user name clicked");
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 5),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 26,
+                                          backgroundColor: Colors.black
+                                              .withOpacity(0.3),
+
+                                          // backgroundImage:NetworkImage(currUser!.photoURL.toString()),
+                                          // child:Icon(Icons.person),
+                                          backgroundImage:
+                                              user?.photoURL != null
+                                              ? NetworkImage(user!.photoURL!)
+                                              : null,
+                                          child: user?.photoURL == null
+                                              ? Icon(
+                                                  Icons.person,
+                                                  color: Colors.white,
+                                                )
+                                              : null,
+                                        ),
+                                        SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              FittedBox(
+                                                child: Text(
+                                                  user?.displayName ?? "",
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: myThemeVar
+                                                        .colorScheme
+                                                        .primary,
+                                                  ),
+                                                ),
+                                              ),
+                                              FittedBox(
+                                                child: Text(
+                                                  user?.email ?? "",
+                                                  style: TextStyle(
+                                                    color: myThemeVar
+                                                        .colorScheme
+                                                        .secondary,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               );
-                            }
-
-                            final user = snapshot.data;
-                            return Container(
-                              // width: double.infinity,
-                              width: MediaQuery.of(context).size.width * 0.55,
-                              height: MediaQuery.of(context).size.height * .1,
-
-                              // height: double.infinity,
-                              // color: Colors.red,
-                              margin: EdgeInsets.only(left: 0, right: 0),
-
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(7),
-                                onTap: () {
-                                  // Navigator.pop(context);
-
-                                  // Navigator.pop(context);
-                                  user == null
-                                      ? {
-                                          handleLoginButtonClick(),
-                                          isRight = !isRight,
-                                        }
-                                      : log("already logged");
-
-                                  log("user name clicked");
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right: 5),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 26,
-                                        backgroundColor: Colors.black
-                                            .withOpacity(0.3),
-
-                                        // backgroundImage:NetworkImage(currUser!.photoURL.toString()),
-                                        // child:Icon(Icons.person),
-                                        backgroundImage: user?.photoURL != null
-                                            ? NetworkImage(user!.photoURL!)
-                                            : null,
-                                        child: user?.photoURL == null
-                                            ? Icon(
-                                                Icons.person,
-                                                color: Colors.white,
-                                              )
-                                            : null,
+                            },
+                          ),
+                          SizedBox(height: 30),
+                          ...[
+                                Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(7),
+                                    onTap: () {
+                                      setState(() {
+                                        isRight = !isRight;
+                                      });
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => Activities(),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      alignment: Alignment.centerLeft,
+                                      padding: EdgeInsets.only(
+                                        left: 5,
+                                        right: 2,
                                       ),
-                                      SizedBox(width: 12),
-                                      Expanded(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                      // height:
+                                      //     MediaQuery.of(context).size.height *
+                                      //     .1,
+                                      width:
+                                          MediaQuery.of(context).size.width *
+                                          .5,
+                                      // color: Colors.blue,
+                                      // color: Colors.red,
+                                      child: FittedBox(
+                                        child: Row(
                                           children: [
-                                            FittedBox(
-                                              child: Text(
-                                                user?.displayName ?? "",
-                                                style: TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: myThemeVar
-                                                      .colorScheme
-                                                      .primary,
-                                                ),
-                                              ),
+                                            Icon(
+                                              Icons.calendar_month,
+                                              color: myThemeVar
+                                                  .colorScheme
+                                                  .onPrimary,
+                                              size: myThemeVar
+                                                  .textTheme
+                                                  .bodyLarge!
+                                                  .fontSize!
+                                                  .toDouble(),
                                             ),
-                                            FittedBox(
-                                              child: Text(
-                                                user?.email ?? "",
-                                                style: TextStyle(
-                                                  color: myThemeVar
-                                                      .colorScheme
-                                                      .secondary,
-                                                ),
-                                              ),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              "Button 1",
+                                              style: myThemeVar
+                                                  .textTheme
+                                                  .bodyLarge,
                                             ),
                                           ],
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-
-                        ...[
-                              Material(
-                                // color: Colors.green,
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(7),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => Activities(),
-                                      ),
-                                    );
-                                  },
-                                  child: Container(
-                                    alignment: Alignment.centerLeft,
-                                    padding: EdgeInsets.only(left: 5, right: 2),
-                                    height:
-                                        MediaQuery.of(context).size.width * .1,
-                                    width:
-                                        MediaQuery.of(context).size.width * .5,
-                                    // color: Colors.blue,
-                                    child: FittedBox(
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.calendar_month,
-                                            color: myThemeVar
-                                                .colorScheme
-                                                .onPrimary,
-                                          ),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            "Button 1",
-                                            style: TextStyle(
-                                              color: myThemeVar
-                                                  .colorScheme
-                                                  .onPrimary,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
 
-                              Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(7),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => Activities(),
-                                      ),
-                                    );
-                                  },
-                                  child: Container(
-                                    alignment: Alignment.centerLeft,
-                                    padding: EdgeInsets.only(left: 5, right: 2),
-                                    height:
-                                        MediaQuery.of(context).size.width * .1,
-                                    width:
-                                        MediaQuery.of(context).size.width * .5,
-                                    // color: Colors.blue,
-                                    child: FittedBox(
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.settings,
-                                            color: myThemeVar
-                                                .colorScheme
-                                                .onPrimary,
-                                          ),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            "Settings",
-                                            style: TextStyle(
-                                              color: myThemeVar
-                                                  .colorScheme
-                                                  .onPrimary,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                              Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(7),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => Activities(),
-                                      ),
-                                    );
-                                  },
-                                  child: Container(
-                                    alignment: Alignment.centerLeft,
-                                    padding: EdgeInsets.only(left: 5, right: 2),
-                                    height:
-                                        MediaQuery.of(context).size.width * .1,
-                                    width:
-                                        MediaQuery.of(context).size.width * .5,
-                                    // color: Colors.blue,
-                                    child: FittedBox(
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.format_list_bulleted_outlined,
-                                            color: myThemeVar
-                                                .colorScheme
-                                                .onPrimary,
-                                          ),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            "Button 3",
-                                            style: TextStyle(
-                                              color: myThemeVar
-                                                  .colorScheme
-                                                  .onPrimary,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                              Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(7),
-                                  onTap: () async {
-                                    // Navigator.pop(context);
-
-                                    setState(() {
-                                      isRight = !isRight;
-                                    });
-                                    try {
-                                      await signOut();
-
-                                      ScaffoldMessenger.of(
+                                Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(7),
+                                    onTap: () {
+                                      setState(() {
+                                        isRight = !isRight;
+                                      });
+                                      Navigator.push(
                                         context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            "Logged Out",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                          backgroundColor: Color.fromARGB(
-                                            255,
-                                            83,
-                                            83,
-                                            83,
-                                          ),
+                                        MaterialPageRoute(
+                                          builder: (_) => Activities(),
                                         ),
                                       );
-                                    } catch (e) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            "Error: $e",
-                                            style: TextStyle(color: Colors.red),
-                                          ),
-                                          backgroundColor: Color.fromARGB(
-                                            255,
-                                            83,
-                                            83,
-                                            83,
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                    log("Sign out Clicked");
-
-                                    // Navigator.push(
-                                    //   context,
-                                    //   MaterialPageRoute(
-                                    //     builder: (_) => Activities(),
-                                    //   ),
-                                    // );
-                                  },
-                                  child: Container(
-                                    alignment: Alignment.centerLeft,
-                                    padding: EdgeInsets.only(left: 5, right: 2),
-                                    height:
-                                        MediaQuery.of(context).size.width * .1,
-                                    width:
-                                        MediaQuery.of(context).size.width * .5,
-                                    // color: Colors.blue,
-                                    child: FittedBox(
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.logout,
-                                            color: myThemeVar
-                                                .colorScheme
-                                                .onPrimary,
-                                          ),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            "Log Out",
-                                            style: TextStyle(
+                                    },
+                                    child: Container(
+                                      alignment: Alignment.centerLeft,
+                                      padding: EdgeInsets.only(
+                                        left: 5,
+                                        right: 2,
+                                      ),
+                                      // height:
+                                      //     MediaQuery.of(context).size.height *
+                                      //     .1,
+                                      width:
+                                          MediaQuery.of(context).size.width *
+                                          .5,
+                                      // color: Colors.blue,
+                                      child: FittedBox(
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.settings,
                                               color: myThemeVar
                                                   .colorScheme
                                                   .onPrimary,
+                                              size: myThemeVar
+                                                  .textTheme
+                                                  .bodyLarge!
+                                                  .fontSize!
+                                                  .toDouble(),
                                             ),
-                                          ),
-                                        ],
+                                            SizedBox(width: 10),
+                                            Text(
+                                              "Settings",
+                                              style: myThemeVar
+                                                  .textTheme
+                                                  .bodyLarge,
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ]
-                            .animate(
-                              interval: (duration * 0.25).ms,
-                              onPlay: (c) =>
-                                  isRight ? c.forward() : c.forward(),
-                            )
-                            .slideX(begin: -1, end: 0), //DRAWER ANIMATION
 
-                        Container(
-                          // color: Colors.red,
-                          width: double.infinity,
-                          // height:
-                          //     (MediaQuery.of(context).size.height * .3) + 30,
-                          child: Text(""),
-                        ),
-                      ],
+                                Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(7),
+                                    onTap: () {
+                                      setState(() {
+                                        isRight = !isRight;
+                                      });
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => Activities(),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      alignment: Alignment.centerLeft,
+                                      padding: EdgeInsets.only(
+                                        left: 5,
+                                        right: 2,
+                                      ),
+                                      // height:
+                                      //     MediaQuery.of(context).size.height *
+                                      //     .1,
+                                      width:
+                                          MediaQuery.of(context).size.width *
+                                          .5,
+                                      // color: Colors.blue,
+                                      child: FittedBox(
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons
+                                                  .format_list_bulleted_outlined,
+                                              color: myThemeVar
+                                                  .colorScheme
+                                                  .onPrimary,
+                                              size: myThemeVar
+                                                  .textTheme
+                                                  .bodyLarge!
+                                                  .fontSize!
+                                                  .toDouble(),
+                                            ),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              "Button 3",
+                                              style: myThemeVar
+                                                  .textTheme
+                                                  .bodyLarge,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(7),
+                                    onTap: () async {
+                                      // Navigator.pop(context);
+
+                                      setState(() {
+                                        isRight = !isRight;
+                                      });
+                                      try {
+                                        await signOut();
+
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              "Logged Out",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            backgroundColor: Color.fromARGB(
+                                              255,
+                                              83,
+                                              83,
+                                              83,
+                                            ),
+                                          ),
+                                        );
+                                      } catch (e) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              "Error: $e",
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                            backgroundColor: Color.fromARGB(
+                                              255,
+                                              83,
+                                              83,
+                                              83,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                      log("Sign out Clicked");
+
+                                      // Navigator.push(
+                                      //   context,
+                                      //   MaterialPageRoute(
+                                      //     builder: (_) => Activities(),
+                                      //   ),
+                                      // );
+                                    },
+                                    child: Container(
+                                      alignment: Alignment.centerLeft,
+                                      padding: EdgeInsets.only(
+                                        left: 5,
+                                        right: 2,
+                                      ),
+                                      // height:
+                                      //     MediaQuery.of(context).size.height *
+                                      //     .1,
+                                      width:
+                                          MediaQuery.of(context).size.width *
+                                          .5,
+                                      // color: Colors.blue,
+                                      child: FittedBox(
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.logout,
+                                              color: myThemeVar
+                                                  .colorScheme
+                                                  .onPrimary,
+                                              size: myThemeVar
+                                                  .textTheme
+                                                  .bodyLarge!
+                                                  .fontSize!
+                                                  .toDouble(),
+                                            ),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              "Log Out",
+                                              style: myThemeVar
+                                                  .textTheme
+                                                  .bodyLarge,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ]
+                              .animate(
+                                interval: (duration * 0.25).ms,
+                                onPlay: (c) =>
+                                    isRight ? c.forward() : c.forward(),
+                              )
+                              .slideX(begin: -1, end: 0), //DRAWER ANIMATION
+
+                          Container(
+                            // color: Colors.red,
+                            width: double.infinity,
+                            // height:
+                            //     (MediaQuery.of(context).size.height * .3) + 30,
+                            child: Text(""),
+                          ),
+                        ],
+                      ),
                     ),
                     // child: Text(""),
                   ),
@@ -742,9 +735,14 @@ class _HomescreenState extends State<Homescreen> {
               curve: Curves.easeInOutCubic,
 
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: backgroundColorOfCards,
-                // color: backgroudColorofCards,
+                borderRadius: isRight
+                    ? BorderRadius.circular(15)
+                    : BorderRadius.circular(0),
+                // color: backgroundColorOfCards, //SMOOTH TRANSITION
+                color: Colors.transparent,
+
+                ///COLOR TRANSITION
+                // color: Colors.white,
               ),
               // color: Colors.amber,
               child: ClipRRect(
@@ -755,30 +753,7 @@ class _HomescreenState extends State<Homescreen> {
                   onTap: isRight
                       ? () {
                           setState(() {
-                            // if (backgroudColorofCards ==
-                            //     myThemeVar.scaffoldBackgroundColor) {
-                            //   backgroudColorofCards =
-                            //       myThemeVar.colorScheme.surface;
-                            // } else {
-                            //   backgroudColorofCards =
-                            //       myThemeVar.scaffoldBackgroundColor;
-                            // }
-                            // if (isRight) {
-                            //   mainContainerHeight = MediaQuery.of(
-                            //     context,
-                            //   ).size.height;
-                            //   mainContainerWidth = MediaQuery.of(
-                            //     context,
-                            //   ).size.width;
-                            // } else {
-                            //   mainContainerHeight =
-                            //       MediaQuery.of(context).size.height * 0.7;
-                            //   mainContainerWidth =
-                            //       MediaQuery.of(context).size.width * 0.7;
-                            // }
-
                             isRight = !isRight;
-                            // isOpen = !isOpen;
                           });
                         }
                       : null,
@@ -791,7 +766,9 @@ class _HomescreenState extends State<Homescreen> {
                       : null,
                   child: Scaffold(
                     // backgroundColor: const Color.fromARGB(255, 44, 16, 16),
-                    backgroundColor: Colors.transparent,
+                    backgroundColor: isRight
+                        ? Colors.transparent
+                        : myThemeVar.scaffoldBackgroundColor,
 
                     // =============================================================
                     // APP BAR (Custom Widget)
@@ -813,38 +790,7 @@ class _HomescreenState extends State<Homescreen> {
                                 icon: const Icon(Icons.menu),
                                 onPressed: () {
                                   setState(() {
-                                    // if (backgroudColorofCards ==
-                                    //     myThemeVar.scaffoldBackgroundColor) {
-                                    //   backgroudColorofCards =
-                                    //       myThemeVar.colorScheme.surface;
-                                    // } else {
-                                    //   backgroudColorofCards =
-                                    //       myThemeVar.scaffoldBackgroundColor;
-                                    // }
-                                    // if (isRight) {
-                                    //   mainContainerHeight = MediaQuery.of(
-                                    //     context,
-                                    //   ).size.height;
-                                    //   mainContainerWidth = MediaQuery.of(
-                                    //     context,
-                                    //   ).size.width;
-                                    // } else {
-                                    //   mainContainerHeight =
-                                    //       MediaQuery.of(context).size.height *
-                                    //       0.7;
-                                    //   mainContainerWidth =
-                                    //       MediaQuery.of(context).size.width *
-                                    //       0.7;
-                                    // }
-
                                     isRight = !isRight;
-                                    // isOpen = !isOpen;
-
-                                    // if (isRight) {
-                                    //   isRight = false;
-                                    // } else {
-                                    //   isRight = true;
-                                    // }
                                   });
                                 },
                               ),
@@ -1051,8 +997,58 @@ class _HomescreenState extends State<Homescreen> {
                                               TopCard1(
                                                 containeHeight: 600,
                                                 containeWidth: 250,
+                                                monthBudget:
+                                                    monthlyBudget, // ✅ int
+                                                onEditBudget:
+                                                    openSetBudgetDialog, // ✅ callback
                                               ),
-                                              TopCard2(),
+
+                                              OpenContainer(
+                                                closedElevation:
+                                                    0, // remove shadow in closed state
+                                                openElevation:
+                                                    0, // remove shadow when opening
+                                                closedColor: Colors.transparent,
+                                                transitionDuration:
+                                                    const Duration(
+                                                      milliseconds: 250,
+                                                    ),
+                                                closedBuilder:
+                                                    (context, Action) {
+                                                      return TopCard2(
+                                                        containerHeight:
+                                                            MediaQuery.of(
+                                                              context,
+                                                            ).size.height,
+                                                        containerWidth:
+                                                            MediaQuery.of(
+                                                              context,
+                                                            ).size.width,
+                                                      );
+                                                    },
+                                                openBuilder: (context, Action) {
+                                                  return TopExpensesScreen(
+                                                    containerHeight:
+                                                        MediaQuery.of(
+                                                          context,
+                                                        ).size.height,
+                                                    containerWidth:
+                                                        MediaQuery.of(
+                                                          context,
+                                                        ).size.width,
+                                                  );
+                                                },
+                                              ),
+                                              // TopCard2(
+                                              //   containerHeight:
+                                              //               MediaQuery.of(
+                                              //                 context,
+                                              //               ).size.height,
+                                              //           containerWidth:
+                                              //               MediaQuery.of(
+                                              //                 context,
+                                              //               ).size.width,
+                                              // ),
                                             ],
                                           ),
                                         ),
@@ -1185,7 +1181,17 @@ class _HomescreenState extends State<Homescreen> {
                                                       );
                                                     },
                                                 openBuilder: (context, action) {
-                                                  return Itemdatascreen();
+                                                  return Itemdatascreen(
+                                                    containerHeight:
+                                                        MediaQuery.of(
+                                                          context,
+                                                        ).size.height,
+                                                    containerWidth:
+                                                        MediaQuery.of(
+                                                          context,
+                                                        ).size.width,
+                                                    itemName: item.name ?? "",
+                                                  );
                                                 },
                                               ),
                                             ),
@@ -1205,59 +1211,79 @@ class _HomescreenState extends State<Homescreen> {
                     // =============================================================
                     // ➕ FLOATING ACTION BUTTON (Add New Item)
                     // =============================================================
-                    floatingActionButton: FloatingActionButton(
-                      backgroundColor:
-                          myThemeVar.floatingActionButtonTheme.backgroundColor,
-                      foregroundColor:
-                          myThemeVar.floatingActionButtonTheme.foregroundColor,
-                      child: Icon(Icons.add),
+                    floatingActionButton: SpeedDial(
+                      animatedIcon: AnimatedIcons.menu_close,
+                      animatedIconTheme: IconThemeData(size: 28.0),
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.black,
 
-                      // onPressed: () async {
-                      //   final result = await showDialog(
-                      //     context: context,
-                      //     builder: (_) => AddItemDialogBox(),
-                      //   );
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      visible: true,
+                      curve: Curves.bounceInOut,
+                      children: [
+                        SpeedDialChild(
+                          child: Icon(
+                            Icons.chrome_reader_mode,
+                            color: Colors.black,
+                          ),
+                          backgroundColor: Colors.green,
+                          onTap: () async {
+                            openSetBudgetDialog();
+                            log('Pressed Set Budget');
+                          },
+                          label: 'Set Budget',
+                          labelStyle: myThemeVar.textTheme.bodySmall,
+                          labelBackgroundColor: myThemeVar.cardColor,
+                        ),
 
-                      //   if (result != null) {
-                      //     final item = BudgetItem(
-                      //       id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      //       name: result["name"],
-                      //       quantity: result["quantity"],
-                      //       price: result["price"],
-                      //       dateTime: result["date"],
-                      //       imagePath: "",
-                      //     );
+                        SpeedDialChild(
+                          child: Icon(Icons.create, color: Colors.black),
+                          backgroundColor: Colors.green,
+                          onTap: () async {
+                            final BudgetItem? item = await showDialog(
+                              context: context,
+                              builder: (_) =>
+                                  AddItemDialogBox(isEditing: false),
+                            );
+                            if (item != null) {
+                              // Save locally first
+                              itemsBox.put(
+                                item.id,
+                                item,
+                              ); // Save using ID as key
+                              log('Saved item: ${item.id}');
+                              setState(() {});
 
-                      //     itemsBox.add(item); // Save to Hive
-                      //     log('Saved item: ${item.id}');
+                              // Then upload in background
+                              try {
+                                final service =
+                                    await FirestoreService.forCurrentUser();
+                                await service.uploadItem(item);
+                                log('Uploaded item ${item.id} to Firestore');
+                              } catch (e) {
+                                log('Failed upload: $e');
+                                // optionally mark item as pending in Hive
+                              }
+                            }
 
-                      //     setState(() {}); // Refresh UI
-                      //   }
-                      // },
-                      onPressed: () async {
-                        final BudgetItem? item = await showDialog(
-                          context: context,
-                          builder: (_) => AddItemDialogBox(isEditing: false),
-                        );
-
-                        if (item != null) {
-                          // Save locally first
-                          itemsBox.put(item.id, item); // Save using ID as key
-                          log('Saved item: ${item.id}');
-                          setState(() {});
-
-                          // Then upload in background
-                          try {
-                            final service =
-                                await FirestoreService.forCurrentUser();
-                            await service.uploadItem(item);
-                            log('Uploaded item ${item.id} to Firestore');
-                          } catch (e) {
-                            log('Failed upload: $e');
-                            // optionally mark item as pending in Hive
-                          }
-                        }
-                      },
+                            log('Pressed Add Item');
+                            // AddItemDialogBox();
+                          },
+                          label: 'Add Item',
+                          labelStyle: myThemeVar.textTheme.bodySmall,
+                          labelBackgroundColor: myThemeVar.cardColor,
+                        ),
+                        // SpeedDialChild(
+                        //       child: Icon(Icons.laptop_chromebook, color: Colors.white),
+                        //       backgroundColor: Colors.green,
+                        //       onTap: () => log('Pressed Code'),
+                        //       label: 'Code',
+                        //       labelStyle:TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
+                        //       labelBackgroundColor: Colors.black,
+                        // ),
+                      ],
                     ),
                   ),
                 ),

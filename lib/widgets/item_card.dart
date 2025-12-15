@@ -86,174 +86,182 @@ class _ItemCardState extends State<ItemCard> {
   @override
   Widget build(BuildContext context) {
     final myThemeVar = Theme.of(context);
-    return Card(
-      // Space between cards in list
-      margin: EdgeInsets.only(bottom: 1, top: 1, left: 1, right: 1),
+    return SizedBox(
+      // height: 90,
+      child: Card(
+        // Space between cards in list
+        margin: EdgeInsets.only(bottom: 1, top: 1, left: 1, right: 1),
 
-      shape: RoundedRectangleBorder(
-        side: widget.isRight
-            ? BorderSide(color: Colors.transparent, width: 0)
-            : BorderSide(color: myThemeVar.dividerColor, width: 1),
-        borderRadius: widget.isRight
-            ? BorderRadius.circular(0)
-            : BorderRadius.circular(15),
-      ),
+        shape: RoundedRectangleBorder(
+          side: widget.isRight
+              ? BorderSide(color: Colors.transparent, width: 0)
+              : BorderSide(color: myThemeVar.dividerColor, width: 1),
+          borderRadius: widget.isRight
+              ? BorderRadius.circular(0)
+              : BorderRadius.circular(15),
+        ),
 
-      // color: const Color.fromARGB(255, 24, 8, 2),
-      color: myThemeVar.cardColor,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        // color: const Color.fromARGB(255, 24, 8, 2),
+        color: myThemeVar.cardColor,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
 
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            // ==================================================================
-            // 🛒 ITEM ICON
-            // ==================================================================
-            SizedBox(
-              width: widget.containerWidth * 0.1,
-              child: Icon(
-                Icons.shopping_cart,
-                color: myThemeVar.iconTheme.color,
-              ),
-            ),
-
-            // ==================================================================
-            // 📝 ITEM NAME + DATE SECTION
-            // ==================================================================
-            Flexible(
-              child: SizedBox(
-                width: widget.containerWidth * 0.4,
-
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // SINGLE-LINE SCROLLABLE ITEM NAME
-                    Api.oneLineScroll(
-                      widget.name,
-                      TextStyle(
-                        color: myThemeVar.colorScheme.primary,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: GoogleFonts.manrope().fontFamily,
-                      ),
-                    ),
-
-                    // ----------------------------------------------------------------
-                    // Formatted date/time below item name
-                    // formatDateTime() is your custom helper function
-                    // ----------------------------------------------------------------
-                    Api.oneLineScroll(
-                      formatDateTime(widget.date),
-                      TextStyle(
-                        fontSize: 11,
-                        color: myThemeVar.colorScheme.secondary,
-                      ),
-                    ),
-
-                    // ----------------------------------------------------------------
-                    // COMMENTED OUT — EXACTLY KEPT AS PROVIDED
-                    // ----------------------------------------------------------------
-                    // Text(
-                    //   "${widget.date.day} ${monthNames[widget.date.month - 1]} ",
-                    // ),
-                  ],
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // ==================================================================
+              // 🛒 ITEM ICON
+              // ==================================================================
+              SizedBox(
+                width: widget.containerWidth * 0.1,
+                child: Icon(
+                  Icons.shopping_cart,
+                  color: myThemeVar.iconTheme.color,
                 ),
               ),
-            ),
 
-            // ==================================================================
-            // 📦 QUANTITY DISPLAY
-            // ==================================================================
-            Flexible(
-              child: SizedBox(
-                width: widget.containerWidth * 0.17,
-                child: Text(
-                  "qty: ${widget.quantity}",
-                  style: TextStyle(
-                    color: myThemeVar.colorScheme.primary,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: GoogleFonts.manrope().fontFamily,
+              // ==================================================================
+              // 📝 ITEM NAME + DATE SECTION
+              // ==================================================================
+              Flexible(
+                child: SizedBox(
+                  width: widget.containerWidth * 0.4,
+
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // SINGLE-LINE SCROLLABLE ITEM NAME
+                      Api.oneLineScroll(
+                        widget.name,
+                        TextStyle(
+                          color: myThemeVar.colorScheme.primary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: GoogleFonts.manrope().fontFamily,
+                        ),
+                      ),
+
+                      // ----------------------------------------------------------------
+                      // Formatted date/time below item name
+                      // formatDateTime() is your custom helper function
+                      // ----------------------------------------------------------------
+                      Api.oneLineScroll(
+                        formatDateTime(widget.date),
+                        TextStyle(
+                          fontSize: 11,
+                          color: myThemeVar.colorScheme.secondary,
+                        ),
+                      ),
+
+                      // ----------------------------------------------------------------
+                      // COMMENTED OUT — EXACTLY KEPT AS PROVIDED
+                      // ----------------------------------------------------------------
+                      // Text(
+                      //   "${widget.date.day} ${monthNames[widget.date.month - 1]} ",
+                      // ),
+                    ],
                   ),
                 ),
               ),
-            ),
 
-            // ==================================================================
-            // 💰 PRICE DISPLAY (price × quantity)
-            // ==================================================================
-            Flexible(
-              child: SizedBox(
-                width: widget.containerWidth * 0.15,
-                child: Text(
-                  "₹${widget.price * widget.quantity}",
-                  textAlign: TextAlign.right,
-                  style: TextStyle(color: myThemeVar.colorScheme.primary),
+              // ==================================================================
+              // 📦 QUANTITY DISPLAY
+              // ==================================================================
+              Flexible(
+                child: SizedBox(
+                  width: widget.containerWidth * 0.17,
+                  child: Text(
+                    "qty: ${widget.quantity}",
+                    style: TextStyle(
+                      color: myThemeVar.colorScheme.primary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: GoogleFonts.manrope().fontFamily,
+                    ),
+                  ),
                 ),
               ),
-            ),
 
-            // ==================================================================
-            // COMMENTED OUT EDIT ICON BUTTON (Kept untouched)
-            // ==================================================================
-            // IconButton(
-            //   icon: Icon(Icons.edit, color: Colors.white),
-            //   onPressed: widget.onEdit,
-            // ),
-          ],
+              // ==================================================================
+              // 💰 PRICE DISPLAY (price × quantity)
+              // ==================================================================
+              Flexible(
+                child: SizedBox(
+                  width: widget.containerWidth * 0.15,
+                  child: SingleChildScrollView(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        "₹${widget.price * widget.quantity}",
+                        textAlign: TextAlign.right,
+                        style: TextStyle(color: myThemeVar.colorScheme.primary),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // ==================================================================
+              // COMMENTED OUT EDIT ICON BUTTON (Kept untouched)
+              // ==================================================================
+              // IconButton(
+              //   icon: Icon(Icons.edit, color: Colors.white),
+              //   onPressed: widget.onEdit,
+              // ),
+            ],
+          ),
+          // child: Row(
+          //   children: [
+          //     // ICON
+          //     Expanded(
+          //       flex: 1,
+          //       child: Icon(Icons.shopping_cart, color: Colors.white54),
+          //     ),
+
+          //     // NAME + DATE
+          //     Expanded(
+          //       flex: 4,
+          //       child: Column(
+          //         crossAxisAlignment: CrossAxisAlignment.start,
+          //         children: [
+          //           Api.oneLineScroll(
+          //             widget.name,
+          //             TextStyle(
+          //               color: Colors.white,
+          //               fontSize: 14,
+          //               fontWeight: FontWeight.w700,
+          //               fontFamily: GoogleFonts.manrope().fontFamily,
+          //             ),
+          //           ),
+          //           Api.oneLineScroll(
+          //             formatDateTime(widget.date),
+          //             TextStyle(fontSize: 11, color: Colors.white54),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+
+          //     // QTY
+          //     Expanded(
+          //       flex: 2,
+          //       child: Text(
+          //         "qty: ${widget.quantity}",
+          //         style: TextStyle(color: Colors.white),
+          //       ),
+          //     ),
+
+          //     // PRICE
+          //     Expanded(
+          //       flex: 2,
+          //       child: Text(
+          //         "₹${widget.price * widget.quantity}",
+          //         textAlign: TextAlign.right,
+          //         style: TextStyle(color: Colors.white),
+          //       ),
+          //     ),
+          //   ],
+          // ),
         ),
-        // child: Row(
-        //   children: [
-        //     // ICON
-        //     Expanded(
-        //       flex: 1,
-        //       child: Icon(Icons.shopping_cart, color: Colors.white54),
-        //     ),
-
-        //     // NAME + DATE
-        //     Expanded(
-        //       flex: 4,
-        //       child: Column(
-        //         crossAxisAlignment: CrossAxisAlignment.start,
-        //         children: [
-        //           Api.oneLineScroll(
-        //             widget.name,
-        //             TextStyle(
-        //               color: Colors.white,
-        //               fontSize: 14,
-        //               fontWeight: FontWeight.w700,
-        //               fontFamily: GoogleFonts.manrope().fontFamily,
-        //             ),
-        //           ),
-        //           Api.oneLineScroll(
-        //             formatDateTime(widget.date),
-        //             TextStyle(fontSize: 11, color: Colors.white54),
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-
-        //     // QTY
-        //     Expanded(
-        //       flex: 2,
-        //       child: Text(
-        //         "qty: ${widget.quantity}",
-        //         style: TextStyle(color: Colors.white),
-        //       ),
-        //     ),
-
-        //     // PRICE
-        //     Expanded(
-        //       flex: 2,
-        //       child: Text(
-        //         "₹${widget.price * widget.quantity}",
-        //         textAlign: TextAlign.right,
-        //         style: TextStyle(color: Colors.white),
-        //       ),
-        //     ),
-        //   ],
-        // ),
       ),
     );
   }

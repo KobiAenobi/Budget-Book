@@ -1,19 +1,417 @@
+import 'dart:developer';
+
+import 'package:budget_book_app/apis/api.dart';
+import 'package:budget_book_app/helper/date_time_helper.dart';
+import 'package:budget_book_app/models/budget_item.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
 
 class Itemdatascreen extends StatefulWidget {
-  const Itemdatascreen({super.key});
+  final double containerHeight;
+
+  final double containerWidth;
+
+  final dynamic itemName;
+
+  const Itemdatascreen({
+    super.key,
+    required this.containerHeight,
+    required this.containerWidth,
+    required this.itemName,
+  });
 
   @override
   State<Itemdatascreen> createState() => _ItemdatascreenState();
 }
 
 class _ItemdatascreenState extends State<Itemdatascreen> {
+  /// Hive box reference
+  final itemsBox = Hive.box<BudgetItem>('itemsBox');
   @override
   Widget build(BuildContext context) {
+    log("Item Name: ${widget.itemName}");
+    // ---------------------------------------------------------
+    // Convert Hive box to list & sort newest → oldest
+    // ---------------------------------------------------------
+    final items = itemsBox.values.toList()
+      ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
+
+    final currMont = DateTime.now().month;
+
+    // final Map<String, int> totalSpentByItem = {};
+    final List<dynamic> ItemList = [];
+
+    for (final item in items) {
+      if (item.dateTime.month == currMont &&
+          item.name.trim().toLowerCase() ==
+              widget.itemName.trim().toLowerCase()) {
+        ItemList.add(item);
+        log("item added: ${item.name}");
+      }
+      // log("items: ${item.name}");
+    }
+    log("list lenght: ${ItemList.length}");
+
+    // final topEntry = totalSpentByItem.entries.reduce(
+    //   (a, b) => a.value >= b.value ? a : b,
+    // );
+
+    // final SortedEntries = totalSpentByItem.entries.toList()
+    //   ..sort((a, b) => b.value.compareTo(a.value));
+
+    // if (SortedEntries.isNotEmpty) {
+    //   log("top ex: ${SortedEntries[0].key} ,${SortedEntries[0].value}");
+    // }
+
+    // final List<MapEntry<String, int>> sortedExpenseList =
+    //     totalSpentByItem.entries.toList()
+    //       ..sort((a, b) => b.value.compareTo(a.value));
+
+    // final List<BudgetItem> sortedByExpense = items.where((item) {
+    //   return item.dateTime.month == currMont;
+    // }).toList();
+
+    // sortedByExpense.sort((a, b) {
+    //   return (b.price * b.quantity).compareTo(a.price * a.quantity);
+    // });
+
+    // log("top expense: ${sortedByExpense[0].quantity}");
+    // final topItem = sortedByExpense[0];
+    // log(
+    //   "top expense: ₹${topItem.price * topItem.quantity} "
+    //   "(price=${topItem.price}, qty=${topItem.quantity})",
+    // );
+
+    // final List<BudgetItem> sortedByExpense =items.where((item)=>item.dateTime.month==currMont).toList();
+
+    // sortedByExpense.sort((a, b){
+    //   return (b.price*b.quantity).compareTo(a.price*a.quantity);
+    // });
+
+    //
+    // final Map<String, int> topExpenseItems;
+
+    // items.forEach(){
+
+    // }
+
+    // ---------------------------------------------------------
+    // Calculate Grand Total
+    // ---------------------------------------------------------
+    int grandTotal = 0;
+    for (var item in items) {
+      grandTotal += item.price * item.quantity;
+    }
+
+    final myThemeVar = Theme.of(context);
     return Scaffold(
-      body: Container(
-        color: const Color.fromARGB(255, 77, 65, 29),
-        child: Text("hello  why"),
+      extendBody: true,
+      backgroundColor: myThemeVar.cardColor,
+      appBar: AppBar(
+        backgroundColor: myThemeVar.cardColor,
+        surfaceTintColor: Colors.transparent,
+        title: Text(
+          "Expenses",
+          style: TextStyle(
+            fontFamily: GoogleFonts.workSans().fontFamily,
+            fontWeight: FontWeight.w900,
+            fontSize: myThemeVar.textTheme.bodyLarge!.fontSize,
+          ),
+        ),
+      ),
+
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          //Top Expense Container
+          Container(
+            width: double.infinity,
+            // height: MediaQuery.of(context).size.height * 0.25,
+            // color: Colors.red,
+            // height: MediaQuery.of(context).size.height * 0.25,
+            // color: Colors.blue,
+            padding: EdgeInsets.only(left: 5, right: 5),
+            // alignment: Alignment.centerLeft,
+            child: FittedBox(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Top Expenses",
+                    style: TextStyle(
+                      color: myThemeVar.colorScheme.primary,
+                      fontFamily: "Impact",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 1000,
+                    ),
+                  ),
+
+                  // Text(
+                  //   "Expenses",
+                  //   style: TextStyle(
+                  //     color: myThemeVar.colorScheme.primary,
+                  //     fontFamily: "Impact",
+                  //     fontWeight: FontWeight.bold,
+                  //     fontSize: 1000,
+                  //   ),
+                  // ),
+                ],
+              ),
+            ),
+          ),
+
+          //
+          Expanded(
+            // flex: 3,
+            child: Container(
+              child: ListView.builder(
+                itemCount: ItemList.length,
+                itemBuilder: (context, index) {
+                  final itm = ItemList[index];
+
+                  // final itemName = entry.;
+                  // final totalPrice = entry.value;
+                  //////////////////////////////////////////
+                  return SizedBox(
+                    // height: 60,
+                    child: Card(
+                      // Space between cards in list
+                      margin: EdgeInsets.only(
+                        bottom: 1,
+                        top: 1,
+                        left: 1,
+                        right: 1,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        // side: widget.isRight
+                        //     ? BorderSide(color: Colors.transparent, width: 0)
+                        side: BorderSide(
+                          color: myThemeVar.dividerColor,
+                          width: 1,
+                        ),
+                        // borderRadius: widget.isRight
+                        //     ? BorderRadius.circular(0)
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      // color: const Color.fromARGB(255, 24, 8, 2),
+                      color: myThemeVar.cardColor,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            // ==================================================================
+                            // 🛒 ITEM ICON
+                            // ==================================================================
+                            SizedBox(
+                              width: widget.containerWidth * 0.1,
+                              child: Text(
+                                "${index + 1}",
+                                style: TextStyle(
+                                  color: myThemeVar.colorScheme.primary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: GoogleFonts.manrope().fontFamily,
+                                ),
+                              ),
+                            ),
+                            // ==================================================================
+                            // 📝 ITEM NAME + DATE SECTION
+                            // ==================================================================
+                            Flexible(
+                              child: SizedBox(
+                                width: widget.containerWidth * 0.4,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // SINGLE-LINE SCROLLABLE ITEM NAME
+                                    Api.oneLineScroll(
+                                      itm.name,
+                                      TextStyle(
+                                        color: myThemeVar.colorScheme.primary,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily:
+                                            GoogleFonts.manrope().fontFamily,
+                                      ),
+                                    ),
+                                    // ----------------------------------------------------------------
+                                    // Formatted date/time below item name
+                                    // formatDateTime() is your custom helper function
+                                    // ----------------------------------------------------------------
+                                    Api.oneLineScroll(
+                                      formatDateTime(itm.dateTime),
+                                      TextStyle(
+                                        fontSize: 11,
+                                        color: myThemeVar.colorScheme.secondary,
+                                      ),
+                                    ),
+                                    // ----------------------------------------------------------------
+                                    // COMMENTED OUT — EXACTLY KEPT AS PROVIDED
+                                    // ----------------------------------------------------------------
+                                    // Text(
+                                    //   "${widget.date.day} ${monthNames[widget.date.month - 1]} ",
+                                    // ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            // Spacer(),
+                            // ==================================================================
+                            // 📦 QUANTITY DISPLAY
+                            // ==================================================================
+                            Flexible(
+                              child: SizedBox(
+                                width: widget.containerWidth * 0,
+                                child: Text(
+                                  // "qty: ${3}",
+                                  "${itm.quantity}",
+                                  style: TextStyle(
+                                    color: myThemeVar.colorScheme.primary,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                    fontFamily:
+                                        GoogleFonts.manrope().fontFamily,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            // ==================================================================
+                            // 💰 PRICE DISPLAY (price × quantity)
+                            // ==================================================================
+                            Flexible(
+                              child: SizedBox(
+                                width: widget.containerWidth * 0.15,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    "₹${itm.price}",
+                                    textAlign: TextAlign.right,
+                                    style: TextStyle(
+                                      color: myThemeVar.colorScheme.primary,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            // ==================================================================
+                            // COMMENTED OUT EDIT ICON BUTTON (Kept untouched)
+                            // ==================================================================
+                            // IconButton(
+                            //   icon: Icon(Icons.edit, color: Colors.white),
+                            //   onPressed: widget.onEdit,
+                            // ),
+                          ],
+                        ),
+                        // child: Row(
+                        //   children: [
+                        //     // ICON
+                        //     Expanded(
+                        //       flex: 1,
+                        //       child: Icon(Icons.shopping_cart, color: Colors.white54),
+                        //     ),
+                        //     // NAME + DATE
+                        //     Expanded(
+                        //       flex: 4,
+                        //       child: Column(
+                        //         crossAxisAlignment: CrossAxisAlignment.start,
+                        //         children: [
+                        //           Api.oneLineScroll(
+                        //             widget.name,
+                        //             TextStyle(
+                        //               color: Colors.white,
+                        //               fontSize: 14,
+                        //               fontWeight: FontWeight.w700,
+                        //               fontFamily: GoogleFonts.manrope().fontFamily,
+                        //             ),
+                        //           ),
+                        //           Api.oneLineScroll(
+                        //             formatDateTime(widget.date),
+                        //             TextStyle(fontSize: 11, color: Colors.white54),
+                        //           ),
+                        //         ],
+                        //       ),
+                        //     ),
+                        //     // QTY
+                        //     Expanded(
+                        //       flex: 2,
+                        //       child: Text(
+                        //         "qty: ${widget.quantity}",
+                        //         style: TextStyle(color: Colors.white),
+                        //       ),
+                        //     ),
+                        //     // PRICE
+                        //     Expanded(
+                        //       flex: 2,
+                        //       child: Text(
+                        //         "₹${widget.price * widget.quantity}",
+                        //         textAlign: TextAlign.right,
+                        //         style: TextStyle(color: Colors.white),
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
+                      ),
+                    ),
+                  );
+                  // Card(
+                  //   color: myThemeVar.cardColor,
+                  //   elevation: 0,
+                  //   // margin: EdgeInsets.all(5),
+                  //   // color: Colors.red,
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.start,
+                  //     children: [
+                  //       SizedBox(width: 20),
+                  //       Text(
+                  //         "${index + 1}",
+                  //         style: TextStyle(
+                  //           color: myThemeVar.colorScheme.primary,
+                  //           fontSize: 14,
+                  //           fontWeight: FontWeight.w700,
+                  //           fontFamily: GoogleFonts.manrope().fontFamily,
+                  //         ),
+                  //       ),
+                  //       SizedBox(width: 20),
+
+                  //       Text(
+                  //         "${itemName}",
+                  //         style: TextStyle(
+                  //           color: myThemeVar.colorScheme.primary,
+                  //           fontSize: 14,
+                  //           fontWeight: FontWeight.w700,
+                  //           fontFamily: GoogleFonts.manrope().fontFamily,
+                  //         ),
+                  //       ),
+                  //       Spacer(),
+
+                  //       Text(
+                  //         "${totalPrice}",
+                  //         style: TextStyle(
+                  //           color: myThemeVar.colorScheme.primary,
+                  //           fontSize: 14,
+                  //           fontWeight: FontWeight.w700,
+                  //           fontFamily: GoogleFonts.manrope().fontFamily,
+                  //         ),
+                  //       ),
+                  //       SizedBox(width: 20),
+                  //     ],
+                  //   ),
+                  // );
+                },
+              ),
+            ),
+          ),
+
+          //items
+          // Container(
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //     children: [Text("SNo. "), Text("NAME: "), Text("Price")],
+          //   ),
+          // ),
+        ],
       ),
     );
   }

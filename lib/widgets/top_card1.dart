@@ -2,7 +2,10 @@
 
 import 'package:budget_book_app/helper/measureSize.dart';
 import 'package:budget_book_app/models/budget_item.dart';
+import 'package:budget_book_app/screens/homeScreen.dart';
+import 'package:budget_book_app/widgets/set_budget_dialog_box.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -12,10 +15,14 @@ import 'dart:developer' show log;
 class TopCard1 extends StatefulWidget {
   final double containeHeight;
   final double containeWidth;
+  final int monthBudget;
+  final VoidCallback onEditBudget;
   const TopCard1({
     super.key,
     required this.containeHeight,
     required this.containeWidth,
+    required this.monthBudget,
+    required this.onEditBudget,
   });
 
   @override
@@ -53,7 +60,7 @@ class _TopCard1State extends State<TopCard1> {
 
     int currentMonth = DateTime.now().month;
     int grandTotal = 0;
-    int monthlyBudget = 12000;
+    // monthlyBudget = 12000;
 
     for (var item in items) {
       if (item.dateTime.month == currentMonth) {
@@ -61,7 +68,8 @@ class _TopCard1State extends State<TopCard1> {
       }
     }
 
-    double percentUsed = grandTotal / monthlyBudget;
+    final int budget = widget.monthBudget;
+    double percentUsed = budget == 0 ? 0 : grandTotal / budget;
 
     Color getBudgetColor(double percent) {
       if (percent < 0.5) return Color.fromARGB(255, 19, 173, 99);
@@ -148,7 +156,7 @@ class _TopCard1State extends State<TopCard1> {
                                   fontSize: 1000,
                                   foreground: Paint()
                                     ..style = PaintingStyle.stroke
-                                    ..strokeWidth = 15
+                                    ..strokeWidth = 1
                                     ..color = myThemeVar.colorScheme.onPrimary,
                                 ),
                               ),
@@ -357,7 +365,7 @@ class _TopCard1State extends State<TopCard1> {
                                       fontSize: 1000,
                                       foreground: Paint()
                                         ..style = PaintingStyle.stroke
-                                        ..strokeWidth = 15
+                                        ..strokeWidth = 1
                                         ..color =
                                             myThemeVar.colorScheme.onPrimary,
                                     ),
@@ -382,7 +390,13 @@ class _TopCard1State extends State<TopCard1> {
                     //GRAND TOTAL
                     Flexible(
                       child: Container(
-                        padding: EdgeInsets.only(left: 5, top: 5, right: 3),
+                        // color: Colors.amber,
+                        padding: EdgeInsets.only(
+                          left: 5,
+                          top: 0,
+                          right: 3,
+                          bottom: 2,
+                        ),
                         height: expenseFittedBoxSize == null
                             ? 0
                             : expenseFittedBoxSize!.height,
@@ -391,40 +405,103 @@ class _TopCard1State extends State<TopCard1> {
                             : mainContainerSize!.width * 0.35,
                         // color: Colors.white38,
                         // padding: EdgeInsets.only(top: 12, right: 5),
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: FittedBox(
-                            fit: BoxFit.contain,
-                            child: Stack(
-                              children: [
-                                Text(
-                                  "₹$grandTotal",
-                                  style: TextStyle(
-                                    fontFamily:
-                                        GoogleFonts.poppins().fontFamily,
+                        child: Stack(
+                          children: [
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: FittedBox(
+                                fit: BoxFit.contain,
+                                child: Stack(
+                                  children: [
+                                    Text(
+                                      "₹$grandTotal",
+                                      style: TextStyle(
+                                        fontFamily:
+                                            GoogleFonts.poppins().fontFamily,
 
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 1000,
-                                    foreground: Paint()
-                                      ..style = PaintingStyle.stroke
-                                      ..strokeWidth = 15
-                                      ..color = myThemeVar.colorScheme.primary,
-                                  ),
-                                ),
-                                Text(
-                                  "₹$grandTotal",
-                                  style: TextStyle(
-                                    color: getBudgetColor(percentUsed),
-                                    fontFamily:
-                                        GoogleFonts.poppins().fontFamily,
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 1000,
+                                        foreground: Paint()
+                                          ..style = PaintingStyle.stroke
+                                          ..strokeWidth = 0.5
+                                          ..color =
+                                              myThemeVar.colorScheme.primary,
+                                      ),
+                                    ),
+                                    Text(
+                                      "₹$grandTotal",
+                                      style: TextStyle(
+                                        color: getBudgetColor(percentUsed),
+                                        fontFamily:
+                                            GoogleFonts.poppins().fontFamily,
 
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 1000,
-                                  ),
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 1000,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
+
+                            budget != 0
+                                ? Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: FittedBox(
+                                      child: Column(
+                                        children: [
+                                          InkWell(
+                                            onTap:
+                                                widget.onEditBudget, // ✅ THIS
+                                            child: RichText(
+                                              text: TextSpan(
+                                                children: [
+                                                  TextSpan(
+                                                    text: "of:",
+                                                    style: TextStyle(
+                                                      color: Color.fromARGB(
+                                                        134,
+                                                        0,
+                                                        0,
+                                                        0,
+                                                      ),
+                                                      fontSize: 12,
+                                                      fontFamily:
+                                                          GoogleFonts.workSans()
+                                                              .fontFamily,
+                                                    ),
+                                                    // style: myThemeVar.textTheme.bodySmall,
+                                                  ),
+                                                  TextSpan(
+                                                    text: "₹$budget",
+                                                    style: TextStyle(
+                                                      color:
+                                                          const Color.fromARGB(
+                                                            133,
+                                                            39,
+                                                            88,
+                                                            40,
+                                                          ),
+                                                      fontSize: 12,
+                                                      fontFamily:
+                                                          GoogleFonts.workSans()
+                                                              .fontFamily,
+                                                      fontWeight:
+                                                          FontWeight.w900,
+                                                    ),
+                                                    // style: myThemeVar.textTheme.bodySmall,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 5),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                : SizedBox.shrink(),
+                          ],
                         ),
                       ),
                     ),

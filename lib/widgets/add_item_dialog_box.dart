@@ -182,12 +182,10 @@ class _AddItemDialogBoxState extends State<AddItemDialogBox> {
                       focusNode: focusNode,
                       textCapitalization: TextCapitalization.sentences,
 
-                      style: TextStyle(color: myThemeVar.colorScheme.primary),
+                      style: myThemeVar.textTheme.bodyMedium,
                       decoration: InputDecoration(
                         labelText: "Name",
-                        labelStyle: TextStyle(
-                          color: myThemeVar.colorScheme.secondary,
-                        ),
+                        labelStyle: myThemeVar.textTheme.bodySmall,
                       ),
 
                       // Sync internal Autocomplete controller on every change
@@ -209,7 +207,7 @@ class _AddItemDialogBoxState extends State<AddItemDialogBox> {
                 return Align(
                   alignment: Alignment.topLeft,
                   child: Material(
-                    color: myThemeVar.colorScheme.onPrimary,
+                    color: myThemeVar.cardColor,
                     elevation: 6,
                     borderRadius: BorderRadius.circular(10),
                     child: Container(
@@ -227,10 +225,7 @@ class _AddItemDialogBoxState extends State<AddItemDialogBox> {
                               padding: EdgeInsets.all(14),
                               child: Text(
                                 option,
-                                style: TextStyle(
-                                  color: myThemeVar.colorScheme.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: myThemeVar.textTheme.bodyMedium,
                               ),
                             ),
                           );
@@ -244,9 +239,9 @@ class _AddItemDialogBoxState extends State<AddItemDialogBox> {
 
             SizedBox(height: 20),
 
-            // ==================================================================
+            // =================================================================
             // QUANTITY + PRICE FIELDS
-            // ==================================================================
+            // =================================================================
             Row(
               children: [
                 /// QUANTITY FIELD
@@ -260,13 +255,11 @@ class _AddItemDialogBoxState extends State<AddItemDialogBox> {
                         extentOffset: quantityCtrl.text.length,
                       );
                     },
-                    style: TextStyle(color: myThemeVar.colorScheme.primary),
+                    style: myThemeVar.textTheme.bodyMedium,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       labelText: "quantity",
-                      labelStyle: TextStyle(
-                        color: myThemeVar.colorScheme.secondary,
-                      ),
+                      labelStyle: myThemeVar.textTheme.bodySmall,
                     ),
                   ),
                 ),
@@ -284,13 +277,11 @@ class _AddItemDialogBoxState extends State<AddItemDialogBox> {
                         extentOffset: priceCtrl.text.length,
                       );
                     },
-                    style: TextStyle(color: myThemeVar.colorScheme.primary),
+                    style: myThemeVar.textTheme.bodyMedium,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       labelText: "Price",
-                      labelStyle: TextStyle(
-                        color: myThemeVar.colorScheme.secondary,
-                      ),
+                      labelStyle: myThemeVar.textTheme.bodySmall,
                     ),
                   ),
                 ),

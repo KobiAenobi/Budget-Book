@@ -170,80 +170,82 @@ class _ActivitiesState extends State<Activities> {
       ),
 
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            /// Button → Open accessibility settings
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
-              onPressed: openAccessibilitySettings,
-              child: Text("Enable Accessibility Service"),
-            ),
-
-            SizedBox(height: 20),
-
-            /// Button → Open overlay settings
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(
-                  255,
-                  24,
-                  8,
-                  2,
-                ), // Button color
-                foregroundColor: Colors.white70, // Text/Icon color
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              /// Button → Open accessibility settings
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
+                onPressed: openAccessibilitySettings,
+                child: Text("Enable Accessibility Service"),
               ),
-              onPressed: openOverlaySettings,
-              child: Text("Enable Overlay Service"),
-            ),
 
-            SizedBox(height: 20),
+              SizedBox(height: 20),
 
-            /// Button → Trigger overlay bubble
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(
-                  255,
-                  24,
-                  8,
-                  2,
-                ), // Button color
-                foregroundColor: Colors.white70, // Text/Icon color
+              /// Button → Open overlay settings
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(
+                    255,
+                    24,
+                    8,
+                    2,
+                  ), // Button color
+                  foregroundColor: Colors.white70, // Text/Icon color
+                ),
+                onPressed: openOverlaySettings,
+                child: Text("Enable Overlay Service"),
               ),
-              onPressed: showOverlay,
-              child: Text("Show Overlay"),
-            ),
 
-            SizedBox(height: 20),
+              SizedBox(height: 20),
 
-            /// Button → Trigger overlay bubble
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(
-                  255,
-                  24,
-                  8,
-                  2,
-                ), // Button color
-                foregroundColor: Colors.white70, // Text/Icon color
+              /// Button → Trigger overlay bubble
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(
+                    255,
+                    24,
+                    8,
+                    2,
+                  ), // Button color
+                  foregroundColor: Colors.white70, // Text/Icon color
+                ),
+                onPressed: showOverlay,
+                child: Text("Show Overlay"),
               ),
-              onPressed: openNotificationSettings,
-              child: Text("openNotificationSettings"),
-            ),
 
-            SizedBox(height: 20),
+              SizedBox(height: 20),
 
-            /// Section title
-            Text(
-              "Latest Event:",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+              /// Button → Trigger overlay bubble
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(
+                    255,
+                    24,
+                    8,
+                    2,
+                  ), // Button color
+                  foregroundColor: Colors.white70, // Text/Icon color
+                ),
+                onPressed: openNotificationSettings,
+                child: Text("openNotificationSettings"),
+              ),
 
-            SizedBox(height: 10),
+              SizedBox(height: 20),
 
-            /// Display the last received event update
-            Text(latestEvent, style: TextStyle(fontSize: 14)),
-          ],
+              /// Section title
+              Text(
+                "Latest Event:",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+
+              SizedBox(height: 10),
+
+              /// Display the last received event update
+              Text(latestEvent, style: TextStyle(fontSize: 14)),
+            ],
+          ),
         ),
       ),
     );

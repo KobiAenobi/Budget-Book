@@ -25,9 +25,9 @@ class MyAppTheme {
 
     // GLOBAL TEXT COLORS
     textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+      bodyLarge: TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 50),
       bodyMedium: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-      bodySmall: TextStyle(color: Color.fromARGB(136, 0, 0, 0)),
+      bodySmall: TextStyle(color: Color.fromARGB(136, 0, 0, 0), fontSize: 16),
       titleLarge: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
       titleMedium: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
       titleSmall: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
@@ -83,12 +83,13 @@ class MyAppTheme {
 
     // GLOBAL TEXT COLORS
     textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-      bodyMedium: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-      bodySmall: TextStyle(color: Color.fromARGB(136, 0, 0, 0)),
+      bodyLarge: TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 24),
+      bodyMedium: TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 18),
+      bodySmall: TextStyle(color: Color.fromARGB(134, 0, 0, 0), fontSize: 14),
       titleLarge: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
       titleMedium: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
       titleSmall: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+     
     ),
 
     // ICON COLORS

@@ -52,6 +52,7 @@ Future<void> overlayEntryPoint() async {
 
   Hive.registerAdapter(BudgetItemAdapter());
   await Hive.openBox<BudgetItem>('itemsBox');
+  await Hive.openBox('appSettings');
 
   const channel = MethodChannel("overlay_channel");
 
@@ -138,6 +139,16 @@ Future<void> main() async {
   const MethodChannel("clear_notifications").invokeMethod("clearAll");
   // <<< CLEAR NOTIFICATIONS
 
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarDividerColor: Colors.transparent,
+      statusBarColor: Colors.transparent,
+    ),
+  );
+
   // 5) Start app
   runApp(MyApp());
 }
@@ -163,7 +174,7 @@ Future<String> getExternalHivePath() async {
   // final dir = await getExternalStorageDirectory();
   // /storage/emulated/0/Android/data/<package>/files
   final hiveDir = Directory(
-    "/storage/emulated/0/Android/media/com.kobi.budget_book_test_version/hive",
+    "/storage/emulated/0/Android/media/com.kobi.budget_book/hive",
   );
 
   if (!hiveDir.existsSync()) {
@@ -198,7 +209,6 @@ class MyApp extends StatelessWidget {
       darkTheme: MyAppTheme.darkTheme,
       themeMode: ThemeMode.system,
 
-      
       home: Homescreen(),
     );
   }

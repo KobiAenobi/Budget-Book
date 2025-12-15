@@ -35,53 +35,58 @@ class AccountSettingsDialog {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // ===== MAIN ACCOUNT HEADER =====
-                  InkWell(
-                    borderRadius: BorderRadius.circular(7),
-                    onTap: () {
-                      // Navigator.pop(context);
+                  FittedBox(
+                    child: Container(
+                      // color: Colors.amberAccent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(7),
+                        onTap: () {
+                          // Navigator.pop(context);
 
-                      // Navigator.pop(context);
+                          // Navigator.pop(context);
 
-                      log("user name clicked");
-                    },
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 26,
-
-                          // backgroundImage:NetworkImage(currUser!.photoURL.toString()),
-                          // child:Icon(Icons.person),
-                          backgroundImage: currUser?.photoURL != null
-                              ? NetworkImage(currUser!.photoURL!)
-                              : null,
-                          child: currUser?.photoURL == null
-                              ? Icon(
-                                  Icons.person,
-                                  color: myThemeVar.iconTheme.color,
-                                )
-                              : null,
-                        ),
-                        SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          log("user name clicked");
+                        },
+                        child: Row(
                           children: [
-                            Text(
-                              currUser?.displayName ?? "Guest",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: myThemeVar.colorScheme.primary,
-                              ),
+                            CircleAvatar(
+                              radius: 26,
+
+                              // backgroundImage:NetworkImage(currUser!.photoURL.toString()),
+                              // child:Icon(Icons.person),
+                              backgroundImage: currUser?.photoURL != null
+                                  ? NetworkImage(currUser!.photoURL!)
+                                  : null,
+                              child: currUser?.photoURL == null
+                                  ? Icon(
+                                      Icons.person,
+                                      color: myThemeVar.iconTheme.color,
+                                    )
+                                  : null,
                             ),
-                            Text(
-                              currUser?.email ?? "guest",
-                              style: TextStyle(
-                                color: myThemeVar.colorScheme.secondary,
-                              ),
+                            SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  currUser?.displayName ?? "Guest",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: myThemeVar.colorScheme.primary,
+                                  ),
+                                ),
+                                Text(
+                                  currUser?.email ?? "guest",
+                                  style: TextStyle(
+                                    color: myThemeVar.colorScheme.secondary,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
 
@@ -207,6 +212,8 @@ Widget otherTile(String name, IconData Iconss, BuildContext context, screen) {
     borderRadius: BorderRadius.circular(7),
     onTap: () {
       log("Switched to");
+      Navigator.pop(context, MaterialPageRoute(builder: (_) => Homescreen()));
+
       Navigator.of(context).push(MaterialPageRoute(builder: (_) => screen));
     },
     child: Padding(
