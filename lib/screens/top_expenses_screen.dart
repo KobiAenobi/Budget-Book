@@ -20,10 +20,37 @@ class TopExpensesScreen extends StatefulWidget {
 }
 
 class _TopExpensesScreenState extends State<TopExpensesScreen> {
+  String formatMonth(String key) {
+    final year = int.parse(key.split('-')[0]);
+    final month = int.parse(key.split('-')[1]);
+
+    const monthNames = [
+      "", // index 0 unused
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    return "${monthNames[month]} $year";
+  }
+
   /// Hive box reference
   final itemsBox = Hive.box<BudgetItem>('itemsBox');
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final currentMonthKey =
+        "${now.year}-${now.month.toString().padLeft(2, '0')}";
+
     // ---------------------------------------------------------
     // Convert Hive box to list & sort newest → oldest
     // ---------------------------------------------------------
@@ -123,37 +150,56 @@ class _TopExpensesScreenState extends State<TopExpensesScreen> {
             //Top Expense Container
             Container(
               width: double.infinity,
-              // height: MediaQuery.of(context).size.height * 0.25,
+              height: MediaQuery.of(context).size.height * 0.2,
               // color: Colors.red,
               // height: MediaQuery.of(context).size.height * 0.25,
               // color: Colors.blue,
-              padding: EdgeInsets.only(left: 5, right: 5),
+              padding: EdgeInsets.only(left: 5, right: 5, bottom: 10),
+
               // alignment: Alignment.centerLeft,
-              child: FittedBox(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Top Expenses",
-                      style: TextStyle(
-                        color: myThemeVar.colorScheme.primary,
-                        fontFamily: "Impact",
-                        fontWeight: FontWeight.bold,
-                        fontSize: 1000,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.1,
+                      child: FittedBox(
+                        child: Text(
+                          "Top Expenses",
+                          style: TextStyle(
+                            color: myThemeVar.colorScheme.primary,
+                            fontFamily: "Impact",
+                            fontWeight: FontWeight.bold,
+                            fontSize: 1000,
+                          ),
+                        ),
                       ),
                     ),
+                  ),
 
-                    // Text(
-                    //   "Expenses",
-                    //   style: TextStyle(
-                    //     color: myThemeVar.colorScheme.primary,
-                    //     fontFamily: "Impact",
-                    //     fontWeight: FontWeight.bold,
-                    //     fontSize: 1000,
-                    //   ),
-                    // ),
-                  ],
-                ),
+                  // Flexible(
+                  //   child: SizedBox(
+                  //     height: MediaQuery.of(context).size.height * 0.15,
+                  //     child: FittedBox(
+                  //       child: Text(
+                  //         "Expenses",
+                  //         style: TextStyle(
+                  //           color: myThemeVar.colorScheme.primary,
+                  //           fontFamily: "Impact",
+                  //           fontWeight: FontWeight.bold,
+                  //           fontSize: 1000,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  FittedBox(
+                    child: Text(
+                      "of ${formatMonth(currentMonthKey)}",
+                      style: myThemeVar.textTheme.bodyLarge,
+                    ),
+                  ),
+                ],
               ),
             ),
 
@@ -203,14 +249,8 @@ class _TopExpensesScreenState extends State<TopExpensesScreen> {
                               SizedBox(
                                 width: widget.containerWidth * 0.1,
                                 child: Text(
-                                  "${index + 1}",
-                                  style: TextStyle(
-                                    color: myThemeVar.colorScheme.primary,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    fontFamily:
-                                        GoogleFonts.manrope().fontFamily,
-                                  ),
+                                  "${index + 1}.",
+                                  style: myThemeVar.textTheme.bodySmall,
                                 ),
                               ),
                               // ==================================================================
@@ -286,9 +326,7 @@ class _TopExpensesScreenState extends State<TopExpensesScreen> {
                                     child: Text(
                                       "₹${totalPrice}",
                                       textAlign: TextAlign.right,
-                                      style: TextStyle(
-                                        color: myThemeVar.colorScheme.primary,
-                                      ),
+                                      style: myThemeVar.textTheme.bodySmall,
                                     ),
                                   ),
                                 ),

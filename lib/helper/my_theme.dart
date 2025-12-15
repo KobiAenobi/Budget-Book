@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MyAppTheme {
   // static Color scaffoldBackgroundColorSecondaryLight = Color.fromRGBO(
@@ -75,21 +76,30 @@ class MyAppTheme {
 
     //MOSTLY FOR TEXT
     colorScheme: const ColorScheme.dark(
-      surface: Color.fromRGBO(255, 109, 31, 1.0),
-      primary: Color.fromARGB(255, 0, 0, 0),
+      // surface: Color.fromRGBO(255, 109, 31, 1.0),
+      surface: Color.fromRGBO(209, 199, 191, 1),
+      primary: Colors.black,
       secondary: Color.fromARGB(255, 80, 80, 80),
       onPrimary: Color.fromARGB(255, 0, 0, 0),
     ),
 
     // GLOBAL TEXT COLORS
-    textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 24),
-      bodyMedium: TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 18),
-      bodySmall: TextStyle(color: Color.fromARGB(134, 0, 0, 0), fontSize: 14),
-      titleLarge: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-      titleMedium: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-      titleSmall: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-     
+    textTheme: GoogleFonts.manropeTextTheme(
+      const TextTheme(
+        bodyLarge: TextStyle(
+          color: Color.fromARGB(255, 0, 0, 0),
+          fontSize: 24,
+          fontWeight: FontWeight.w900,
+        ),
+        bodyMedium: TextStyle(
+          color: Color.fromARGB(255, 0, 0, 0),
+          fontSize: 18,
+        ),
+        bodySmall: TextStyle(color: Color.fromARGB(134, 0, 0, 0), fontSize: 14),
+        titleLarge: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+        titleMedium: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+        titleSmall: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+      ),
     ),
 
     // ICON COLORS

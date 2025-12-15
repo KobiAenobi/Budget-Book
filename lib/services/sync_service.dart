@@ -1,6 +1,5 @@
 import 'dart:developer' show log;
 
-import 'package:budget_book_app/models/budget_item.dart';
 import 'package:hive/hive.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,7 +21,7 @@ Future<void> initialSync() async {
   final box = Hive.box<BudgetItem>('itemsBox');
 
   final snap = await db
-      .collection('users')
+      .collection('users_test')
       .doc(uid)
       .collection('budgets')
       .get();
@@ -45,7 +44,7 @@ Future<void> syncLocalItemsToCloud() async {
 
   // 1. Get cloud items
   final remoteSnap = await db
-      .collection('users')
+      .collection('users_test')
       .doc(uid)
       .collection('budgets')
       .get();
@@ -56,7 +55,7 @@ Future<void> syncLocalItemsToCloud() async {
   for (var localItem in box.values) {
     if (!remoteIds.contains(localItem.id)) {
       await db
-          .collection('users')
+          .collection('users_test')
           .doc(uid)
           .collection('budgets')
           .doc(localItem.id)
@@ -79,7 +78,7 @@ void listenForLocalChanges() {
     if (item == null) return;
 
     await FirebaseFirestore.instance
-        .collection('users')
+        .collection('users_test')
         .doc(uid)
         .collection('budgets')
         .doc(item.id)

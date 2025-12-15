@@ -174,7 +174,7 @@ class _ItemCardState extends State<ItemCard> {
                     "qty: ${widget.quantity}",
                     style: TextStyle(
                       color: myThemeVar.colorScheme.primary,
-                      fontSize: 14,
+                      fontSize: 11,
                       fontWeight: FontWeight.w700,
                       fontFamily: GoogleFonts.manrope().fontFamily,
                     ),
