@@ -196,7 +196,7 @@ class _TopExpensesScreenState extends State<TopExpensesScreen> {
                   FittedBox(
                     child: Text(
                       "of ${formatMonth(currentMonthKey)}",
-                      style: myThemeVar.textTheme.bodyLarge,
+                      style: myThemeVar.textTheme.bodyMedium,
                     ),
                   ),
                 ],
@@ -250,7 +250,12 @@ class _TopExpensesScreenState extends State<TopExpensesScreen> {
                                 width: widget.containerWidth * 0.1,
                                 child: Text(
                                   "${index + 1}.",
-                                  style: myThemeVar.textTheme.bodySmall,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    // fontWeight: FontWeight.bold,
+                                    fontFamily:
+                                        GoogleFonts.manrope().fontFamily,
+                                  ),
                                 ),
                               ),
                               // ==================================================================
@@ -326,7 +331,12 @@ class _TopExpensesScreenState extends State<TopExpensesScreen> {
                                     child: Text(
                                       "₹${totalPrice}",
                                       textAlign: TextAlign.right,
-                                      style: myThemeVar.textTheme.bodySmall,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        // fontWeight: FontWeight.bold,
+                                        fontFamily:
+                                            GoogleFonts.poppins().fontFamily,
+                                      ),
                                     ),
                                   ),
                                 ),

@@ -354,8 +354,9 @@ class _ItemdatascreenState extends State<Itemdatascreen> {
                                   SizedBox(
                                     width: widget.containerWidth * 0.1,
                                     child: Text(
-                                      "$serialNo",
+                                      "$serialNo.",
                                       style: TextStyle(
+                                        fontSize: 11,
                                         // fontWeight: FontWeight.bold,
                                         fontFamily:
                                             GoogleFonts.manrope().fontFamily,
@@ -422,7 +423,11 @@ class _ItemdatascreenState extends State<Itemdatascreen> {
                                         "₹${itm.price}",
                                         textAlign: TextAlign.right,
                                         style: TextStyle(
-                                          color: myThemeVar.colorScheme.primary,
+                                          // color: myThemeVar.colorScheme.primary,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w700,
+                                          fontFamily:
+                                              GoogleFonts.manrope().fontFamily,
                                         ),
                                       ),
                                     ),

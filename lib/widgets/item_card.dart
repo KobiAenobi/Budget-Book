@@ -194,7 +194,10 @@ class _ItemCardState extends State<ItemCard> {
                       child: Text(
                         "₹${widget.price * widget.quantity}",
                         textAlign: TextAlign.right,
-                        style: TextStyle(color: myThemeVar.colorScheme.primary),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                        ),
                       ),
                     ),
                   ),

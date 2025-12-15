@@ -433,34 +433,46 @@ class _HomescreenState extends State<Homescreen> {
                               child: Container(
                                 alignment: Alignment.centerLeft,
                                 padding: EdgeInsets.only(left: 5, right: 2),
-                                // height:
-                                //     MediaQuery.of(context).size.height *
-                                //     .1,
+                                height:
+                                    MediaQuery.of(context).size.height * .05,
                                 width: MediaQuery.of(context).size.width * .5,
                                 // color: Colors.blue,
                                 // color: Colors.red,
                                 child: FittedBox(
                                   child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      Icon(
-                                        Icons.trending_up,
-                                        color: myThemeVar.colorScheme.onPrimary,
-                                        size: myThemeVar
-                                            .textTheme
-                                            .bodyLarge!
-                                            .fontSize!
-                                            .toDouble(),
+                                      FittedBox(
+                                        child: Icon(
+                                          Icons.trending_up,
+                                          color:
+                                              myThemeVar.colorScheme.onPrimary,
+                                          size:
+                                              MediaQuery.of(
+                                                context,
+                                              ).size.width *
+                                              0.05,
+                                        ),
                                       ),
                                       SizedBox(width: 10),
-                                      Text(
-                                        "Top Expenses",
-                                        style: myThemeVar.textTheme.bodyLarge,
-                                        // style: TextStyle(
-                                        //   fontFamily:
-                                        //       GoogleFonts.manrope().fontFamily,
-                                        //   fontSize: 24,
-                                        //   fontWeight: FontWeight.w900,
-                                        // ),
+                                      FittedBox(
+                                        child: SingleChildScrollView(
+                                          child: Text(
+                                            "Top Expenses",
+                                            maxLines: 1,
+                                            // style: myThemeVar.textTheme.bodyLarge,
+                                            style: TextStyle(
+                                              fontFamily: GoogleFonts.manrope()
+                                                  .fontFamily,
+                                              fontSize:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
+                                                  0.05,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -490,33 +502,47 @@ class _HomescreenState extends State<Homescreen> {
                               child: Container(
                                 alignment: Alignment.centerLeft,
                                 padding: EdgeInsets.only(left: 5, right: 2),
-                                // height:
-                                //     MediaQuery.of(context).size.height *
-                                //     .1,
+                                height:
+                                    MediaQuery.of(context).size.height * .05,
                                 width: MediaQuery.of(context).size.width * .5,
                                 // color: Colors.blue,
                                 child: FittedBox(
                                   child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      Icon(
-                                        Icons.settings,
-                                        color: myThemeVar.colorScheme.onPrimary,
-                                        size: myThemeVar
-                                            .textTheme
-                                            .bodyLarge!
-                                            .fontSize!
-                                            .toDouble(),
+                                      SizedBox(
+                                        child: FittedBox(
+                                          child: Icon(
+                                            Icons.settings,
+                                            color: myThemeVar
+                                                .colorScheme
+                                                .onPrimary,
+                                            size:
+                                                MediaQuery.of(
+                                                  context,
+                                                ).size.width *
+                                                0.05,
+                                          ),
+                                        ),
                                       ),
                                       SizedBox(width: 10),
-                                      Text(
-                                        "Settings",
-                                        style: myThemeVar.textTheme.bodyLarge,
-                                        // style: TextStyle(
-                                        //   fontFamily:
-                                        //       GoogleFonts.manrope().fontFamily,
-                                        //   fontSize: 24,
-                                        //   fontWeight: FontWeight.w900,
-                                        // ),
+                                      SizedBox(
+                                        child: FittedBox(
+                                          child: Text(
+                                            "Settings",
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                              fontFamily: GoogleFonts.manrope()
+                                                  .fontFamily,
+                                              fontSize:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
+                                                  0.05,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -629,27 +655,40 @@ class _HomescreenState extends State<Homescreen> {
                               child: Container(
                                 alignment: Alignment.centerLeft,
                                 padding: EdgeInsets.only(left: 5, right: 2),
-                                // height:
-                                //     MediaQuery.of(context).size.height *
-                                //     .1,
+                                height:
+                                    MediaQuery.of(context).size.height * .05,
                                 width: MediaQuery.of(context).size.width * .5,
                                 // color: Colors.blue,
                                 child: FittedBox(
                                   child: Row(
                                     children: [
-                                      Icon(
-                                        Icons.logout,
-                                        color: myThemeVar.colorScheme.onPrimary,
-                                        size: myThemeVar
-                                            .textTheme
-                                            .bodyLarge!
-                                            .fontSize!
-                                            .toDouble(),
+                                      FittedBox(
+                                        child: Icon(
+                                          Icons.logout,
+                                          color:
+                                              myThemeVar.colorScheme.onPrimary,
+                                          size:
+                                              MediaQuery.of(
+                                                context,
+                                              ).size.width *
+                                              .05,
+                                        ),
                                       ),
                                       SizedBox(width: 10),
-                                      Text(
-                                        "Log Out",
-                                        style: myThemeVar.textTheme.bodyLarge,
+                                      FittedBox(
+                                        child: Text(
+                                          "Log Out",
+                                          style: TextStyle(
+                                            fontFamily: GoogleFonts.manrope()
+                                                .fontFamily,
+                                            fontSize:
+                                                MediaQuery.of(
+                                                  context,
+                                                ).size.width *
+                                                0.05,
+                                            fontWeight: FontWeight.w900,
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),

@@ -92,8 +92,9 @@ class MyAppTheme {
           fontWeight: FontWeight.w900,
         ),
         bodyMedium: TextStyle(
-          color: Color.fromARGB(255, 0, 0, 0),
+          color: Color.fromARGB(134, 0, 0, 0),
           fontSize: 18,
+          fontWeight: FontWeight.w900,
         ),
         bodySmall: TextStyle(color: Color.fromARGB(134, 0, 0, 0), fontSize: 14),
         titleLarge: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),

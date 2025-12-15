@@ -172,9 +172,8 @@ class _TopCard2State extends State<TopCard2> {
                       Text(
                         "${index + 1}.",
                         style: TextStyle(
-                          color: myThemeVar.colorScheme.primary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 11,
+                          // fontWeight: FontWeight.bold,
                           fontFamily: GoogleFonts.manrope().fontFamily,
                         ),
                       ),
@@ -185,19 +184,18 @@ class _TopCard2State extends State<TopCard2> {
                         style: TextStyle(
                           color: myThemeVar.colorScheme.primary,
                           fontSize: 14,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w900,
                           fontFamily: GoogleFonts.manrope().fontFamily,
                         ),
                       ),
                       Spacer(),
 
                       Text(
-                        "${totalPrice}",
+                        "₹${totalPrice}",
                         style: TextStyle(
-                          color: myThemeVar.colorScheme.primary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          fontFamily: GoogleFonts.manrope().fontFamily,
+                          fontSize: 12,
+                          // fontWeight: FontWeight.bold,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
                         ),
                       ),
                       SizedBox(width: 20),
