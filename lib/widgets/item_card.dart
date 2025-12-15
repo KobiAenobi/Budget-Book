@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:budget_book_app/helper/date_time_helper.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 /// ============================================================================
-/// 🧾 ITEM CARD WIDGET
+/// ITEM CARD WIDGET
 /// ----------------------------------------------------------------------------
 /// A UI card that displays:
 ///  • Item name
@@ -18,12 +17,17 @@ import 'package:google_fonts/google_fonts.dart';
 /// NOTHING modified — only comments added.
 /// ============================================================================
 class ItemCard extends StatefulWidget {
-  final String name;         // Item name
-  final DateTime date;       // Purchase date
-  final int quantity;        // Quantity of item
-  final int price;           // Price per unit
+  final String name; // Item name
+  final DateTime date; // Purchase date
+  final int quantity; // Quantity of item
+  final int price; // Price per unit
+
+  final double containerHeight;
+  final double containerWidth;
 
   final VoidCallback? onEdit; // Optional edit callback
+
+  final bool isRight;
 
   const ItemCard({
     super.key,
@@ -32,6 +36,9 @@ class ItemCard extends StatefulWidget {
     required this.quantity,
     required this.price,
     this.onEdit,
+    required this.containerHeight,
+    required this.containerWidth,
+    required this.isRight,
   });
 
   @override
@@ -73,119 +80,190 @@ class _ItemCardState extends State<ItemCard> {
   //   "Dec",
   // ];
 
-
   /// ========================================================================
   /// 🖥 BUILD METHOD — Constructs the card UI
   /// ========================================================================
   @override
   Widget build(BuildContext context) {
-    return Card(
+    final myThemeVar = Theme.of(context);
+    return SizedBox(
+      // height: 90,
+      child: Card(
+        // Space between cards in list
+        margin: EdgeInsets.only(bottom: 1, top: 1, left: 1, right: 1),
 
-      // Space between cards in list
-      margin: EdgeInsets.only(bottom: 1, top: 1, left: 0, right: 0),
+        shape: RoundedRectangleBorder(
+          side: widget.isRight
+              ? BorderSide(color: Colors.transparent, width: 0)
+              : BorderSide(color: myThemeVar.dividerColor, width: 1),
+          borderRadius: widget.isRight
+              ? BorderRadius.circular(0)
+              : BorderRadius.circular(15),
+        ),
 
-      shape: RoundedRectangleBorder(
-        side: BorderSide(color: const Color.fromARGB(255, 105, 99, 97)),
-        borderRadius: BorderRadius.circular(10),
-      ),
+        // color: const Color.fromARGB(255, 24, 8, 2),
+        color: myThemeVar.cardColor,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
 
-      color: const Color.fromARGB(255, 24, 8, 2),
-
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-
-            // ==================================================================
-            // 🛒 ITEM ICON
-            // ==================================================================
-            Container(
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.1,
-                child: Icon(Icons.shopping_cart, color: Colors.white54),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // ==================================================================
+              // 🛒 ITEM ICON
+              // ==================================================================
+              SizedBox(
+                width: widget.containerWidth * 0.1,
+                child: Icon(
+                  Icons.shopping_cart,
+                  color: myThemeVar.iconTheme.color,
+                ),
               ),
-            ),
 
+              // ==================================================================
+              // 📝 ITEM NAME + DATE SECTION
+              // ==================================================================
+              Flexible(
+                child: SizedBox(
+                  width: widget.containerWidth * 0.4,
 
-            // ==================================================================
-            // 📝 ITEM NAME + DATE SECTION
-            // ==================================================================
-            Container(
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.4,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // SINGLE-LINE SCROLLABLE ITEM NAME
+                      Api.oneLineScroll(
+                        widget.name,
+                        TextStyle(
+                          color: myThemeVar.colorScheme.primary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: GoogleFonts.manrope().fontFamily,
+                        ),
+                      ),
 
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                      // ----------------------------------------------------------------
+                      // Formatted date/time below item name
+                      // formatDateTime() is your custom helper function
+                      // ----------------------------------------------------------------
+                      Api.oneLineScroll(
+                        formatDateTime(widget.date),
+                        TextStyle(
+                          fontSize: 11,
+                          color: myThemeVar.colorScheme.secondary,
+                        ),
+                      ),
 
-                    // SINGLE-LINE SCROLLABLE ITEM NAME
-                    Api.oneLineScroll(
-                      widget.name,
-                      TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: GoogleFonts.manrope().fontFamily,
+                      // ----------------------------------------------------------------
+                      // COMMENTED OUT — EXACTLY KEPT AS PROVIDED
+                      // ----------------------------------------------------------------
+                      // Text(
+                      //   "${widget.date.day} ${monthNames[widget.date.month - 1]} ",
+                      // ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // ==================================================================
+              // 📦 QUANTITY DISPLAY
+              // ==================================================================
+              Flexible(
+                child: SizedBox(
+                  width: widget.containerWidth * 0.17,
+                  child: Text(
+                    "qty: ${widget.quantity}",
+                    style: TextStyle(
+                      color: myThemeVar.colorScheme.primary,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: GoogleFonts.manrope().fontFamily,
+                    ),
+                  ),
+                ),
+              ),
+
+              // ==================================================================
+              // 💰 PRICE DISPLAY (price × quantity)
+              // ==================================================================
+              Flexible(
+                child: SizedBox(
+                  width: widget.containerWidth * 0.15,
+                  child: SingleChildScrollView(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        "₹${widget.price * widget.quantity}",
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                        ),
                       ),
                     ),
-
-                    // ----------------------------------------------------------------
-                    // Formatted date/time below item name
-                    // formatDateTime() is your custom helper function
-                    // ----------------------------------------------------------------
-                    Api.oneLineScroll(
-                      formatDateTime(widget.date),
-                      TextStyle(fontSize: 11, color: Colors.white54),
-                    ),
-
-                    // ----------------------------------------------------------------
-                    // COMMENTED OUT — EXACTLY KEPT AS PROVIDED
-                    // ----------------------------------------------------------------
-                    // Text(
-                    //   "${widget.date.day} ${monthNames[widget.date.month - 1]} ",
-                    // ),
-                  ],
+                  ),
                 ),
               ),
-            ),
 
+              // ==================================================================
+              // COMMENTED OUT EDIT ICON BUTTON (Kept untouched)
+              // ==================================================================
+              // IconButton(
+              //   icon: Icon(Icons.edit, color: Colors.white),
+              //   onPressed: widget.onEdit,
+              // ),
+            ],
+          ),
+          // child: Row(
+          //   children: [
+          //     // ICON
+          //     Expanded(
+          //       flex: 1,
+          //       child: Icon(Icons.shopping_cart, color: Colors.white54),
+          //     ),
 
-            // ==================================================================
-            // 📦 QUANTITY DISPLAY
-            // ==================================================================
-            Container(
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.17,
-                child: Text("qty: ${widget.quantity}"),
-              ),
-            ),
+          //     // NAME + DATE
+          //     Expanded(
+          //       flex: 4,
+          //       child: Column(
+          //         crossAxisAlignment: CrossAxisAlignment.start,
+          //         children: [
+          //           Api.oneLineScroll(
+          //             widget.name,
+          //             TextStyle(
+          //               color: Colors.white,
+          //               fontSize: 14,
+          //               fontWeight: FontWeight.w700,
+          //               fontFamily: GoogleFonts.manrope().fontFamily,
+          //             ),
+          //           ),
+          //           Api.oneLineScroll(
+          //             formatDateTime(widget.date),
+          //             TextStyle(fontSize: 11, color: Colors.white54),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
 
+          //     // QTY
+          //     Expanded(
+          //       flex: 2,
+          //       child: Text(
+          //         "qty: ${widget.quantity}",
+          //         style: TextStyle(color: Colors.white),
+          //       ),
+          //     ),
 
-            // ==================================================================
-            // 💰 PRICE DISPLAY (price × quantity)
-            // ==================================================================
-            Container(
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.15,
-                child: Text(
-                  "₹${widget.price * widget.quantity}",
-                  textAlign: TextAlign.right,
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-
-
-            // ==================================================================
-            // COMMENTED OUT EDIT ICON BUTTON (Kept untouched)
-            // ==================================================================
-            // IconButton(
-            //   icon: Icon(Icons.edit, color: Colors.white),
-            //   onPressed: widget.onEdit,
-            // ),
-          ],
+          //     // PRICE
+          //     Expanded(
+          //       flex: 2,
+          //       child: Text(
+          //         "₹${widget.price * widget.quantity}",
+          //         textAlign: TextAlign.right,
+          //         style: TextStyle(color: Colors.white),
+          //       ),
+          //     ),
+          //   ],
+          // ),
         ),
       ),
     );

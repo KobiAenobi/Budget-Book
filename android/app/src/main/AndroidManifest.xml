@@ -114,11 +114,17 @@
                You also declared the matching permission above.
              - Ensure you request SYSTEM_ALERT_WINDOW from the user UI before starting overlay.
         -->
-        <service
+        <!-- <service
     android:name=".MyOverlayService"
     android:exported="false"
     android:foregroundServiceType="specialUse"
-    android:permission="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    android:permission="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" /> -->
+
+    <service
+    android:name=".MyOverlayService"
+    android:exported="false"
+    android:foregroundServiceType="specialUse" />
+
 
     
 

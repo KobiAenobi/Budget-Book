@@ -1,5 +1,6 @@
 import 'dart:developer' show log;
 
+import 'package:budget_book_app/models/budget_item.dart';
 import 'package:hive/hive.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

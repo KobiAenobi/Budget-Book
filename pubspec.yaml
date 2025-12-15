@@ -2,7 +2,7 @@ name: budget_book_app
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.2.0+1
 
 environment:
   sdk: ^3.8.1
@@ -36,6 +36,9 @@ dependencies:
   cloud_firestore: ^6.1.0
   flutter_launcher_icons: ^0.14.4
   lottie: ^3.3.1
+  animations: ^2.1.1
+  flutter_animate: ^4.5.2
+  flutter_speed_dial: ^7.0.0
 
 dev_dependencies:
   flutter_test:
@@ -52,7 +55,8 @@ flutter_icons:
 
 flutter:
   assets:
-    - assets/lottie/book_pen_write.json
+    - assets/lottie/
+    - assets/icons/
 
   uses-material-design: true
 

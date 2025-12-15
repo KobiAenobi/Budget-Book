@@ -145,7 +145,6 @@ class _ActivitiesState extends State<Activities> {
     }
   }
 
-
   Future<void> openNotificationSettings() async {
     await platform.invokeMethod('openNotificationSettings');
   }
@@ -161,93 +160,92 @@ class _ActivitiesState extends State<Activities> {
   /// ==========================================================================
   @override
   Widget build(BuildContext context) {
+    final mytheme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 44, 16, 16),
-      appBar: AppBar(title: Text("Budget Book")),
+      backgroundColor: mytheme.cardColor,
+      appBar: AppBar(
+        backgroundColor: mytheme.cardColor,
+        surfaceTintColor: Colors.transparent,
+        title: Text("Budget Book"),
+      ),
 
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            /// Button → Open accessibility settings
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(
-                  255,
-                  24,
-                  8,
-                  2,
-                ), // Button color
-                foregroundColor: Colors.white70, // Text/Icon color
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              /// Button → Open accessibility settings
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
+                onPressed: openAccessibilitySettings,
+                child: Text("Enable Accessibility Service"),
               ),
-              onPressed: openAccessibilitySettings,
-              child: Text("Enable Accessibility Service"),
-            ),
 
-            SizedBox(height: 20),
+              SizedBox(height: 20),
 
-            /// Button → Open overlay settings
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(
-                  255,
-                  24,
-                  8,
-                  2,
-                ), // Button color
-                foregroundColor: Colors.white70, // Text/Icon color
+              /// Button → Open overlay settings
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(
+                    255,
+                    24,
+                    8,
+                    2,
+                  ), // Button color
+                  foregroundColor: Colors.white70, // Text/Icon color
+                ),
+                onPressed: openOverlaySettings,
+                child: Text("Enable Overlay Service"),
               ),
-              onPressed: openOverlaySettings,
-              child: Text("Enable Overlay Service"),
-            ),
 
-            SizedBox(height: 20),
+              SizedBox(height: 20),
 
-            /// Button → Trigger overlay bubble
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(
-                  255,
-                  24,
-                  8,
-                  2,
-                ), // Button color
-                foregroundColor: Colors.white70, // Text/Icon color
+              /// Button → Trigger overlay bubble
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(
+                    255,
+                    24,
+                    8,
+                    2,
+                  ), // Button color
+                  foregroundColor: Colors.white70, // Text/Icon color
+                ),
+                onPressed: showOverlay,
+                child: Text("Show Overlay"),
               ),
-              onPressed: showOverlay,
-              child: Text("Show Overlay"),
-            ),
 
-            SizedBox(height: 20),
+              SizedBox(height: 20),
 
-            /// Button → Trigger overlay bubble
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(
-                  255,
-                  24,
-                  8,
-                  2,
-                ), // Button color
-                foregroundColor: Colors.white70, // Text/Icon color
+              /// Button → Trigger overlay bubble
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(
+                    255,
+                    24,
+                    8,
+                    2,
+                  ), // Button color
+                  foregroundColor: Colors.white70, // Text/Icon color
+                ),
+                onPressed: openNotificationSettings,
+                child: Text("openNotificationSettings"),
               ),
-              onPressed: openNotificationSettings,
-              child: Text("openNotificationSettings"),
-            ),
 
-            SizedBox(height: 20),
+              SizedBox(height: 20),
 
-            /// Section title
-            Text(
-              "Latest Event:",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+              /// Section title
+              Text(
+                "Latest Event:",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
 
-            SizedBox(height: 10),
+              SizedBox(height: 10),
 
-            /// Display the last received event update
-            Text(latestEvent, style: TextStyle(fontSize: 14)),
-          ],
+              /// Display the last received event update
+              Text(latestEvent, style: TextStyle(fontSize: 14)),
+            ],
+          ),
         ),
       ),
     );

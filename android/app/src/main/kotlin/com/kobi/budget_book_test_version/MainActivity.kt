@@ -19,6 +19,11 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 
 
+// >>> ADDED (for clearing notifications)
+import android.app.NotificationManager
+// <<< ADDED
+
+
 
 /// ============================================================================
 /// 🏠 MainActivity (Kotlin → Flutter Bridge)
@@ -170,6 +175,27 @@ class MainActivity : FlutterActivity() {
                 eventSink = null
             }
         })
+
+
+        // ==========================================================================
+        // ⭐⭐⭐ ADDED METHOD CHANNEL FOR CLEARING NOTIFICATIONS ⭐⭐⭐
+        // ==========================================================================
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            "clear_notifications"
+        ).setMethodCallHandler { call, result ->
+            if (call.method == "clearAll") {
+                val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                nm.cancelAll() // ← clears ALL notifications from your app
+                result.success(true)
+            } else {
+                result.notImplemented()
+            }
+        }
+        // ==========================================================================
+
+
+
     }
 
 

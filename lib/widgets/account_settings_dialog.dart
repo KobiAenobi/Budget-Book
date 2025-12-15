@@ -1,5 +1,6 @@
 import 'dart:developer' show log;
 
+import 'package:budget_book_app/helper/my_theme.dart';
 import 'package:budget_book_app/screens/activities.dart';
 import 'package:budget_book_app/screens/homeScreen.dart';
 import 'package:budget_book_app/services/sync_service.dart';
@@ -12,12 +13,13 @@ class AccountSettingsDialog {
 
   // static ChatUser me;
   void showAccountSettingDialog(BuildContext context) {
+    final myThemeVar = Theme.of(context);
     showDialog(
       context: context,
-      barrierColor: Colors.black54,
+      barrierColor: const Color.fromARGB(135, 0, 0, 0),
       builder: (context) {
         return Dialog(
-          backgroundColor: const Color.fromARGB(255, 24, 8, 2),
+          backgroundColor: myThemeVar.cardColor,
           insetPadding: EdgeInsets.only(top: 60, right: 10),
           alignment: Alignment.topRight,
           shape: RoundedRectangleBorder(
@@ -33,46 +35,58 @@ class AccountSettingsDialog {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // ===== MAIN ACCOUNT HEADER =====
-                  InkWell(
-                    borderRadius: BorderRadius.circular(7),
-                    onTap: () {
-                      // Navigator.pop(context);
+                  FittedBox(
+                    child: Container(
+                      // color: Colors.amberAccent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(7),
+                        onTap: () {
+                          // Navigator.pop(context);
 
-                      // Navigator.pop(context);
-                      log("user name clicked");
-                    },
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 26,
+                          // Navigator.pop(context);
 
-                          // backgroundImage:NetworkImage(currUser!.photoURL.toString()),
-                          // child:Icon(Icons.person),
-                          backgroundImage: currUser?.photoURL != null
-                              ? NetworkImage(currUser!.photoURL!)
-                              : null,
-                          child: currUser?.photoURL == null
-                              ? Icon(Icons.person, color: Colors.white70)
-                              : null,
-                        ),
-                        SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          log("user name clicked");
+                        },
+                        child: Row(
                           children: [
-                            Text(
-                              currUser?.displayName ?? "Guest",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            CircleAvatar(
+                              radius: 26,
+
+                              // backgroundImage:NetworkImage(currUser!.photoURL.toString()),
+                              // child:Icon(Icons.person),
+                              backgroundImage: currUser?.photoURL != null
+                                  ? NetworkImage(currUser!.photoURL!)
+                                  : null,
+                              child: currUser?.photoURL == null
+                                  ? Icon(
+                                      Icons.person,
+                                      color: myThemeVar.iconTheme.color,
+                                    )
+                                  : null,
                             ),
-                            Text(
-                              currUser?.email ?? "guest",
-                              style: TextStyle(color: Colors.grey[700]),
+                            SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  currUser?.displayName ?? "Guest",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: myThemeVar.colorScheme.primary,
+                                  ),
+                                ),
+                                Text(
+                                  currUser?.email ?? "guest",
+                                  style: TextStyle(
+                                    color: myThemeVar.colorScheme.secondary,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
 
@@ -83,13 +97,16 @@ class AccountSettingsDialog {
                   InkWell(
                     borderRadius: BorderRadius.circular(7),
                     onTap: () {
-                      _handleLoginButtonClick();
+                      handleLoginButtonClick();
 
                       // Navigator.pushReplacement(
                       //   context,
                       //   MaterialPageRoute(builder: (_) => Homescreen()),
                       // );
-                      Navigator.pop(context, MaterialPageRoute(builder: (_)=> Homescreen()));
+                      Navigator.pop(
+                        context,
+                        MaterialPageRoute(builder: (_) => Homescreen()),
+                      );
 
                       // Navigator.pop(context);
                       log("Manage account");
@@ -122,7 +139,6 @@ class AccountSettingsDialog {
                   // SizedBox(height: 16),
                   Divider(),
 
-                  
                   Row(
                     children: [
                       // ===== SIGN OUT =====
@@ -131,7 +147,7 @@ class AccountSettingsDialog {
                           borderRadius: BorderRadius.circular(7),
                           onTap: () {
                             signOut();
-                        
+
                             Navigator.pop(context);
                             log("Sign out Clicked");
                           },
@@ -151,37 +167,35 @@ class AccountSettingsDialog {
                         ),
                       ),
 
-                      SizedBox(width: 10,),
+                      SizedBox(width: 10),
                       // ===== Sync =====
-                  Flexible(
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(7),
-                      onTap: () {
-                        syncLocalItemsToCloud();
-                        // migrateKeysToId();
-                    
-                        Navigator.pop(context);
-                        log("Sync Data Clicked");
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: SizedBox(
-                          // width: double.infinity,
-                          child: Text(
-                            "Sync Data",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
+                      Flexible(
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(7),
+                          onTap: () {
+                            syncLocalItemsToCloud();
+                            // migrateKeysToId();
+
+                            Navigator.pop(context);
+                            log("Sync Data Clicked");
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: SizedBox(
+                              // width: double.infinity,
+                              child: Text(
+                                "Sync Data",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
                     ],
                   ),
-
-                  
                 ],
               ),
             ),
@@ -193,17 +207,20 @@ class AccountSettingsDialog {
 }
 
 Widget otherTile(String name, IconData Iconss, BuildContext context, screen) {
+  final myThemeVar = Theme.of(context);
   return InkWell(
     borderRadius: BorderRadius.circular(7),
     onTap: () {
       log("Switched to");
+      Navigator.pop(context, MaterialPageRoute(builder: (_) => Homescreen()));
+
       Navigator.of(context).push(MaterialPageRoute(builder: (_) => screen));
     },
     child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(Iconss, color: Colors.white60),
+          Icon(Iconss, color: myThemeVar.iconTheme.color),
           SizedBox(width: 14),
           Text(
             name,
@@ -216,7 +233,7 @@ Widget otherTile(String name, IconData Iconss, BuildContext context, screen) {
 }
 
 /// --------------------- Login Logic ---------------------
-_handleLoginButtonClick() {
+void handleLoginButtonClick() {
   signInWithGoogle().then((user) async {
     if (user != null) {
       log('\nUser: ${user.user}');

@@ -90,6 +90,8 @@ class _AddItemDialogBoxState extends State<AddItemDialogBox> {
   /// ==========================================================================
   @override
   Widget build(BuildContext context) {
+    final myThemeVar = Theme.of(context);
+
     /// Suggestions list (unique item names)
     final List<String> suggestions = itemsBox.values
         .map((e) => e.name)
@@ -97,14 +99,17 @@ class _AddItemDialogBoxState extends State<AddItemDialogBox> {
         .toList();
 
     return AlertDialog(
-      backgroundColor: Colors.black,
-
+      // backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+      backgroundColor: myThemeVar.cardColor,
       content: Container(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             /// Title
-            Text(widget.isEditing ? 'Edit Item' : 'Add Item'),
+            Text(
+              widget.isEditing ? 'Edit Item' : 'Add Item',
+              style: TextStyle(color: myThemeVar.colorScheme.primary),
+            ),
 
             // ==================================================================
             // ITEM NAME FIELD — USING AUTOCOMPLETE
@@ -176,7 +181,12 @@ class _AddItemDialogBoxState extends State<AddItemDialogBox> {
                       controller: nameCtrl, // YOUR BASE CONTROLLER (respected)
                       focusNode: focusNode,
                       textCapitalization: TextCapitalization.sentences,
-                      decoration: InputDecoration(labelText: "Name"),
+
+                      style: myThemeVar.textTheme.bodyMedium,
+                      decoration: InputDecoration(
+                        labelText: "Name",
+                        labelStyle: myThemeVar.textTheme.bodySmall,
+                      ),
 
                       // Sync internal Autocomplete controller on every change
                       onChanged: (value) {
@@ -197,7 +207,7 @@ class _AddItemDialogBoxState extends State<AddItemDialogBox> {
                 return Align(
                   alignment: Alignment.topLeft,
                   child: Material(
-                    color: Color(0xFF1A1A1A),
+                    color: myThemeVar.cardColor,
                     elevation: 6,
                     borderRadius: BorderRadius.circular(10),
                     child: Container(
@@ -215,10 +225,7 @@ class _AddItemDialogBoxState extends State<AddItemDialogBox> {
                               padding: EdgeInsets.all(14),
                               child: Text(
                                 option,
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: myThemeVar.textTheme.bodyMedium,
                               ),
                             ),
                           );
@@ -232,9 +239,9 @@ class _AddItemDialogBoxState extends State<AddItemDialogBox> {
 
             SizedBox(height: 20),
 
-            // ==================================================================
+            // =================================================================
             // QUANTITY + PRICE FIELDS
-            // ==================================================================
+            // =================================================================
             Row(
               children: [
                 /// QUANTITY FIELD
@@ -248,8 +255,12 @@ class _AddItemDialogBoxState extends State<AddItemDialogBox> {
                         extentOffset: quantityCtrl.text.length,
                       );
                     },
+                    style: myThemeVar.textTheme.bodyMedium,
                     keyboardType: TextInputType.number,
-                    decoration: InputDecoration(labelText: "quantity"),
+                    decoration: InputDecoration(
+                      labelText: "quantity",
+                      labelStyle: myThemeVar.textTheme.bodySmall,
+                    ),
                   ),
                 ),
 
@@ -266,8 +277,12 @@ class _AddItemDialogBoxState extends State<AddItemDialogBox> {
                         extentOffset: priceCtrl.text.length,
                       );
                     },
+                    style: myThemeVar.textTheme.bodyMedium,
                     keyboardType: TextInputType.number,
-                    decoration: InputDecoration(labelText: "Price"),
+                    decoration: InputDecoration(
+                      labelText: "Price",
+                      labelStyle: myThemeVar.textTheme.bodySmall,
+                    ),
                   ),
                 ),
               ],
@@ -286,7 +301,10 @@ class _AddItemDialogBoxState extends State<AddItemDialogBox> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text('Cancel', style: TextStyle(color: Colors.white)),
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(color: myThemeVar.colorScheme.primary),
+                  ),
                 ),
 
                 /// ADD / SAVE BUTTON
@@ -298,8 +316,13 @@ class _AddItemDialogBoxState extends State<AddItemDialogBox> {
                         priceCtrl.text.trim().isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text("Please fill all fields"),
-                          backgroundColor: Colors.red,
+                          content: Text(
+                            "Please fill all fields",
+                            style: TextStyle(
+                              color: myThemeVar.colorScheme.onPrimary,
+                            ),
+                          ),
+                          backgroundColor: myThemeVar.colorScheme.primary,
                         ),
                       );
 
@@ -347,7 +370,7 @@ class _AddItemDialogBoxState extends State<AddItemDialogBox> {
 
                   child: Text(
                     widget.isEditing ? 'Save' : 'Add',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: myThemeVar.colorScheme.primary),
                   ),
                 ),
               ],

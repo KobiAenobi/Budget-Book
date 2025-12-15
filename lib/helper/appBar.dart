@@ -19,8 +19,6 @@ class customAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// Title text shown in the center/left of the AppBar
   final String title;
 
-  
-
   /// List of popup menu entries (PopupMenuItem, CheckedPopupMenuItem, etc.)
   // final List<PopupMenuEntry<String>> menuItems;
 
@@ -59,11 +57,19 @@ class customAppBar extends StatelessWidget implements PreferredSizeWidget {
         final user = snapshot.data;
 
         return AppBar(
-          iconTheme: const IconThemeData(color: Colors.white70),
-          title: Text(
-            title,
-            style: const TextStyle(color: Colors.white70),
+          leading: Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () {
+                  // Scaffold.of(context).openDrawer();
+                },
+                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+              );
+            },
           ),
+          iconTheme: const IconThemeData(color: Colors.white70),
+          title: Text(title, style: const TextStyle(color: Colors.white70)),
           actions: [
             GestureDetector(
               onTap: () {
@@ -87,6 +93,5 @@ class customAppBar extends StatelessWidget implements PreferredSizeWidget {
         );
       },
     );
-
   }
 }
