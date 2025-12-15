@@ -14,7 +14,7 @@ class FirestoreService {
     return FirestoreService._(user!.uid);
   }
 
-  CollectionReference<Map<String, dynamic>> get _budgets => _db.collection('users_test').doc(uid).collection('budgets');
+  CollectionReference<Map<String, dynamic>> get _budgets => _db.collection('users').doc(uid).collection('budgets');
 
   Future<void> uploadItem(BudgetItem item) async{
     await _budgets.doc(item.id).set(item.toMap(), SetOptions(merge: true));
