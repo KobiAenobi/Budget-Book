@@ -1,5 +1,6 @@
 import 'dart:developer' show log;
 
+import 'package:budget_book_app/apis/api.dart';
 import 'package:budget_book_app/helper/my_theme.dart';
 import 'package:budget_book_app/screens/activities.dart';
 import 'package:budget_book_app/screens/homeScreen.dart';
@@ -146,7 +147,18 @@ class AccountSettingsDialog {
                         child: InkWell(
                           borderRadius: BorderRadius.circular(7),
                           onTap: () {
-                            signOut();
+                            try {
+                              signOut();
+                              if (FirebaseAuth.instance.currentUser == null) {
+                                Api.showAppSnack("Already Logged out");
+                              } else {
+                                Api.showAppSnack("Logged Out");
+                              }
+                            } catch (e) {
+                              Api.showAppSnack("error: $e");
+                            }
+
+                            // signOut();
 
                             Navigator.pop(context);
                             log("Sign out Clicked");
@@ -172,13 +184,53 @@ class AccountSettingsDialog {
                       Flexible(
                         child: InkWell(
                           borderRadius: BorderRadius.circular(7),
-                          onTap: () {
-                            syncLocalItemsToCloud();
-                            // migrateKeysToId();
+                          onTap: () async {
+                            final confirmed = await showDialog<bool>(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) {
+                                return AlertDialog(
+                                  icon: const Icon(Icons.warning_amber_rounded),
+                                  title: const Text('Sync data?'),
+                                  content: const Text(
+                                    'This action cannot be undone.',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    FilledButton.tonal(
+                                      onPressed: () =>
+                                          Navigator.pop(context, true),
+                                      child: const Text('Sync'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
 
-                            Navigator.pop(context);
-                            log("Sync Data Clicked");
+                            if (confirmed == true) {
+                              Navigator.pop(context);
+                              // ✅ DO YOUR ACTION HERE
+                              // syncLocalItemsToCloud();
+                              // migrateKeysToId();
+
+                              try {
+                                await syncLocalItemsToCloud();
+                                Api.showAppSnack("Data Synced");
+                              } catch (e) {
+                                Api.showAppSnack("Error: $e");
+                              }
+
+                              // close AccountSettingsDialog AFTER confirm
+                              log("Sync confirmed");
+                            } else {
+                              log("Sync cancelled");
+                            }
                           },
+
                           child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             child: SizedBox(
@@ -212,8 +264,6 @@ Widget otherTile(String name, IconData Iconss, BuildContext context, screen) {
     borderRadius: BorderRadius.circular(7),
     onTap: () {
       log("Switched to");
-      Navigator.pop(context, MaterialPageRoute(builder: (_) => Homescreen()));
-
       Navigator.of(context).push(MaterialPageRoute(builder: (_) => screen));
     },
     child: Padding(

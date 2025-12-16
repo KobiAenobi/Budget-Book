@@ -90,7 +90,8 @@ class _ItemCardState extends State<ItemCard> {
       // height: 90,
       child: Card(
         // Space between cards in list
-        margin: EdgeInsets.only(bottom: 1, top: 1, left: 1, right: 1),
+        // margin: EdgeInsets.only(bottom: 1, top: 1, left: 1, right: 1),
+        margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
 
         shape: RoundedRectangleBorder(
           side: widget.isRight
@@ -123,44 +124,42 @@ class _ItemCardState extends State<ItemCard> {
               // ==================================================================
               // 📝 ITEM NAME + DATE SECTION
               // ==================================================================
-              Flexible(
-                child: SizedBox(
-                  width: widget.containerWidth * 0.4,
+              SizedBox(
+                width: widget.containerWidth * 0.4,
 
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // SINGLE-LINE SCROLLABLE ITEM NAME
-                      Api.oneLineScroll(
-                        widget.name,
-                        TextStyle(
-                          color: myThemeVar.colorScheme.primary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          fontFamily: GoogleFonts.manrope().fontFamily,
-                        ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // SINGLE-LINE SCROLLABLE ITEM NAME
+                    Api.oneLineScroll(
+                      widget.name,
+                      TextStyle(
+                        color: myThemeVar.colorScheme.primary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: GoogleFonts.manrope().fontFamily,
                       ),
+                    ),
 
-                      // ----------------------------------------------------------------
-                      // Formatted date/time below item name
-                      // formatDateTime() is your custom helper function
-                      // ----------------------------------------------------------------
-                      Api.oneLineScroll(
-                        formatDateTime(widget.date),
-                        TextStyle(
-                          fontSize: 11,
-                          color: myThemeVar.colorScheme.secondary,
-                        ),
+                    // ----------------------------------------------------------------
+                    // Formatted date/time below item name
+                    // formatDateTime() is your custom helper function
+                    // ----------------------------------------------------------------
+                    Api.oneLineScroll(
+                      formatDateTime(widget.date),
+                      TextStyle(
+                        fontSize: 11,
+                        color: myThemeVar.colorScheme.secondary,
                       ),
+                    ),
 
-                      // ----------------------------------------------------------------
-                      // COMMENTED OUT — EXACTLY KEPT AS PROVIDED
-                      // ----------------------------------------------------------------
-                      // Text(
-                      //   "${widget.date.day} ${monthNames[widget.date.month - 1]} ",
-                      // ),
-                    ],
-                  ),
+                    // ----------------------------------------------------------------
+                    // COMMENTED OUT — EXACTLY KEPT AS PROVIDED
+                    // ----------------------------------------------------------------
+                    // Text(
+                    //   "${widget.date.day} ${monthNames[widget.date.month - 1]} ",
+                    // ),
+                  ],
                 ),
               ),
 

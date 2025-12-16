@@ -109,15 +109,15 @@ class _ItemdatascreenState extends State<Itemdatascreen> {
     final List<dynamic> ItemList = [];
 
     for (final item in items) {
-      if (
-      //item.dateTime.month == currMont &&
-      item.name.trim().toLowerCase() == widget.itemName.trim().toLowerCase()) {
+      if (item.dateTime.month == currMont &&
+          item.name.trim().toLowerCase() ==
+              widget.itemName.trim().toLowerCase()) {
         ItemList.add(item);
         log("item added: ${item.name}");
       }
       // log("items: ${item.name}");
     }
-    log("list lenght: ${ItemList.length}");
+    // log("list lenght: ${ItemList.length}");
 
     // final topEntry = totalSpentByItem.entries.reduce(
     //   (a, b) => a.value >= b.value ? a : b,
@@ -165,14 +165,22 @@ class _ItemdatascreenState extends State<Itemdatascreen> {
     // ---------------------------------------------------------
     // Calculate Grand Total
     // ---------------------------------------------------------
-    num grandTotal = 0;
-    for (var item in ItemList) {
-      grandTotal += item.price * item.quantity;
-    }
+    // num grandTotal = 0;
+    // for (var item in ItemList) {
+    //   grandTotal += item.price * item.quantity;
+    // }
 
     final now = DateTime.now();
-    final currentMonthKey =
-        "${now.year}-${now.month.toString().padLeft(2, '0')}";
+    final int currMonthQty = items
+        .where((item) {
+          return item.dateTime.year == now.year &&
+              item.dateTime.month == now.month &&
+              item.name.trim().toLowerCase() ==
+                  widget.itemName.trim().toLowerCase();
+        })
+        .fold<int>(0, (sum, item) => sum + item.quantity);
+    // final currentMonthKey =
+    //     "${now.year}-${now.month.toString().padLeft(2, '0')}";
 
     final myThemeVar = Theme.of(context);
     return Scaffold(
@@ -245,9 +253,9 @@ class _ItemdatascreenState extends State<Itemdatascreen> {
                       child: FittedBox(
                         child: Container(
                           padding: EdgeInsets.only(left: 10),
-                          child: overallTotalQty > 1
+                          child: currMonthQty == 1
                               ? Text(
-                                  "Bought: ${overallTotalQty} times",
+                                  "Only one this month",
                                   //   in\n${formatMonth("${DateTime.now().year}-${DateTime.now().month}")}",
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
@@ -255,8 +263,17 @@ class _ItemdatascreenState extends State<Itemdatascreen> {
                                         GoogleFonts.manrope().fontFamily,
                                   ),
                                 )
+                              : currMonthQty == 2
+                              ? Text(
+                                  "Only two this month",
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                    fontFamily:
+                                        GoogleFonts.manrope().fontFamily,
+                                  ),
+                                )
                               : Text(
-                                  "Bought: ${overallTotalQty} time",
+                                  "${currMonthQty} this month",
                                   textAlign: TextAlign.right,
                                   style: TextStyle(
                                     fontFamily:
@@ -314,6 +331,7 @@ class _ItemdatascreenState extends State<Itemdatascreen> {
                           return MonthCard(
                             month: formatMonth(entry['month']),
                             total: entry['total'],
+                            qtyByMonth: entry['totalQty'],
                             containerHeight: 60,
                             containerWidth: double.infinity,
                             monthCardColor: myThemeVar.cardColor,
@@ -365,36 +383,33 @@ class _ItemdatascreenState extends State<Itemdatascreen> {
                                   ),
 
                                   // ITEM NAME + DATE
-                                  Flexible(
-                                    child: SizedBox(
-                                      width: widget.containerWidth * 0.4,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Api.oneLineScroll(
-                                            itm.name,
-                                            TextStyle(
-                                              color: myThemeVar
-                                                  .colorScheme
-                                                  .primary,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w700,
-                                              fontFamily: GoogleFonts.manrope()
-                                                  .fontFamily,
-                                            ),
+                                  SizedBox(
+                                    width: widget.containerWidth * 0.4,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Api.oneLineScroll(
+                                          itm.name,
+                                          TextStyle(
+                                            color:
+                                                myThemeVar.colorScheme.primary,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700,
+                                            fontFamily: GoogleFonts.manrope()
+                                                .fontFamily,
                                           ),
-                                          Api.oneLineScroll(
-                                            formatDateTime(itm.dateTime),
-                                            TextStyle(
-                                              fontSize: 11,
-                                              color: myThemeVar
-                                                  .colorScheme
-                                                  .secondary,
-                                            ),
+                                        ),
+                                        Api.oneLineScroll(
+                                          formatDateTime(itm.dateTime),
+                                          TextStyle(
+                                            fontSize: 11,
+                                            color: myThemeVar
+                                                .colorScheme
+                                                .secondary,
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                   ),
 
@@ -420,7 +435,7 @@ class _ItemdatascreenState extends State<Itemdatascreen> {
                                     child: SizedBox(
                                       width: widget.containerWidth * 0.15,
                                       child: Text(
-                                        "₹${itm.price}",
+                                        "₹${itm.price * itm.quantity}",
                                         textAlign: TextAlign.right,
                                         style: TextStyle(
                                           // color: myThemeVar.colorScheme.primary,

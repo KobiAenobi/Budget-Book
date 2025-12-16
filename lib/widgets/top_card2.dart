@@ -1,7 +1,9 @@
 import 'dart:developer';
 
+import 'package:animations/animations.dart';
 import 'package:budget_book_app/apis/api.dart';
 import 'package:budget_book_app/models/budget_item.dart';
+import 'package:budget_book_app/screens/top_expenses_screen.dart';
 import 'package:budget_book_app/widgets/item_card.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -150,59 +152,100 @@ class _TopCard2State extends State<TopCard2> {
 
           //
           Expanded(
-            child: ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: sortedExpenseList.length.clamp(0, 8),
-              itemBuilder: (context, index) {
-                final entry = sortedExpenseList[index];
+            child: Container(
+              padding: EdgeInsets.only(top: 5, bottom: 5),
+              color: Colors.transparent,
+              child: OpenContainer(
+                closedColor: Colors.transparent,
+                closedElevation: 0,
+                openElevation: 0,
+                transitionType: ContainerTransitionType.fadeThrough,
+                // transitionDuration: Duration(milliseconds: 250),
+                closedBuilder: (context, action) {
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      side: BorderSide(color: myThemeVar.dividerColor),
+                    ),
+                    // color: Color.fromRGBO(235, 223, 180, 1),
+                    color: myThemeVar.cardColor,
+                    elevation: 0,
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final itemCount = sortedExpenseList.length.clamp(1, 4);
+                        // final itemHeight = constraints.maxHeight / itemCount;
+                        final rowHeight = constraints.maxHeight / itemCount;
 
-                final itemName = entry.key;
-                final totalPrice = entry.value;
-                //////////////////////////////////////////
-                return Card(
-                  color: myThemeVar.cardColor,
-                  elevation: 0,
-                  // margin: EdgeInsets.all(5),
-                  // color: Colors.red,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(width: 20),
-                      Text(
-                        "${index + 1}.",
-                        style: TextStyle(
-                          fontSize: 11,
-                          // fontWeight: FontWeight.bold,
-                          fontFamily: GoogleFonts.manrope().fontFamily,
-                        ),
-                      ),
-                      SizedBox(width: 20),
+                        return ListView.builder(
+                          // physics: const NeverScrollableScrollPhysics(),
+                          // shrinkWrap: true,
+                          // itemCount: itemCount,
+                          itemCount: sortedExpenseList.length,
+                          itemExtent: rowHeight,
+                          itemBuilder: (context, index) {
+                            final entry = sortedExpenseList[index];
 
-                      Text(
-                        "${itemName}",
-                        style: TextStyle(
-                          color: myThemeVar.colorScheme.primary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w900,
-                          fontFamily: GoogleFonts.manrope().fontFamily,
-                        ),
-                      ),
-                      Spacer(),
+                            final itemName = entry.key;
+                            final totalPrice = entry.value;
+                            //////////////////////////////////////////
+                            return Card(
+                              // color: myThemeVar.cardColor,
+                              elevation: 0,
+                              // margin: EdgeInsets.all(5),
+                              color: Colors.transparent,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  SizedBox(width: 20),
+                                  Text(
+                                    "${index + 1}.",
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      // fontWeight: FontWeight.bold,
+                                      fontFamily:
+                                          GoogleFonts.manrope().fontFamily,
+                                    ),
+                                  ),
+                                  SizedBox(width: 20),
 
-                      Text(
-                        "₹${totalPrice}",
-                        style: TextStyle(
-                          fontSize: 12,
-                          // fontWeight: FontWeight.bold,
-                          fontFamily: GoogleFonts.poppins().fontFamily,
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                    ],
-                  ),
-                );
-              },
+                                  Text(
+                                    "${itemName}",
+                                    style: TextStyle(
+                                      color: myThemeVar.colorScheme.primary,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w900,
+                                      fontFamily:
+                                          GoogleFonts.manrope().fontFamily,
+                                    ),
+                                  ),
+                                  Spacer(),
+
+                                  Text(
+                                    "₹${totalPrice}",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      // fontWeight: FontWeight.bold,
+                                      fontFamily:
+                                          GoogleFonts.poppins().fontFamily,
+                                    ),
+                                  ),
+                                  SizedBox(width: 20),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  );
+                },
+                openBuilder: (context, action) {
+                  return TopExpensesScreen(
+                    containerHeight: MediaQuery.of(context).size.height,
+                    containerWidth: MediaQuery.of(context).size.width,
+                  );
+                },
+              ),
             ),
           ),
 

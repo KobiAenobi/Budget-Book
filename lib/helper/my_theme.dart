@@ -70,6 +70,24 @@ class MyAppTheme {
 
     // GLOBAL BACKGROUND COLORS
 
+    //SNACKBAR
+    useMaterial3: true,
+
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      elevation: 6,
+      backgroundColor: const Color(0xFF323232),
+      contentTextStyle: const TextStyle(
+        color: Colors.white,
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      actionTextColor: Colors.orange,
+      showCloseIcon: true,
+      closeIconColor: Colors.white70,
+    ),
+
     // GLOBAL BACKGROUND COLORS
     scaffoldBackgroundColor: Color.fromRGBO(209, 199, 191, 1),
     // scaffoldBackgroundColor: Color.fromRGBO(255, 166, 25, 1.000),
@@ -79,7 +97,7 @@ class MyAppTheme {
       // surface: Color.fromRGBO(255, 109, 31, 1.0),
       surface: Color.fromRGBO(209, 199, 191, 1),
       primary: Colors.black,
-      secondary: Color.fromARGB(255, 80, 80, 80),
+      secondary: Color.fromARGB(180, 80, 80, 80),
       onPrimary: Color.fromARGB(255, 0, 0, 0),
     ),
 

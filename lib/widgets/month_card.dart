@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 class MonthCard extends StatefulWidget {
   final String month;
   final int total;
+  final int? qtyByMonth;
   final double containerHeight;
   final double containerWidth;
   final Color monthCardColor;
@@ -16,6 +17,7 @@ class MonthCard extends StatefulWidget {
     required this.containerWidth,
     required this.monthCardColor,
     required this.colorDuration,
+    this.qtyByMonth,
   });
 
   @override
@@ -53,6 +55,20 @@ class _MonthCardState extends State<MonthCard> {
               ),
             ),
           ),
+
+          widget.qtyByMonth != null
+              ? Container(
+                  child: Text(
+                    "${widget.qtyByMonth}",
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: myThemeVar.colorScheme.onPrimary,
+                      fontFamily: GoogleFonts.prociono().fontFamily,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                )
+              : SizedBox.shrink(),
 
           Flexible(
             child: Container(

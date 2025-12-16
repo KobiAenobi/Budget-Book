@@ -29,6 +29,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:lottie/lottie.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 /// ===============================================================
 /// HOMESCREEN (Main Dashboard UI)
@@ -610,39 +611,60 @@ class _HomescreenState extends State<Homescreen> {
                                 setState(() {
                                   isRight = !isRight;
                                 });
-                                try {
-                                  await signOut();
 
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        "Logged Out",
-                                        style: TextStyle(color: Colors.white),
+                                try {
+                                  signOut();
+                                  if (FirebaseAuth.instance.currentUser ==
+                                      null) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text("Already Logged out"),
                                       ),
-                                      backgroundColor: Color.fromARGB(
-                                        255,
-                                        83,
-                                        83,
-                                        83,
-                                      ),
-                                    ),
-                                  );
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text("Logged Out")),
+                                    );
+                                  }
                                 } catch (e) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        "Error: $e",
-                                        style: TextStyle(color: Colors.red),
-                                      ),
-                                      backgroundColor: Color.fromARGB(
-                                        255,
-                                        83,
-                                        83,
-                                        83,
-                                      ),
-                                    ),
+                                    SnackBar(content: Text("error: $e")),
                                   );
                                 }
+
+                                // try {
+                                //   await signOut();
+
+                                //   ScaffoldMessenger.of(context).showSnackBar(
+                                //     const SnackBar(
+                                //       content: Text(
+                                //         "Logged Out",
+                                //         style: TextStyle(color: Colors.white),
+                                //       ),
+                                //       backgroundColor: Color.fromARGB(
+                                //         255,
+                                //         83,
+                                //         83,
+                                //         83,
+                                //       ),
+                                //     ),
+                                //   );
+                                // } catch (e) {
+                                //   ScaffoldMessenger.of(context).showSnackBar(
+                                //     SnackBar(
+                                //       content: Text(
+                                //         "Error: $e",
+                                //         style: TextStyle(color: Colors.red),
+                                //       ),
+                                //       backgroundColor: Color.fromARGB(
+                                //         255,
+                                //         83,
+                                //         83,
+                                //         83,
+                                //       ),
+                                //     ),
+                                //   );
+                                // }
                                 log("Sign out Clicked");
 
                                 // Navigator.push(
@@ -967,87 +989,57 @@ class _HomescreenState extends State<Homescreen> {
                                 // =======================================================
                                 // TOP CARD
                                 // =======================================================
-                                Stack(
-                                  children: [
-                                    //LAYER BOTTOM BELOW TOP CARD
-                                    Container(
-                                      color: myThemeVar.cardColor,
-                                      height: 40,
-                                      width: MediaQuery.of(context).size.width,
+                                Container(
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: myThemeVar.dividerColor,
+                                      ),
                                     ),
-
-                                    //TOP LAYER   TOP CARD
-                                    Container(
-                                      // decoration: BoxDecoration(
-                                      //   border: Border(
-                                      //     bottom: BorderSide(
-                                      //       color: myThemeVar.dividerColor,
-                                      //     ),
-                                      //   ),
-                                      // ),
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                          0.27,
-                                      width: double.infinity,
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        child: Card(
-                                          elevation: 0,
-                                          margin: const EdgeInsets.only(
-                                            bottom: 0,
-                                            top: 0,
-                                            left: 0,
-                                            right: 0,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            // side: BorderSide(
-                                            //   color: !isRight
-                                            //       ? myThemeVar.dividerColor
-                                            //       : Colors.transparent,
-                                            // ),
-                                            borderRadius: isRight
-                                                ? BorderRadiusGeometry.only(
-                                                    bottomLeft: Radius.circular(
-                                                      0,
-                                                    ),
-                                                    bottomRight:
-                                                        Radius.circular(0),
-                                                  )
-                                                : BorderRadiusGeometry.zero,
-                                          ),
-                                          color: myThemeVar.cardColor,
-                                          // color: const Color.fromARGB(255, 44, 90, 163),
-                                          child: PageView(
-                                            controller: _pageViewController,
-                                            children: [
-                                              TopCard1(
-                                                containeHeight: 600,
-                                                containeWidth: 250,
-                                                monthBudget:
-                                                    monthlyBudget, // ✅ int
-                                                onEditBudget:
-                                                    openSetBudgetDialog, // ✅ callback
-                                              ),
-                                              InkWell(
-                                                onTap: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (_) =>
-                                                          TopExpensesScreen(
-                                                            containerHeight:
-                                                                MediaQuery.of(
-                                                                  context,
-                                                                ).size.height,
-                                                            containerWidth:
-                                                                MediaQuery.of(
-                                                                  context,
-                                                                ).size.width,
-                                                          ),
-                                                    ),
-                                                  );
-                                                },
-                                                child: TopCard2(
+                                  ),
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.27,
+                                  width: double.infinity,
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: Card(
+                                      elevation: 1,
+                                      margin: const EdgeInsets.only(
+                                        bottom: 0,
+                                        top: 0,
+                                        left: 0,
+                                        right: 0,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        // side: BorderSide(
+                                        //   color: !isRight
+                                        //       ? myThemeVar.dividerColor
+                                        //       : Colors.transparent,
+                                        // ),
+                                        borderRadius: isRight
+                                            ? BorderRadiusGeometry.only(
+                                                bottomLeft: Radius.circular(0),
+                                                bottomRight: Radius.circular(0),
+                                              )
+                                            : BorderRadiusGeometry.zero,
+                                      ),
+                                      color: myThemeVar.cardColor,
+                                      // color: const Color.fromARGB(255, 44, 90, 163),
+                                      child: Column(
+                                        children: [
+                                          Expanded(
+                                            child: PageView(
+                                              controller: _pageViewController,
+                                              children: [
+                                                TopCard1(
+                                                  containeHeight: 600,
+                                                  containeWidth: 250,
+                                                  monthBudget:
+                                                      monthlyBudget, // ✅ int
+                                                  onEditBudget:
+                                                      openSetBudgetDialog, // ✅ callback
+                                                ),
+                                                TopCard2(
                                                   containerHeight:
                                                       MediaQuery.of(
                                                         context,
@@ -1056,62 +1048,80 @@ class _HomescreenState extends State<Homescreen> {
                                                     context,
                                                   ).size.width,
                                                 ),
-                                              ),
 
-                                              // OpenContainer(
-                                              //   closedElevation:
-                                              //       0, // remove shadow in closed state
-                                              //   openElevation:
-                                              //       0, // remove shadow when opening
-                                              //   closedColor: Colors.transparent,
-                                              //   transitionDuration:
-                                              //       const Duration(
-                                              //         milliseconds: 250,
-                                              //       ),
-                                              //   closedBuilder:
-                                              //       (context, Action) {
-                                              //         return TopCard2(
-                                              //           containerHeight:
-                                              //               MediaQuery.of(
-                                              //                 context,
-                                              //               ).size.height,
-                                              //           containerWidth:
-                                              //               MediaQuery.of(
-                                              //                 context,
-                                              //               ).size.width,
-                                              //         );
-                                              //       },
-                                              //   openBuilder: (context, Action) {
-                                              //     return TopExpensesScreen(
-                                              //       containerHeight:
-                                              //           MediaQuery.of(
-                                              //             context,
-                                              //           ).size.height,
-                                              //       containerWidth:
-                                              //           MediaQuery.of(
-                                              //             context,
-                                              //           ).size.width,
-                                              //     );
-                                              //   },
-                                              // ),
+                                                // OpenContainer(
+                                                //   closedElevation:
+                                                //       0, // remove shadow in closed state
+                                                //   openElevation:
+                                                //       0, // remove shadow when opening
+                                                //   closedColor: Colors.transparent,
+                                                //   transitionDuration:
+                                                //       const Duration(
+                                                //         milliseconds: 250,
+                                                //       ),
+                                                //   closedBuilder:
+                                                //       (context, Action) {
+                                                //         return TopCard2(
+                                                //           containerHeight:
+                                                //               MediaQuery.of(
+                                                //                 context,
+                                                //               ).size.height,
+                                                //           containerWidth:
+                                                //               MediaQuery.of(
+                                                //                 context,
+                                                //               ).size.width,
+                                                //         );
+                                                //       },
+                                                //   openBuilder: (context, Action) {
+                                                //     return TopExpensesScreen(
+                                                //       containerHeight:
+                                                //           MediaQuery.of(
+                                                //             context,
+                                                //           ).size.height,
+                                                //       containerWidth:
+                                                //           MediaQuery.of(
+                                                //             context,
+                                                //           ).size.width,
+                                                //     );
+                                                //   },
+                                                // ),
 
-                                              // TopCard2(
-                                              //   containerHeight:
-                                              //               MediaQuery.of(
-                                              //                 context,
-                                              //               ).size.height,
-                                              //           containerWidth:
-                                              //               MediaQuery.of(
-                                              //                 context,
-                                              //               ).size.width,
-                                              // ),
-                                            ],
+                                                // TopCard2(
+                                                //   containerHeight:
+                                                //               MediaQuery.of(
+                                                //                 context,
+                                                //               ).size.height,
+                                                //           containerWidth:
+                                                //               MediaQuery.of(
+                                                //                 context,
+                                                //               ).size.width,
+                                                // ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
+
+                                          Padding(
+                                            padding: EdgeInsets.only(bottom: 4),
+                                            child: SmoothPageIndicator(
+                                              controller: _pageViewController,
+                                              count: 2,
+                                              effect: WormEffect(
+                                                dotHeight: 6,
+                                                dotWidth: 6,
+                                                spacing: 6,
+                                                activeDotColor: myThemeVar
+                                                    .colorScheme
+                                                    .primary,
+                                                dotColor: myThemeVar
+                                                    .colorScheme
+                                                    .primary,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    //
-                                  ],
+                                  ),
                                 ),
 
                                 // =======================================================
@@ -1176,18 +1186,105 @@ class _HomescreenState extends State<Homescreen> {
                                               children: [
                                                 SlidableAction(
                                                   onPressed: (context) async {
-                                                    itemsBox.delete(item.id);
+                                                    final confirmed = await showDialog<bool>(
+                                                      context: context,
+                                                      barrierDismissible: false,
+                                                      builder: (context) {
+                                                        return AlertDialog(
+                                                          // backgroundColor:
+                                                          //     myThemeVar
+                                                          //         .cardColor,
+                                                          icon: const Icon(
+                                                            Icons
+                                                                .warning_amber_rounded,
+                                                            // color: Colors.red,
+                                                          ),
+                                                          title: const Text(
+                                                            'Delete Item?',
+                                                          ),
+                                                          content: const Text(
+                                                            'This action cannot be undone.',
+                                                          ),
+                                                          actions: [
+                                                            TextButton(
+                                                              onPressed: () =>
+                                                                  Navigator.pop(
+                                                                    context,
+                                                                    false,
+                                                                  ),
+                                                              child: const Text(
+                                                                'Cancel',
+                                                              ),
+                                                            ),
+                                                            FilledButton.tonal(
+                                                              style: FilledButton.styleFrom(
+                                                                // backgroundColor:
+                                                                //     myThemeVar
+                                                                //         .scaffoldBackgroundColor,
+                                                                // foregroundColor:
+                                                                //     Colors
+                                                                //         .red, // destructive
+                                                              ),
+                                                              onPressed: () =>
+                                                                  Navigator.pop(
+                                                                    context,
+                                                                    true,
+                                                                  ),
+                                                              child: const Text(
+                                                                'Delete',
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
+                                                    );
 
-                                                    try {
-                                                      final service =
-                                                          await FirestoreService.forCurrentUser();
-                                                      await service.deleteItem(
-                                                        item.id,
-                                                      );
-                                                    } catch (e) {
-                                                      log(
-                                                        'Failed remote delete: $e',
-                                                      );
+                                                    if (confirmed == true) {
+                                                      // Navigator.pop(context);
+
+                                                      itemsBox.delete(item.id);
+
+                                                      try {
+                                                        final service =
+                                                            await FirestoreService.forCurrentUser();
+                                                        await service
+                                                            .deleteItem(
+                                                              item.id,
+                                                            );
+
+                                                        Api.showAppSnack(
+                                                          "Item Delete",
+                                                        );
+
+                                                        log('deleted');
+                                                      } catch (e) {
+                                                        Api.showAppSnack(
+                                                          "Item Deleted Locally",
+                                                        );
+                                                        log(
+                                                          'Failed remote delete: $e',
+                                                        );
+                                                      }
+
+                                                      // ✅ DO YOUR ACTION HERE
+                                                      // syncLocalItemsToCloud();
+                                                      // migrateKeysToId();
+
+                                                      // try {
+                                                      //   await syncLocalItemsToCloud();
+                                                      //   ScaffoldMessenger.of(context).showSnackBar(
+                                                      //     SnackBar(content: Text("Data Synced")),
+                                                      //   );
+                                                      // } catch (e) {
+                                                      //   ScaffoldMessenger.of(context).showSnackBar(
+                                                      //     SnackBar(content: Text("Error: $e")),
+                                                      //   );
+                                                      // }
+
+                                                      // close AccountSettingsDialog AFTER confirm
+                                                      // log("Sync confirmed");
+                                                    } else {
+                                                      log("Delete cancelled");
                                                     }
                                                   },
                                                   backgroundColor:
@@ -1268,8 +1365,10 @@ class _HomescreenState extends State<Homescreen> {
                     // ➕ FLOATING ACTION BUTTON (Add New Item)
                     // =============================================================
                     floatingActionButton: SpeedDial(
-                      animatedIcon: AnimatedIcons.menu_close,
-                      animatedIconTheme: IconThemeData(size: 28.0),
+                      icon: Icons.add,
+                      activeIcon: Icons.close,
+                      // animatedIcon: AnimatedIcons.add_event,
+                      iconTheme: IconThemeData(size: 28.0),
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.black,
 

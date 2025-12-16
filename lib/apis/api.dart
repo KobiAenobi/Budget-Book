@@ -1,7 +1,7 @@
+import 'package:budget_book_app/main.dart';
 import 'package:budget_book_app/models/budget_item.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-
 
 /// ============================================================================
 /// 📌 Api Utility Class
@@ -13,7 +13,6 @@ import 'package:hive/hive.dart';
 /// NOTHING has been changed — only explanatory comments were added.
 /// ============================================================================
 class Api {
-
   /// ==========================================================================
   /// 📝 oneLineScroll(String text, TextStyle? style)
   /// --------------------------------------------------------------------------
@@ -39,8 +38,8 @@ class Api {
 
       child: Text(
         text,
-        style: style,                   // Custom text styling
-        maxLines: 1,                    // Force single line
+        style: style, // Custom text styling
+        maxLines: 1, // Force single line
         overflow: TextOverflow.visible, // Full text visible (no ellipsis)
       ),
     );
@@ -49,28 +48,34 @@ class Api {
   // ===========================================================================
   // 💰 MONTHLY BUDGET (HIVE VERSION)
   // ===========================================================================
-  static String getCurrentMonthId(){
-    final now=DateTime.now();
+  static String getCurrentMonthId() {
+    final now = DateTime.now();
     return "${now.year}-${now.month}";
   }
 
   Future<void> saveMonthlyBudget(int amount) async {
-    final box=Hive.box("monthly_budget");
-    final monthId=getCurrentMonthId();
+    final box = Hive.box("monthly_budget");
+    final monthId = getCurrentMonthId();
     await box.put(monthId, amount);
   }
 
-  static int? getMonthlyBudget(){
+  static int? getMonthlyBudget() {
     final box = Hive.box("monthly_budget");
-    final monthId=getCurrentMonthId();
+    final monthId = getCurrentMonthId();
     return box.get(monthId);
   }
 
-  static int getMonthlySpent(){
-    final expensesBox=Hive.box<BudgetItem>("expenses");
-    final now=DateTime.now();
+  static int getMonthlySpent() {
+    final expensesBox = Hive.box<BudgetItem>("expenses");
+    final now = DateTime.now();
 
-    return expensesBox.values.where((item)=> item.dateTime.year==now.year && item.dateTime.month == now.month).fold(0, (sum, item)=> sum +item.price);
+    return expensesBox.values
+        .where(
+          (item) =>
+              item.dateTime.year == now.year &&
+              item.dateTime.month == now.month,
+        )
+        .fold(0, (sum, item) => sum + item.price);
   }
 
   /// Returns the remaining budget (or null if no monthly budget is set)
@@ -100,27 +105,32 @@ class Api {
     return "stressed";
   }
 
-
   //group by months
 
-  static Map<String, List<BudgetItem>> groupItemsByMonth(List<BudgetItem> items){
-
-    items.sort((a, b)=> b.dateTime.compareTo(a.dateTime));
-
+  static Map<String, List<BudgetItem>> groupItemsByMonth(
+    List<BudgetItem> items,
+  ) {
+    items.sort((a, b) => b.dateTime.compareTo(a.dateTime));
 
     final Map<String, List<BudgetItem>> grouped = {};
 
-    for(var item in items){
+    for (var item in items) {
+      String key =
+          "${item.dateTime.year}-${item.dateTime.month.toString().padLeft(2, '0')}";
 
-      String key = "${item.dateTime.year}-${item.dateTime.month.toString().padLeft(2, '0')}";
-
-      if(!grouped.containsKey(key)){
-        grouped[key]=[];
+      if (!grouped.containsKey(key)) {
+        grouped[key] = [];
       }
 
       grouped[key]!.add(item);
     }
 
     return grouped;
+  }
+
+  static  showAppSnack(String message) {
+    scaffoldMessengerKey.currentState?.showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 }
