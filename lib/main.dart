@@ -179,7 +179,7 @@ Future<String> getExternalHivePath() async {
   // final dir = await getExternalStorageDirectory();
   // /storage/emulated/0/Android/data/<package>/files
   final hiveDir = Directory(
-    "/storage/emulated/0/Android/media/com.kobi.budget_book/hive",
+    "/storage/emulated/0/Android/media/com.kobi.budget_book_test_version/hive",
   );
 
   if (!hiveDir.existsSync()) {
