@@ -147,7 +147,7 @@ class _TopExpensesScreenState extends State<TopExpensesScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [myThemeVar.cardColor, myThemeVar.scaffoldBackgroundColor],
+            colors: [myThemeVar.cardColor, myThemeVar.cardColor],
           ),
         ),
         child: Column(
@@ -157,7 +157,7 @@ class _TopExpensesScreenState extends State<TopExpensesScreen> {
             Container(
               width: double.infinity,
               height: MediaQuery.of(context).size.height * 0.2,
-              // color: Colors.red,
+              color: Colors.transparent,
               // height: MediaQuery.of(context).size.height * 0.25,
               // color: Colors.blue,
               padding: EdgeInsets.only(left: 5, right: 5, bottom: 10),
