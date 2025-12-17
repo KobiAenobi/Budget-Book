@@ -2,7 +2,7 @@ import 'dart:developer' show log;
 
 import 'package:budget_book_app/apis/api.dart';
 import 'package:budget_book_app/helper/my_theme.dart';
-import 'package:budget_book_app/screens/activities.dart';
+import 'package:budget_book_app/screens/settings_screen.dart';
 import 'package:budget_book_app/screens/homeScreen.dart';
 import 'package:budget_book_app/services/sync_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';

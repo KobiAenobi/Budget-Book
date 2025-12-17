@@ -3,6 +3,7 @@ import 'dart:developer' show log;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 /// ============================================================================
 /// 📌 ACTIVITIES SCREEN
@@ -166,7 +167,13 @@ class _ActivitiesState extends State<Activities> {
       appBar: AppBar(
         backgroundColor: mytheme.cardColor,
         surfaceTintColor: Colors.transparent,
-        title: Text("Budget Book"),
+        title: Text(
+          "Settings",
+          style: TextStyle(
+            fontFamily: GoogleFonts.workSans().fontFamily,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
       ),
 
       body: Center(

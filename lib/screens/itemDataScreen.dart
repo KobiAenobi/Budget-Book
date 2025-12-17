@@ -190,7 +190,7 @@ class _ItemdatascreenState extends State<Itemdatascreen> {
         backgroundColor: myThemeVar.cardColor,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          "Expenses",
+          "Item Information",
           style: TextStyle(
             fontFamily: GoogleFonts.workSans().fontFamily,
             fontWeight: FontWeight.w900,

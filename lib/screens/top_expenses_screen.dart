@@ -133,7 +133,7 @@ class _TopExpensesScreenState extends State<TopExpensesScreen> {
         backgroundColor: myThemeVar.cardColor,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          "Expenses",
+          "Top Expenses",
           style: TextStyle(
             fontFamily: GoogleFonts.workSans().fontFamily,
             fontWeight: FontWeight.w900,

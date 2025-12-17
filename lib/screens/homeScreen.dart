@@ -8,7 +8,7 @@ import 'package:budget_book_app/helper/my_colors.dart';
 import 'package:budget_book_app/helper/my_theme.dart';
 import 'package:budget_book_app/helper/fab_speed_dial.dart';
 import 'package:budget_book_app/models/budget_item.dart';
-import 'package:budget_book_app/screens/activities.dart';
+import 'package:budget_book_app/screens/settings_screen.dart';
 import 'package:budget_book_app/screens/itemDataScreen.dart';
 import 'package:budget_book_app/screens/top_expenses_screen.dart';
 import 'package:budget_book_app/services/firestore_service.dart';
