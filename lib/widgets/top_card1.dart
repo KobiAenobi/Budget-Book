@@ -459,12 +459,7 @@ class _TopCard1State extends State<TopCard1> {
                                                   TextSpan(
                                                     text: "of:",
                                                     style: TextStyle(
-                                                      color: Color.fromARGB(
-                                                        134,
-                                                        0,
-                                                        0,
-                                                        0,
-                                                      ),
+                                                      color: myThemeVar.colorScheme.primary,
                                                       fontSize: 12,
                                                       fontFamily:
                                                           GoogleFonts.workSans()
@@ -476,12 +471,7 @@ class _TopCard1State extends State<TopCard1> {
                                                     text: "₹$budget",
                                                     style: TextStyle(
                                                       color:
-                                                          const Color.fromARGB(
-                                                            133,
-                                                            39,
-                                                            88,
-                                                            40,
-                                                          ),
+                                                          const Color.fromARGB(133, 56, 134, 58),
                                                       fontSize: 12,
                                                       fontFamily:
                                                           GoogleFonts.workSans()

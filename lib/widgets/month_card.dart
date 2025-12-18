@@ -49,7 +49,7 @@ class _MonthCardState extends State<MonthCard> {
                 // style: TextStyle(fontSize: 500, color: Colors.white54, fontFamily: 'Impact',),
                 style: GoogleFonts.prociono(
                   fontSize: 500,
-                  color: myThemeVar.colorScheme.onPrimary,
+                  color: myThemeVar.colorScheme.primary,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -62,7 +62,7 @@ class _MonthCardState extends State<MonthCard> {
                     "${widget.qtyByMonth}",
                     style: TextStyle(
                       fontSize: 11,
-                      color: myThemeVar.colorScheme.onPrimary,
+                      color: myThemeVar.colorScheme.primary,
                       fontFamily: GoogleFonts.prociono().fontFamily,
                       fontWeight: FontWeight.w600,
                     ),
@@ -84,7 +84,7 @@ class _MonthCardState extends State<MonthCard> {
                     "₹${widget.total.toString()}",
                     textAlign: TextAlign.left,
                     style: TextStyle(
-                      color: myThemeVar.colorScheme.onPrimary,
+                      color: myThemeVar.colorScheme.primary,
                       fontFamily: GoogleFonts.prociono().fontFamily,
                       fontWeight: FontWeight.w600,
                       fontSize: 500,

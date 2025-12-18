@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// ============================================================================
-/// 📌 ACTIVITIES SCREEN
+/// 📌 PermissionsScreen SCREEN
 /// ----------------------------------------------------------------------------
 /// This screen is responsible for:
 /// - Communicating with native Android via MethodChannel & EventChannel
@@ -17,14 +17,14 @@ import 'package:google_fonts/google_fonts.dart';
 ///
 /// NOTHING has been changed. Only formatted + commented.
 /// ============================================================================
-class Activities extends StatefulWidget {
-  const Activities({super.key});
+class PermissionsScreen extends StatefulWidget {
+  const PermissionsScreen({super.key});
 
   @override
-  State<Activities> createState() => _ActivitiesState();
+  State<PermissionsScreen> createState() => _PermissionsScreenState();
 }
 
-class _ActivitiesState extends State<Activities> {
+class _PermissionsScreenState extends State<PermissionsScreen> {
   /// MethodChannel for calling native Android methods
   /// (open settings, check permissions, start overlay, etc.)
   static const platform = MethodChannel('accessibility_channel');
@@ -161,14 +161,14 @@ class _ActivitiesState extends State<Activities> {
   /// ==========================================================================
   @override
   Widget build(BuildContext context) {
-    final mytheme = Theme.of(context);
+    final mythemevar = Theme.of(context);
     return Scaffold(
-      backgroundColor: mytheme.cardColor,
+      backgroundColor: mythemevar.cardColor,
       appBar: AppBar(
-        backgroundColor: mytheme.cardColor,
+        backgroundColor: mythemevar.cardColor,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          "Settings",
+          "Permissions",
           style: TextStyle(
             fontFamily: GoogleFonts.workSans().fontFamily,
             fontWeight: FontWeight.w900,
@@ -183,7 +183,9 @@ class _ActivitiesState extends State<Activities> {
             children: [
               /// Button → Open accessibility settings
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 216, 162, 0),
+                ),
                 onPressed: openAccessibilitySettings,
                 child: Text("Enable Accessibility Service"),
               ),
@@ -193,12 +195,8 @@ class _ActivitiesState extends State<Activities> {
               /// Button → Open overlay settings
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(
-                    255,
-                    24,
-                    8,
-                    2,
-                  ), // Button color
+                  backgroundColor:
+                      mythemevar.colorScheme.secondary, // Button color
                   foregroundColor: Colors.white70, // Text/Icon color
                 ),
                 onPressed: openOverlaySettings,
@@ -210,12 +208,8 @@ class _ActivitiesState extends State<Activities> {
               /// Button → Trigger overlay bubble
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(
-                    255,
-                    24,
-                    8,
-                    2,
-                  ), // Button color
+                  backgroundColor:
+                      mythemevar.colorScheme.secondary, // Button color
                   foregroundColor: Colors.white70, // Text/Icon color
                 ),
                 onPressed: showOverlay,
@@ -227,12 +221,8 @@ class _ActivitiesState extends State<Activities> {
               /// Button → Trigger overlay bubble
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(
-                    255,
-                    24,
-                    8,
-                    2,
-                  ), // Button color
+                  backgroundColor:
+                      mythemevar.colorScheme.secondary, // Button color
                   foregroundColor: Colors.white70, // Text/Icon color
                 ),
                 onPressed: openNotificationSettings,

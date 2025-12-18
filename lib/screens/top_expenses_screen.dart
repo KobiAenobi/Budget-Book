@@ -128,9 +128,9 @@ class _TopExpensesScreenState extends State<TopExpensesScreen> {
     final myThemeVar = Theme.of(context);
     return Scaffold(
       extendBody: true,
-      backgroundColor: myThemeVar.cardColor,
+      backgroundColor: myThemeVar.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: myThemeVar.cardColor,
+        backgroundColor: myThemeVar.scaffoldBackgroundColor,
         surfaceTintColor: Colors.transparent,
         title: Text(
           "Top Expenses",
@@ -143,13 +143,13 @@ class _TopExpensesScreenState extends State<TopExpensesScreen> {
       ),
 
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [myThemeVar.cardColor, myThemeVar.cardColor],
-          ),
-        ),
+        // decoration: BoxDecoration(
+        //   gradient: LinearGradient(
+        //     begin: Alignment.topLeft,
+        //     end: Alignment.bottomRight,
+        //     colors: [myThemeVar.cardColor, myThemeVar.cardColor],
+        //   ),
+        // ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

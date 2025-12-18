@@ -58,6 +58,7 @@ flutter:
   assets:
     - assets/lottie/
     - assets/icons/
+    - assets/bg/
 
   uses-material-design: true
 

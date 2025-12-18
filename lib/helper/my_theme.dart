@@ -2,81 +2,76 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class MyAppTheme {
-  // static Color scaffoldBackgroundColorSecondaryLight = Color.fromRGBO(
-  //   255,
-  //   109,
-  //   31,
-  //   1.0,
-  // );
-  // ---------------- LIGHT THEME ----------------
+  // ---------------- LIGHT THEME (UNCHANGED) ----------------
   static ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
 
-    // GLOBAL BACKGROUND COLORS
-    scaffoldBackgroundColor: Color.fromRGBO(209, 199, 191, 1),
-    // scaffoldBackgroundColor: Color.fromRGBO(255, 166, 25, 1.000),
+    useMaterial3: true,
 
-    //MOSTLY FOR TEXT
-    colorScheme: const ColorScheme.light(
-      surface: Color.fromRGBO(255, 109, 31, 1.0),
-      primary: Color.fromARGB(255, 0, 0, 0),
-      secondary: Color.fromARGB(255, 80, 80, 80),
-      onPrimary: Color.fromARGB(255, 0, 0, 0),
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      elevation: 6,
+      backgroundColor: const Color(0xFFCDCDCD), // Inverted from 0xFF323232
+      contentTextStyle: const TextStyle(
+        color: Colors.black, // Inverted from White
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      actionTextColor: Colors.deepOrange,
+      showCloseIcon: true,
+      closeIconColor: Colors.black54,
     ),
 
-    // GLOBAL TEXT COLORS
+    // scaffoldBackgroundColor: const Color.fromRGBO(209, 199, 191, 1),
+    scaffoldBackgroundColor: const Color.fromARGB(255, 194, 185, 154),
+
+    colorScheme: const ColorScheme.light(
+      surface: Color.fromRGBO(209, 199, 191, 1),
+      primary: Colors.black,
+      secondary: Color.fromARGB(180, 80, 80, 80),
+      onPrimary: Color.fromARGB(255, 255, 255, 255),
+    ),
+
     textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 50),
-      bodyMedium: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-      bodySmall: TextStyle(color: Color.fromARGB(136, 0, 0, 0), fontSize: 16),
+      bodyLarge: TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 24),
+      bodyMedium: TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 14),
+      bodySmall: TextStyle(color: Color.fromARGB(136, 0, 0, 0), fontSize: 11),
       titleLarge: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
       titleMedium: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
       titleSmall: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
     ),
 
-    // ICON COLORS
-    iconTheme: const IconThemeData(color: Color.fromARGB(255, 0, 0, 0)),
+    iconTheme: const IconThemeData(color: Color.fromARGB(255, 80, 80, 80)),
 
-    // CARD THEME
-    cardColor: Color.fromRGBO(231, 222, 190, 1),
-    // cardColor: Color.fromRGBO(201, 181, 156, 1.000),
+    // cardColor: const Color.fromRGBO(231, 222, 190, 1),
+    cardColor: const Color.fromARGB(255, 216, 207, 175),
     shadowColor: const Color.fromARGB(96, 71, 71, 71),
+    dividerColor: const Color.fromRGBO(65, 65, 65, 1),
 
-    dividerColor: Color.fromRGBO(65, 65, 65, 1),
-
-    // APPBAR THEME
     appBarTheme: const AppBarTheme(
       backgroundColor: Color.fromRGBO(245, 231, 198, 1.0),
       foregroundColor: Color.fromARGB(255, 0, 0, 0),
       elevation: 0,
     ),
 
-    floatingActionButtonTheme: FloatingActionButtonThemeData(
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: Color.fromARGB(255, 19, 173, 99),
       foregroundColor: Colors.black,
     ),
   );
 
-  // static Color scaffoldBackgroundColorSecondaryDark = Color.fromRGBO(
-  //   255,
-  //   109,
-  //   31,
-  //   1.0,
-  // );
-
-  // ---------------- DARK THEME ----------------
+  // ---------------- DARK THEME (EXACT OPPOSITE) ----------------
   static ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
-
-    // GLOBAL BACKGROUND COLORS
-
-    //SNACKBAR
     useMaterial3: true,
 
+    // SNACKBAR
+    // Inverted: Light background with Dark text
     snackBarTheme: SnackBarThemeData(
       behavior: SnackBarBehavior.floating,
       elevation: 6,
-      backgroundColor: const Color(0xFF323232),
+      backgroundColor: const Color.fromARGB(255, 78, 76, 76),
       contentTextStyle: const TextStyle(
         color: Colors.white,
         fontSize: 14,
@@ -89,58 +84,61 @@ class MyAppTheme {
     ),
 
     // GLOBAL BACKGROUND COLORS
-    scaffoldBackgroundColor: Color.fromRGBO(209, 199, 191, 1),
-    // scaffoldBackgroundColor: Color.fromRGBO(255, 166, 25, 1.000),
+    // Mathematically inverted: 255 - LightValue
+    // R:255-209=46, G:255-199=56, B:255-191=64
+    scaffoldBackgroundColor: const Color.fromARGB(255, 17, 17, 17),
 
-    //MOSTLY FOR TEXT
+    // COLOR SCHEME
     colorScheme: const ColorScheme.dark(
-      // surface: Color.fromRGBO(255, 109, 31, 1.0),
-      surface: Color.fromRGBO(209, 199, 191, 1),
-      primary: Colors.black,
-      secondary: Color.fromARGB(180, 80, 80, 80),
-      onPrimary: Color.fromARGB(255, 0, 0, 0),
+      surface: Color.fromRGBO(46, 56, 64, 1), // Slate Blue
+      primary: Colors.white, // Opposite of Black
+      secondary: Color.fromARGB(255, 155, 155, 155), // Opposite of 80,80,80
+      onPrimary: Colors.black, // Text on primary
+      onSurface: Colors.white,
     ),
 
-    // GLOBAL TEXT COLORS
-    textTheme: GoogleFonts.manropeTextTheme(
-      const TextTheme(
-        bodyLarge: TextStyle(
-          color: Color.fromARGB(255, 0, 0, 0),
-          fontSize: 24,
-          fontWeight: FontWeight.w900,
-        ),
-        bodyMedium: TextStyle(
-          color: Color.fromARGB(134, 0, 0, 0),
-          fontSize: 18,
-          fontWeight: FontWeight.w900,
-        ),
-        bodySmall: TextStyle(color: Color.fromARGB(134, 0, 0, 0), fontSize: 14),
-        titleLarge: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-        titleMedium: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-        titleSmall: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+    // TEXT THEME
+    // All text inverted to Pure White (255, 255, 255)
+    textTheme: const TextTheme(
+      bodyLarge: TextStyle(color: Colors.white, fontSize: 24),
+      bodyMedium: TextStyle(color: Colors.white, fontSize: 14),
+      bodySmall: TextStyle(
+        color: Color.fromARGB(180, 255, 255, 255),
+        fontSize: 11,
       ),
+      titleLarge: TextStyle(color: Colors.white),
+      titleMedium: TextStyle(color: Colors.white),
+      titleSmall: TextStyle(color: Colors.white),
     ),
 
     // ICON COLORS
-    iconTheme: const IconThemeData(color: Color.fromARGB(255, 80, 80, 80)),
+    // Inverted from Dark Grey to Light Grey
+    iconTheme: const IconThemeData(color: Color.fromARGB(255, 175, 175, 175)),
 
     // CARD THEME
-    cardColor: Color.fromRGBO(231, 222, 190, 1),
-    // cardColor: Color.fromRGBO(201, 181, 156, 1.000),
-    shadowColor: const Color.fromARGB(96, 71, 71, 71),
+    // Inverted from Cream (231, 222, 190) to Dark Blue (24, 33, 65)
+    cardColor: const Color.fromARGB(255, 34, 34, 34),
+    shadowColor: const Color.fromARGB(255, 58, 58, 58),
 
-    dividerColor: Color.fromRGBO(65, 65, 65, 1),
-
+    dividerColor: const Color.fromARGB(
+      172,
+      190,
+      190,
+      190,
+    ), // Inverted from 65,65,65
     // APPBAR THEME
+    // Inverted from Pale Yellow (245, 231, 198) to Deep Midnight (10, 24, 57)
     appBarTheme: const AppBarTheme(
-      backgroundColor: Color.fromRGBO(245, 231, 198, 1.0),
-      foregroundColor: Color.fromARGB(255, 0, 0, 0),
+      backgroundColor: Color.fromRGBO(10, 24, 57, 1.0),
+      foregroundColor: Colors.white, // Inverted from Black
       elevation: 0,
     ),
 
-    floatingActionButtonTheme: FloatingActionButtonThemeData(
+    // FAB
+    // Keeping Green for brand consistency, but using White icon for contrast
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: Color.fromARGB(255, 19, 173, 99),
-      foregroundColor: Colors.black,
+      foregroundColor: Colors.white,
     ),
   );
 }

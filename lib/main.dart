@@ -45,7 +45,8 @@ import 'screens/homeScreen.dart';
 final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
 
-    
+final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.system);
+
 @pragma('vm:entry-point')
 Future<void> overlayEntryPoint() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -154,6 +155,10 @@ Future<void> main() async {
     ),
   );
 
+  final savedTheme = Hive.box('appSettings').get('themeMode', defaultValue: 0);
+
+  themeNotifier.value = ThemeMode.values[savedTheme];
+
   // 5) Start app
   runApp(MyApp());
 }
@@ -179,7 +184,7 @@ Future<String> getExternalHivePath() async {
   // final dir = await getExternalStorageDirectory();
   // /storage/emulated/0/Android/data/<package>/files
   final hiveDir = Directory(
-    "/storage/emulated/0/Android/media/com.kobi.budget_book_test_version/hive",
+    "/storage/emulated/0/Android/media/com.kobi.budget_book/hive",
   );
 
   if (!hiveDir.existsSync()) {
@@ -194,31 +199,34 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return ValueListenableBuilder(
+      valueListenable: themeNotifier,
+      builder: (context, themeMode, _) {
+        return MaterialApp(
+          scaffoldMessengerKey: scaffoldMessengerKey,
 
-      scaffoldMessengerKey: scaffoldMessengerKey,
+          title: 'Budget Book',
+          // theme: ThemeData(
+          //   textTheme: GoogleFonts.workSansTextTheme().apply(
+          //     bodyColor: const Color.fromARGB(179, 151, 0, 0),
+          //     displayColor: const Color.fromARGB(255, 182, 58, 58),
+          //   ),
+          //   appBarTheme: AppBarTheme(
+          //     backgroundColor: const Color.fromRGBO(250, 243, 225, 1.000),
+          //     titleTextStyle: GoogleFonts.workSans(
+          //       color: const Color.fromARGB(255, 34, 0, 0),
+          //       fontWeight: FontWeight.bold,
+          //       fontSize: 24,
+          //     ),
+          //   ),
+          // ),
+          theme: MyAppTheme.lightTheme,
+          darkTheme: MyAppTheme.darkTheme,
+          themeMode: themeMode,
 
-
-      title: 'Budget Book',
-      // theme: ThemeData(
-      //   textTheme: GoogleFonts.workSansTextTheme().apply(
-      //     bodyColor: const Color.fromARGB(179, 151, 0, 0),
-      //     displayColor: const Color.fromARGB(255, 182, 58, 58),
-      //   ),
-      //   appBarTheme: AppBarTheme(
-      //     backgroundColor: const Color.fromRGBO(250, 243, 225, 1.000),
-      //     titleTextStyle: GoogleFonts.workSans(
-      //       color: const Color.fromARGB(255, 34, 0, 0),
-      //       fontWeight: FontWeight.bold,
-      //       fontSize: 24,
-      //     ),
-      //   ),
-      // ),
-      theme: MyAppTheme.lightTheme,
-      darkTheme: MyAppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-
-      home: Homescreen(),
+          home: Homescreen(),
+        );
+      },
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:math' hide log;
 
 import 'package:animations/animations.dart';
 import 'package:budget_book_app/apis/api.dart';
@@ -8,8 +9,9 @@ import 'package:budget_book_app/helper/my_colors.dart';
 import 'package:budget_book_app/helper/my_theme.dart';
 import 'package:budget_book_app/helper/fab_speed_dial.dart';
 import 'package:budget_book_app/models/budget_item.dart';
-import 'package:budget_book_app/screens/settings_screen.dart';
+import 'package:budget_book_app/screens/permissions_screen.dart';
 import 'package:budget_book_app/screens/itemDataScreen.dart';
+import 'package:budget_book_app/screens/theme_select_screeen.dart';
 import 'package:budget_book_app/screens/top_expenses_screen.dart';
 import 'package:budget_book_app/services/firestore_service.dart';
 import 'package:budget_book_app/services/sync_service.dart';
@@ -22,6 +24,7 @@ import 'package:budget_book_app/widgets/top_card1.dart';
 import 'package:budget_book_app/widgets/top_card2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_launcher_icons/xml_templates.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -201,7 +204,7 @@ class _HomescreenState extends State<Homescreen> {
       children: [
         // bottom layer
         Material(
-          color: Colors.blue,
+          color: Colors.transparent,
           child: Container(
             // decoration: BoxDecoration(
             //   gradient: LinearGradient(
@@ -217,11 +220,15 @@ class _HomescreenState extends State<Homescreen> {
             // ),
             // color: myThemeVar.colorScheme.surface,
             decoration: BoxDecoration(
+              // image: DecorationImage(
+              //   image: AssetImage("assets/bg/scaf_paper_bg.jpg"),
+              //   fit: BoxFit.cover,
+              // ),
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  myThemeVar.cardColor,
+                  myThemeVar.scaffoldBackgroundColor,
                   myThemeVar.scaffoldBackgroundColor,
                 ],
               ),
@@ -420,6 +427,122 @@ class _HomescreenState extends State<Homescreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
+                                    builder: (_) => ThemeSelectScreeen(),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                alignment: Alignment.centerLeft,
+                                padding: EdgeInsets.only(left: 5, right: 2),
+                                height:
+                                    MediaQuery.of(context).size.height * .05,
+                                width: MediaQuery.of(context).size.width * .5,
+                                // color: Colors.blue,
+                                // color: Colors.red,
+                                child: FittedBox(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      FittedBox(
+                                        child: Icon(
+                                          Icons.dark_mode_outlined,
+                                          color: myThemeVar.colorScheme.primary,
+                                          size:
+                                              MediaQuery.of(
+                                                context,
+                                              ).size.width *
+                                              0.05,
+                                        ),
+                                      ),
+                                      SizedBox(width: 10),
+                                      FittedBox(
+                                        child: SingleChildScrollView(
+                                          child: Text(
+                                            "System Theme",
+                                            maxLines: 1,
+                                            // style: myThemeVar.textTheme.bodyLarge,
+                                            style: TextStyle(
+                                              fontFamily: GoogleFonts.manrope()
+                                                  .fontFamily,
+                                              fontSize:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
+                                                  0.05,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //3rd button
+
+                          // Material(
+                          //   color: Colors.transparent,
+                          //   child: InkWell(
+                          //     borderRadius: BorderRadius.circular(7),
+                          //     onTap: () {
+                          //       setState(() {
+                          //         isRight = !isRight;
+                          //       });
+                          //       Navigator.push(
+                          //         context,
+                          //         MaterialPageRoute(
+                          //           builder: (_) => Activities(),
+                          //         ),
+                          //       );
+                          //     },
+                          //     child: Container(
+                          //       alignment: Alignment.centerLeft,
+                          //       padding: EdgeInsets.only(left: 5, right: 2),
+                          //       // height:
+                          //       //     MediaQuery.of(context).size.height *
+                          //       //     .1,
+                          //       width: MediaQuery.of(context).size.width * .5,
+                          //       // color: Colors.blue,
+                          //       child: FittedBox(
+                          //         child: Row(
+                          //           children: [
+                          //             Icon(
+                          //               Icons.format_list_bulleted_outlined,
+                          //               color: myThemeVar.colorScheme.primary,
+                          //               size: myThemeVar
+                          //                   .textTheme
+                          //                   .bodyLarge!
+                          //                   .fontSize!
+                          //                   .toDouble(),
+                          //             ),
+                          //             SizedBox(width: 10),
+                          //             Text(
+                          //               "Button 3",
+                          //               style: myThemeVar.textTheme.bodyLarge,
+                          //             ),
+                          //           ],
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+                          SizedBox(height: 10),
+
+                          //2nd button
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(7),
+                              onTap: () {
+                                setState(() {
+                                  isRight = !isRight;
+                                });
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
                                     builder: (_) => TopExpensesScreen(
                                       containerHeight: MediaQuery.of(
                                         context,
@@ -446,8 +569,7 @@ class _HomescreenState extends State<Homescreen> {
                                       FittedBox(
                                         child: Icon(
                                           Icons.trending_up,
-                                          color:
-                                              myThemeVar.colorScheme.onPrimary,
+                                          color: myThemeVar.colorScheme.primary,
                                           size:
                                               MediaQuery.of(
                                                 context,
@@ -459,7 +581,7 @@ class _HomescreenState extends State<Homescreen> {
                                       FittedBox(
                                         child: SingleChildScrollView(
                                           child: Text(
-                                            "Top Expenses",
+                                            "Top Expense",
                                             maxLines: 1,
                                             // style: myThemeVar.textTheme.bodyLarge,
                                             style: TextStyle(
@@ -484,7 +606,7 @@ class _HomescreenState extends State<Homescreen> {
 
                           SizedBox(height: 10),
 
-                          //2nd Button
+                          //3rd button
                           Material(
                             color: Colors.transparent,
                             child: InkWell(
@@ -496,7 +618,7 @@ class _HomescreenState extends State<Homescreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => Activities(),
+                                    builder: (_) => PermissionsScreen(),
                                   ),
                                 );
                               },
@@ -515,9 +637,8 @@ class _HomescreenState extends State<Homescreen> {
                                         child: FittedBox(
                                           child: Icon(
                                             Icons.settings,
-                                            color: myThemeVar
-                                                .colorScheme
-                                                .onPrimary,
+                                            color:
+                                                myThemeVar.colorScheme.primary,
                                             size:
                                                 MediaQuery.of(
                                                   context,
@@ -552,172 +673,287 @@ class _HomescreenState extends State<Homescreen> {
                             ),
                           ),
 
-                          //3rd Button
-                          // Material(
-                          //   color: Colors.transparent,
-                          //   child: InkWell(
-                          //     borderRadius: BorderRadius.circular(7),
-                          //     onTap: () {
-                          //       setState(() {
-                          //         isRight = !isRight;
-                          //       });
-                          //       Navigator.push(
-                          //         context,
-                          //         MaterialPageRoute(
-                          //           builder: (_) => Activities(),
-                          //         ),
-                          //       );
-                          //     },
-                          //     child: Container(
-                          //       alignment: Alignment.centerLeft,
-                          //       padding: EdgeInsets.only(left: 5, right: 2),
-                          //       // height:
-                          //       //     MediaQuery.of(context).size.height *
-                          //       //     .1,
-                          //       width: MediaQuery.of(context).size.width * .5,
-                          //       // color: Colors.blue,
-                          //       child: FittedBox(
-                          //         child: Row(
-                          //           children: [
-                          //             Icon(
-                          //               Icons.format_list_bulleted_outlined,
-                          //               color: myThemeVar.colorScheme.onPrimary,
-                          //               size: myThemeVar
-                          //                   .textTheme
-                          //                   .bodyLarge!
-                          //                   .fontSize!
-                          //                   .toDouble(),
-                          //             ),
-                          //             SizedBox(width: 10),
-                          //             Text(
-                          //               "Button 3",
-                          //               style: myThemeVar.textTheme.bodyLarge,
-                          //             ),
-                          //           ],
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
                           SizedBox(height: 10),
+
+                          //3rd Button
+
                           //4th Button
-                          Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(7),
-                              onTap: () async {
-                                // Navigator.pop(context);
+                          FirebaseAuth.instance.currentUser != null
+                              ? Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(7),
+                                    onTap: () async {
+                                      // Navigator.pop(context);
 
-                                setState(() {
-                                  isRight = !isRight;
-                                });
+                                      setState(() {
+                                        isRight = !isRight;
+                                      });
 
-                                try {
-                                  signOut();
-                                  if (FirebaseAuth.instance.currentUser ==
-                                      null) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text("Already Logged out"),
+                                      try {
+                                        signOut();
+                                        if (FirebaseAuth.instance.currentUser ==
+                                            null) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                "Already Logged out",
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text("Logged Out"),
+                                            ),
+                                          );
+                                        }
+                                      } catch (e) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(content: Text("error: $e")),
+                                        );
+                                      }
+
+                                      // try {
+                                      //   await signOut();
+
+                                      //   ScaffoldMessenger.of(context).showSnackBar(
+                                      //     const SnackBar(
+                                      //       content: Text(
+                                      //         "Logged Out",
+                                      //         style: TextStyle(color: Colors.white),
+                                      //       ),
+                                      //       backgroundColor: Color.fromARGB(
+                                      //         255,
+                                      //         83,
+                                      //         83,
+                                      //         83,
+                                      //       ),
+                                      //     ),
+                                      //   );
+                                      // } catch (e) {
+                                      //   ScaffoldMessenger.of(context).showSnackBar(
+                                      //     SnackBar(
+                                      //       content: Text(
+                                      //         "Error: $e",
+                                      //         style: TextStyle(color: Colors.red),
+                                      //       ),
+                                      //       backgroundColor: Color.fromARGB(
+                                      //         255,
+                                      //         83,
+                                      //         83,
+                                      //         83,
+                                      //       ),
+                                      //     ),
+                                      //   );
+                                      // }
+                                      log("Sign out Clicked");
+
+                                      // Navigator.push(
+                                      //   context,
+                                      //   MaterialPageRoute(
+                                      //     builder: (_) => Activities(),
+                                      //   ),
+                                      // );
+                                    },
+                                    child: Container(
+                                      alignment: Alignment.centerLeft,
+                                      padding: EdgeInsets.only(
+                                        left: 5,
+                                        right: 2,
                                       ),
-                                    );
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text("Logged Out")),
-                                    );
-                                  }
-                                } catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text("error: $e")),
-                                  );
-                                }
-
-                                // try {
-                                //   await signOut();
-
-                                //   ScaffoldMessenger.of(context).showSnackBar(
-                                //     const SnackBar(
-                                //       content: Text(
-                                //         "Logged Out",
-                                //         style: TextStyle(color: Colors.white),
-                                //       ),
-                                //       backgroundColor: Color.fromARGB(
-                                //         255,
-                                //         83,
-                                //         83,
-                                //         83,
-                                //       ),
-                                //     ),
-                                //   );
-                                // } catch (e) {
-                                //   ScaffoldMessenger.of(context).showSnackBar(
-                                //     SnackBar(
-                                //       content: Text(
-                                //         "Error: $e",
-                                //         style: TextStyle(color: Colors.red),
-                                //       ),
-                                //       backgroundColor: Color.fromARGB(
-                                //         255,
-                                //         83,
-                                //         83,
-                                //         83,
-                                //       ),
-                                //     ),
-                                //   );
-                                // }
-                                log("Sign out Clicked");
-
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (_) => Activities(),
-                                //   ),
-                                // );
-                              },
-                              child: Container(
-                                alignment: Alignment.centerLeft,
-                                padding: EdgeInsets.only(left: 5, right: 2),
-                                height:
-                                    MediaQuery.of(context).size.height * .05,
-                                width: MediaQuery.of(context).size.width * .5,
-                                // color: Colors.blue,
-                                child: FittedBox(
-                                  child: Row(
-                                    children: [
-                                      FittedBox(
-                                        child: Icon(
-                                          Icons.logout,
-                                          color:
-                                              myThemeVar.colorScheme.onPrimary,
-                                          size:
-                                              MediaQuery.of(
-                                                context,
-                                              ).size.width *
-                                              .05,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                          .05,
+                                      width:
+                                          MediaQuery.of(context).size.width *
+                                          .5,
+                                      // color: Colors.blue,
+                                      child: FittedBox(
+                                        child: Row(
+                                          children: [
+                                            FittedBox(
+                                              child: Transform.rotate(
+                                                angle: pi,
+                                                child: Icon(
+                                                  Icons.logout,
+                                                  color: myThemeVar
+                                                      .colorScheme
+                                                      .primary,
+                                                  size:
+                                                      MediaQuery.of(
+                                                        context,
+                                                      ).size.width *
+                                                      .05,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(width: 10),
+                                            FittedBox(
+                                              child: Text(
+                                                "Log out",
+                                                style: TextStyle(
+                                                  fontFamily:
+                                                      GoogleFonts.manrope()
+                                                          .fontFamily,
+                                                  fontSize:
+                                                      MediaQuery.of(
+                                                        context,
+                                                      ).size.width *
+                                                      0.05,
+                                                  fontWeight: FontWeight.w900,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                      SizedBox(width: 10),
-                                      FittedBox(
-                                        child: Text(
-                                          "Log Out",
-                                          style: TextStyle(
-                                            fontFamily: GoogleFonts.manrope()
-                                                .fontFamily,
-                                            fontSize:
-                                                MediaQuery.of(
-                                                  context,
-                                                ).size.width *
-                                                0.05,
-                                            fontWeight: FontWeight.w900,
-                                          ),
+                                    ),
+                                  ),
+                                )
+                              : Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(7),
+                                    onTap: () async {
+                                      // Navigator.pop(context);
+
+                                      setState(() {
+                                        isRight = !isRight;
+                                      });
+
+                                      handleLoginButtonClick();
+
+                                      // try {
+                                      //   signOut();
+                                      //   if (FirebaseAuth.instance.currentUser ==
+                                      //       null) {
+                                      //     ScaffoldMessenger.of(
+                                      //       context,
+                                      //     ).showSnackBar(
+                                      //       SnackBar(
+                                      //         content: Text(
+                                      //           "Already Logged out",
+                                      //         ),
+                                      //       ),
+                                      //     );
+                                      //   } else {
+                                      //     ScaffoldMessenger.of(
+                                      //       context,
+                                      //     ).showSnackBar(
+                                      //       SnackBar(
+                                      //         content: Text("Logged Out"),
+                                      //       ),
+                                      //     );
+                                      //   }
+                                      // } catch (e) {
+                                      //   ScaffoldMessenger.of(
+                                      //     context,
+                                      //   ).showSnackBar(
+                                      //     SnackBar(content: Text("error: $e")),
+                                      //   );
+                                      // }
+
+                                      // try {
+                                      //   await signOut();
+
+                                      //   ScaffoldMessenger.of(context).showSnackBar(
+                                      //     const SnackBar(
+                                      //       content: Text(
+                                      //         "Logged Out",
+                                      //         style: TextStyle(color: Colors.white),
+                                      //       ),
+                                      //       backgroundColor: Color.fromARGB(
+                                      //         255,
+                                      //         83,
+                                      //         83,
+                                      //         83,
+                                      //       ),
+                                      //     ),
+                                      //   );
+                                      // } catch (e) {
+                                      //   ScaffoldMessenger.of(context).showSnackBar(
+                                      //     SnackBar(
+                                      //       content: Text(
+                                      //         "Error: $e",
+                                      //         style: TextStyle(color: Colors.red),
+                                      //       ),
+                                      //       backgroundColor: Color.fromARGB(
+                                      //         255,
+                                      //         83,
+                                      //         83,
+                                      //         83,
+                                      //       ),
+                                      //     ),
+                                      //   );
+                                      // }
+                                      log("Sign out Clicked");
+
+                                      // Navigator.push(
+                                      //   context,
+                                      //   MaterialPageRoute(
+                                      //     builder: (_) => Activities(),
+                                      //   ),
+                                      // );
+                                    },
+                                    child: Container(
+                                      alignment: Alignment.centerLeft,
+                                      padding: EdgeInsets.only(
+                                        left: 5,
+                                        right: 2,
+                                      ),
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                          .05,
+                                      width:
+                                          MediaQuery.of(context).size.width *
+                                          .5,
+                                      // color: Colors.blue,
+                                      child: FittedBox(
+                                        child: Row(
+                                          children: [
+                                            FittedBox(
+                                              child: Icon(
+                                                Icons.logout,
+                                                color: myThemeVar
+                                                    .colorScheme
+                                                    .primary,
+                                                size:
+                                                    MediaQuery.of(
+                                                      context,
+                                                    ).size.width *
+                                                    .05,
+                                              ),
+                                            ),
+                                            SizedBox(width: 10),
+                                            FittedBox(
+                                              child: Text(
+                                                "Log in",
+                                                style: TextStyle(
+                                                  fontFamily:
+                                                      GoogleFonts.manrope()
+                                                          .fontFamily,
+                                                  fontSize:
+                                                      MediaQuery.of(
+                                                        context,
+                                                      ).size.width *
+                                                      0.05,
+                                                  fontWeight: FontWeight.w900,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                          ),
 
                           // ]
                           // .animate(
@@ -748,7 +984,7 @@ class _HomescreenState extends State<Homescreen> {
 
         // SECOND LAYER BORDER CONTAINER
         AnimatedScale(
-          scale: isRight ? 0.71 : 1.0,
+          scale: isRight ? 0.71 : 1.1,
           duration: Duration(milliseconds: duration),
           curve: Curves.linear,
           child: AnimatedSlide(
@@ -786,7 +1022,7 @@ class _HomescreenState extends State<Homescreen> {
                 borderRadius: isRight
                     ? BorderRadius.circular(15)
                     : BorderRadius.circular(0),
-                // color: backgroundColorOfCards, //SMOOTH TRANSITION
+                //color: backgroundColorOfCards, //SMOOTH TRANSITION
                 color: Colors.transparent,
 
                 ///COLOR TRANSITION
@@ -816,7 +1052,8 @@ class _HomescreenState extends State<Homescreen> {
                     // backgroundColor: const Color.fromARGB(255, 44, 16, 16),
                     backgroundColor: isRight
                         ? Colors.transparent
-                        : myThemeVar.scaffoldBackgroundColor,
+                        : Colors.transparent,
+                    // : myThemeVar.scaffoldBackgroundColor,
 
                     // =============================================================
                     // APP BAR (Custom Widget)
@@ -829,69 +1066,83 @@ class _HomescreenState extends State<Homescreen> {
                         builder: (context, snapshot) {
                           final user = snapshot.data;
 
-                          if (isRight == false) {
-                            return AppBar(
-                              backgroundColor: myThemeVar.cardColor,
-                              surfaceTintColor: Colors.transparent,
-                              leading: IconButton(
-                                color: myThemeVar.iconTheme.color,
-                                icon: const Icon(Icons.menu),
-                                onPressed: () {
-                                  setState(() {
-                                    isRight = !isRight;
-                                  });
+                          // if (isRight == false) {
+                          return AppBar(
+                            systemOverlayStyle: const SystemUiOverlayStyle(
+                              systemNavigationBarColor: Colors.transparent,
+                            ), //transparent system navigation bar
+                            backgroundColor: myThemeVar.cardColor,
+                            // backgroundColor: Colors.transparent,
+                            surfaceTintColor: Colors.transparent,
+                            flexibleSpace: Container(
+                              // decoration: BoxDecoration(
+                              //   image: DecorationImage(
+                              //     image: AssetImage(
+                              //       "assets/bg/card_paper_bg_light.jpg",
+                              //     ),
+                              //     fit: BoxFit.cover,
+                              //   ),
+                              // ),
+                            ),
+                            leading: IconButton(
+                              color: myThemeVar.iconTheme.color,
+                              icon: const Icon(Icons.menu),
+                              onPressed: () {
+                                setState(() {
+                                  isRight = !isRight;
+                                });
+                              },
+                            ),
+                            // iconTheme: const IconThemeData(color: Colors.white70),
+                            title: Text(
+                              "Budget Book",
+                              style: TextStyle(
+                                color: myThemeVar.colorScheme.primary,
+                                fontFamily: GoogleFonts.workSans().fontFamily,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 24,
+                              ),
+                            ),
+                            actions: [
+                              GestureDetector(
+                                onTap: () {
+                                  log("photo url: ${user?.photoURL}");
+                                  AccountSettingsDialog()
+                                      .showAccountSettingDialog(context);
                                 },
-                              ),
-                              // iconTheme: const IconThemeData(color: Colors.white70),
-                              title: Text(
-                                "Budget Book",
-                                style: TextStyle(
-                                  color: myThemeVar.colorScheme.primary,
-                                  fontFamily: GoogleFonts.workSans().fontFamily,
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 24,
-                                ),
-                              ),
-                              actions: [
-                                GestureDetector(
-                                  onTap: () {
-                                    log("photo url: ${user?.photoURL}");
-                                    AccountSettingsDialog()
-                                        .showAccountSettingDialog(context);
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(right: 12),
-                                    child: CircleAvatar(
-                                      backgroundColor: Colors.transparent,
-                                      backgroundImage: user?.photoURL != null
-                                          ? NetworkImage(user!.photoURL!)
-                                          : null,
-                                      child: user?.photoURL == null
-                                          ? Icon(
-                                              Icons.person,
-                                              color: myThemeVar.iconTheme.color,
-                                            )
-                                          : null,
-                                    ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 12),
+                                  child: CircleAvatar(
+                                    backgroundColor: Colors.transparent,
+                                    backgroundImage: user?.photoURL != null
+                                        ? NetworkImage(user!.photoURL!)
+                                        : null,
+                                    child: user?.photoURL == null
+                                        ? Icon(
+                                            Icons.person,
+                                            color: myThemeVar.iconTheme.color,
+                                          )
+                                        : null,
                                   ),
                                 ),
-                              ],
-                            );
-                          } else {
-                            return AppBar(
-                              backgroundColor: myThemeVar.cardColor,
-                              surfaceTintColor: Colors.transparent,
-                              title: Text(
-                                "Budget Book",
-                                style: TextStyle(
-                                  color: myThemeVar.colorScheme.primary,
-                                  fontFamily: GoogleFonts.workSans().fontFamily,
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 24,
-                                ),
                               ),
-                            );
-                          }
+                            ],
+                          );
+                          // } else {
+                          //   return AppBar(
+                          //     backgroundColor: myThemeVar.cardColor,
+                          //     surfaceTintColor: Colors.transparent,
+                          //     title: Text(
+                          //       "Budget Book",
+                          //       style: TextStyle(
+                          //         color: myThemeVar.colorScheme.primary,
+                          //         fontFamily: GoogleFonts.workSans().fontFamily,
+                          //         fontWeight: FontWeight.w900,
+                          //         fontSize: 24,
+                          //       ),
+                          //     ),
+                          //   );
+                          // }
                         },
                       ),
                     ),
@@ -911,33 +1162,42 @@ class _HomescreenState extends State<Homescreen> {
                           // ---------------------------------------------------------
 
                           if (box.isEmpty) {
-                            return Container(
-                              color: myThemeVar.cardColor,
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Container(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.3,
-                                  // color: Colors.amber,
-                                  // alignment: Alignment.center,
-                                  child: Column(
-                                    children: [
-                                      Flexible(
-                                        child: Lottie.asset(
-                                          "assets/lottie/cat_in_the_box.json",
-                                          // height: 120,
+                            return SizedBox.expand(
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                  // color: Colors.transparent,
+                                  // image: DecorationImage(
+                                  //   image: AssetImage(
+                                  //     "assets/bg/card_paper_bg_light.jpg",
+                                  //   ),
+                                  //   fit: BoxFit.cover,
+                                  // ),
+                                ),
+                                color: myThemeVar.cardColor,
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Container(
+                                    height:
+                                        MediaQuery.of(context).size.height *
+                                        0.3,
+                                    child: Column(
+                                      children: [
+                                        Flexible(
+                                          child: Lottie.asset(
+                                            "assets/lottie/cat_in_the_box.json",
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        "No Items found",
-                                        style: TextStyle(
-                                          fontFamily:
-                                              GoogleFonts.workSans().fontFamily,
-                                          fontWeight: FontWeight.bold,
+                                        Text(
+                                          "No Items found",
+                                          style: TextStyle(
+                                            fontFamily: GoogleFonts.workSans()
+                                                .fontFamily,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
-                                      ),
-                                      Expanded(child: SizedBox(height: 0)),
-                                    ],
+                                        Expanded(child: SizedBox(height: 0)),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -996,130 +1256,133 @@ class _HomescreenState extends State<Homescreen> {
                                         color: myThemeVar.dividerColor,
                                       ),
                                     ),
+                                    // image: DecorationImage(
+                                    //   image: AssetImage(
+                                    //     "assets/bg/card_paper_bg_light.jpg",
+                                    //   ),
+                                    //   fit: BoxFit.cover,
+                                    // ),
+                                    // color: Colors.red,
                                   ),
                                   height:
                                       MediaQuery.of(context).size.height * 0.27,
                                   width: double.infinity,
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: Card(
-                                      elevation: 1,
-                                      margin: const EdgeInsets.only(
-                                        bottom: 0,
-                                        top: 0,
-                                        left: 0,
-                                        right: 0,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        // side: BorderSide(
-                                        //   color: !isRight
-                                        //       ? myThemeVar.dividerColor
-                                        //       : Colors.transparent,
-                                        // ),
-                                        borderRadius: isRight
-                                            ? BorderRadiusGeometry.only(
-                                                bottomLeft: Radius.circular(0),
-                                                bottomRight: Radius.circular(0),
-                                              )
-                                            : BorderRadiusGeometry.zero,
-                                      ),
-                                      color: myThemeVar.cardColor,
-                                      // color: const Color.fromARGB(255, 44, 90, 163),
-                                      child: Column(
-                                        children: [
-                                          Expanded(
-                                            child: PageView(
-                                              controller: _pageViewController,
-                                              children: [
-                                                TopCard1(
-                                                  containeHeight: 600,
-                                                  containeWidth: 250,
-                                                  monthBudget:
-                                                      monthlyBudget, // ✅ int
-                                                  onEditBudget:
-                                                      openSetBudgetDialog, // ✅ callback
-                                                ),
-                                                TopCard2(
-                                                  containerHeight:
-                                                      MediaQuery.of(
-                                                        context,
-                                                      ).size.height,
-                                                  containerWidth: MediaQuery.of(
-                                                    context,
-                                                  ).size.width,
-                                                ),
-
-                                                // OpenContainer(
-                                                //   closedElevation:
-                                                //       0, // remove shadow in closed state
-                                                //   openElevation:
-                                                //       0, // remove shadow when opening
-                                                //   closedColor: Colors.transparent,
-                                                //   transitionDuration:
-                                                //       const Duration(
-                                                //         milliseconds: 250,
-                                                //       ),
-                                                //   closedBuilder:
-                                                //       (context, Action) {
-                                                //         return TopCard2(
-                                                //           containerHeight:
-                                                //               MediaQuery.of(
-                                                //                 context,
-                                                //               ).size.height,
-                                                //           containerWidth:
-                                                //               MediaQuery.of(
-                                                //                 context,
-                                                //               ).size.width,
-                                                //         );
-                                                //       },
-                                                //   openBuilder: (context, Action) {
-                                                //     return TopExpensesScreen(
-                                                //       containerHeight:
-                                                //           MediaQuery.of(
-                                                //             context,
-                                                //           ).size.height,
-                                                //       containerWidth:
-                                                //           MediaQuery.of(
-                                                //             context,
-                                                //           ).size.width,
-                                                //     );
-                                                //   },
-                                                // ),
-
-                                                // TopCard2(
-                                                //   containerHeight:
-                                                //               MediaQuery.of(
-                                                //                 context,
-                                                //               ).size.height,
-                                                //           containerWidth:
-                                                //               MediaQuery.of(
-                                                //                 context,
-                                                //               ).size.width,
-                                                // ),
-                                              ],
-                                            ),
-                                          ),
-
-                                          Padding(
-                                            padding: EdgeInsets.only(bottom: 4),
-                                            child: SmoothPageIndicator(
-                                              controller: _pageViewController,
-                                              count: 2,
-                                              effect: WormEffect(
-                                                dotHeight: 6,
-                                                dotWidth: 6,
-                                                spacing: 6,
-                                                activeDotColor: myThemeVar
-                                                    .colorScheme
-                                                    .primary,
-                                                dotColor: myThemeVar
-                                                    .colorScheme
-                                                    .primary,
+                                  child: Card(
+                                    elevation: 0,
+                                    margin: const EdgeInsets.only(
+                                      bottom: 0,
+                                      top: 0,
+                                      left: 0,
+                                      right: 0,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      // side: BorderSide(
+                                      //   color: !isRight
+                                      //       ? myThemeVar.dividerColor
+                                      //       : Colors.transparent,
+                                      // ),
+                                      borderRadius: isRight
+                                          ? BorderRadiusGeometry.only(
+                                              bottomLeft: Radius.circular(0),
+                                              bottomRight: Radius.circular(0),
+                                            )
+                                          : BorderRadiusGeometry.zero,
+                                    ),
+                                    color: myThemeVar.cardColor,
+                                    // color: Colors.transparent,
+                                    child: Column(
+                                      children: [
+                                        Expanded(
+                                          child: PageView(
+                                            controller: _pageViewController,
+                                            children: [
+                                              TopCard1(
+                                                containeHeight: 600,
+                                                containeWidth: 250,
+                                                monthBudget:
+                                                    monthlyBudget, // ✅ int
+                                                onEditBudget:
+                                                    openSetBudgetDialog, // ✅ callback
                                               ),
+                                              TopCard2(
+                                                containerHeight: MediaQuery.of(
+                                                  context,
+                                                ).size.height,
+                                                containerWidth: MediaQuery.of(
+                                                  context,
+                                                ).size.width,
+                                              ),
+
+                                              // OpenContainer(
+                                              //   closedElevation:
+                                              //       0, // remove shadow in closed state
+                                              //   openElevation:
+                                              //       0, // remove shadow when opening
+                                              //   closedColor: Colors.transparent,
+                                              //   transitionDuration:
+                                              //       const Duration(
+                                              //         milliseconds: 250,
+                                              //       ),
+                                              //   closedBuilder:
+                                              //       (context, Action) {
+                                              //         return TopCard2(
+                                              //           containerHeight:
+                                              //               MediaQuery.of(
+                                              //                 context,
+                                              //               ).size.height,
+                                              //           containerWidth:
+                                              //               MediaQuery.of(
+                                              //                 context,
+                                              //               ).size.width,
+                                              //         );
+                                              //       },
+                                              //   openBuilder: (context, Action) {
+                                              //     return TopExpensesScreen(
+                                              //       containerHeight:
+                                              //           MediaQuery.of(
+                                              //             context,
+                                              //           ).size.height,
+                                              //       containerWidth:
+                                              //           MediaQuery.of(
+                                              //             context,
+                                              //           ).size.width,
+                                              //     );
+                                              //   },
+                                              // ),
+
+                                              // TopCard2(
+                                              //   containerHeight:
+                                              //               MediaQuery.of(
+                                              //                 context,
+                                              //               ).size.height,
+                                              //           containerWidth:
+                                              //               MediaQuery.of(
+                                              //                 context,
+                                              //               ).size.width,
+                                              // ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        Padding(
+                                          padding: EdgeInsets.only(bottom: 4),
+                                          child: SmoothPageIndicator(
+                                            controller: _pageViewController,
+                                            count: 2,
+                                            effect: WormEffect(
+                                              dotHeight: 6,
+                                              dotWidth: 6,
+                                              spacing: 6,
+                                              activeDotColor: myThemeVar
+                                                  .colorScheme
+                                                  .primary,
+                                              dotColor: myThemeVar
+                                                  .colorScheme
+                                                  .primary,
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -1129,6 +1392,7 @@ class _HomescreenState extends State<Homescreen> {
                                 // =======================================================
                                 Expanded(
                                   child: Container(
+                                    // color: Colors.red,
                                     margin: EdgeInsets.only(left: 0, right: 0),
                                     child: ListView.builder(
                                       padding: const EdgeInsets.only(
@@ -1173,7 +1437,7 @@ class _HomescreenState extends State<Homescreen> {
                                                       Colors.transparent,
                                                   foregroundColor: myThemeVar
                                                       .colorScheme
-                                                      .onPrimary,
+                                                      .primary,
                                                   icon: Icons.edit,
                                                   label: 'Edit',
                                                 ),
@@ -1253,7 +1517,7 @@ class _HomescreenState extends State<Homescreen> {
                                                             );
 
                                                         Api.showAppSnack(
-                                                          "Item Delete",
+                                                          "Item Deleted",
                                                         );
 
                                                         log('deleted');
@@ -1291,7 +1555,7 @@ class _HomescreenState extends State<Homescreen> {
                                                       Colors.transparent,
                                                   foregroundColor: myThemeVar
                                                       .colorScheme
-                                                      .onPrimary,
+                                                      .primary,
                                                   icon: Icons.delete,
                                                   label: 'Delete',
                                                 ),

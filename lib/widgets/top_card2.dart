@@ -127,8 +127,8 @@ class _TopCard2State extends State<TopCard2> {
       //   side: BorderSide(color: const Color.fromARGB(255, 105, 99, 97)),
       //   borderRadius: BorderRadius.circular(10),
       // ),
-      // color: const Color.fromARGB(255, 194, 150, 135),
-      color: myThemeVar.cardColor,
+      color: Colors.transparent,
+      // color: myThemeVar.cardColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -162,80 +162,93 @@ class _TopCard2State extends State<TopCard2> {
                 transitionType: ContainerTransitionType.fadeThrough,
                 // transitionDuration: Duration(milliseconds: 250),
                 closedBuilder: (context, action) {
+                  //TOP EXPENSES CARD
                   return Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                       side: BorderSide(color: myThemeVar.dividerColor),
                     ),
-                    // color: Color.fromRGBO(235, 223, 180, 1),
-                    color: myThemeVar.cardColor,
-                    elevation: 0,
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final itemCount = sortedExpenseList.length.clamp(1, 4);
-                        // final itemHeight = constraints.maxHeight / itemCount;
-                        final rowHeight = constraints.maxHeight / itemCount;
+                    // color: Colors.transparent,
+                    color: myThemeVar.scaffoldBackgroundColor,
+                    elevation: 3,
+                    child: Container(
+                      // decoration: BoxDecoration(
+                      //   borderRadius: BorderRadius.circular(15),
+                      //   image: DecorationImage(
+                      //     image: AssetImage("assets/bg/card_paper_bg_light.jpg"),
+                      //     fit: BoxFit.cover,
+                      //   ),
+                      // ),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final itemCount = sortedExpenseList.length.clamp(
+                            1,
+                            4,
+                          );
+                          // final itemHeight = constraints.maxHeight / itemCount;
+                          final rowHeight = constraints.maxHeight / itemCount;
 
-                        return ListView.builder(
-                          // physics: const NeverScrollableScrollPhysics(),
-                          // shrinkWrap: true,
-                          // itemCount: itemCount,
-                          itemCount: sortedExpenseList.length,
-                          itemExtent: rowHeight,
-                          itemBuilder: (context, index) {
-                            final entry = sortedExpenseList[index];
+                          return ListView.builder(
+                            // physics: const NeverScrollableScrollPhysics(),
+                            // shrinkWrap: true,
+                            // itemCount: itemCount,
+                            itemCount: sortedExpenseList.length,
+                            itemExtent: rowHeight,
+                            itemBuilder: (context, index) {
+                              final entry = sortedExpenseList[index];
 
-                            final itemName = entry.key;
-                            final totalPrice = entry.value;
-                            //////////////////////////////////////////
-                            return Card(
-                              // color: myThemeVar.cardColor,
-                              elevation: 0,
-                              // margin: EdgeInsets.all(5),
-                              color: Colors.transparent,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  SizedBox(width: 20),
-                                  Text(
-                                    "${index + 1}.",
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      // fontWeight: FontWeight.bold,
-                                      fontFamily:
-                                          GoogleFonts.manrope().fontFamily,
+                              final itemName = entry.key;
+                              final totalPrice = entry.value;
+                              //////////////////////////////////////////
+                              return Card(
+                                // color: myThemeVar.cardColor,
+                                elevation: 0,
+                                // margin: EdgeInsets.all(5),
+                                color: Colors.transparent,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    SizedBox(width: 20),
+                                    Text(
+                                      "${index + 1}.",
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        // fontWeight: FontWeight.bold,
+                                        fontFamily:
+                                            GoogleFonts.manrope().fontFamily,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(width: 20),
+                                    SizedBox(width: 20),
 
-                                  Text(
-                                    "${itemName}",
-                                    style: TextStyle(
-                                      color: myThemeVar.colorScheme.primary,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w900,
-                                      fontFamily:
-                                          GoogleFonts.manrope().fontFamily,
+                                    Text(
+                                      "${itemName}",
+                                      style: TextStyle(
+                                        color: myThemeVar.colorScheme.primary,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w900,
+                                        fontFamily:
+                                            GoogleFonts.manrope().fontFamily,
+                                      ),
                                     ),
-                                  ),
-                                  Spacer(),
+                                    Spacer(),
 
-                                  Text(
-                                    "₹${totalPrice}",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      // fontWeight: FontWeight.bold,
-                                      fontFamily:
-                                          GoogleFonts.poppins().fontFamily,
+                                    Text(
+                                      "₹${totalPrice}",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        // fontWeight: FontWeight.bold,
+                                        fontFamily:
+                                            GoogleFonts.poppins().fontFamily,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(width: 20),
-                                ],
-                              ),
-                            );
-                          },
-                        );
-                      },
+                                    SizedBox(width: 20),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
                     ),
                   );
                 },

@@ -185,9 +185,9 @@ class _ItemdatascreenState extends State<Itemdatascreen> {
     final myThemeVar = Theme.of(context);
     return Scaffold(
       extendBody: true,
-      backgroundColor: myThemeVar.cardColor,
+      backgroundColor: myThemeVar.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: myThemeVar.cardColor,
+        backgroundColor: myThemeVar.scaffoldBackgroundColor,
         surfaceTintColor: Colors.transparent,
         title: Text(
           "Item Information",
