@@ -1,46 +1,20 @@
+import 'dart:developer' show log;
 import 'dart:io';
 
+import 'package:budget_book_app/UI/screens/homeScreen.dart';
+import 'package:budget_book_app/UI/screens/test.dart';
+import 'package:budget_book_app/blocs/budgets/budget_bloc.dart';
+import 'package:budget_book_app/blocs/budgets/budget_event.dart';
+import 'package:budget_book_app/blocs/budgets/models/budget_item.dart';
+import 'package:budget_book_app/blocs/budgets/repository/budget_repository.dart';
 import 'package:budget_book_app/firebase_options.dart';
-import 'package:budget_book_app/helper/my_theme.dart';
+import 'package:budget_book_app/themes/my_theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
-import 'models/budget_item.dart';
-import 'screens/homeScreen.dart';
-
-// // ===============================================================
-// // overlayEntryPoint()
-// // ---------------------------------------------------------------
-// // This function is marked as a VM entry point, meaning it can be
-// // invoked not only by the main Flutter app, but ALSO by a second
-// // Flutter engine (such as a background isolate or overlay engine).
-// //
-// // Why this exists?
-// // Android overlays or background services often run a SECOND
-// // Flutter engine. That engine cannot automatically run `main()`,
-// // so we explicitly give it a separate entry point.
-// //
-// // ⚙ What it does:
-// // - Ensures Flutter binding is initialized (important for plugins).
-// // - Initializes Hive for local storage.
-// // - Opens the Hive box for BudgetItem.
-// // - Creates a MethodChannel to communicate with native Android
-// //   overlay code.
-// // - Responds to method calls for:
-// //     • adding a new budget item
-// //     • returning suggestions (existing items)
-// //
-// // NOTHING here is changed — only documented.
-// // ===============================================================
-
-// ==============================
-// This function runs for both:
-// - Main UI engine
-// - Shared background engine
-// ==============================
 
 final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
@@ -101,6 +75,7 @@ Future<void> overlayEntryPoint() async {
       // Old: box.add(item);  → creates duplicate
       // New (correct):
       await box.put(item.id, item);
+      log("from main.dart: item added from OVERLAY  ${item.id} : ${item.name}");
 
       return {"savedId": item.id};
     }
@@ -121,9 +96,20 @@ Future<void> overlayEntryPoint() async {
   });
 }
 
-// ==============================
-// Normal UI main() function
-// ==============================
+Future<String> getExternalHivePath() async {
+  // final dir = await getExternalStorageDirectory();
+  // /storage/emulated/0/Android/data/<package>/files
+  final hiveDir = Directory(
+    "/storage/emulated/0/Android/media/com.kobi.budget_book_test_version/hive",
+  );
+
+  if (!hiveDir.existsSync()) {
+    hiveDir.createSync(recursive: true);
+  }
+
+  return hiveDir.path;
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -133,18 +119,15 @@ Future<void> main() async {
   // 2) Initialize Hive (your overlayEntryPoint handles this)
   await overlayEntryPoint();
 
-  // await migrateUuidToDateTimeIds();
-
-  // // 3) Sign user in (anonymous or Google)
-  // await signInAnonymouslyIfNeeded();     // <-- ADD THIS
-
-  // // 4) Sync Firestore → Hive before UI shows
-  // await initialSync();                    // <-- EXACT CORRECT SPOT
-
   // >>> CLEAR NOTIFICATIONS ON APP OPEN
   const MethodChannel("clear_notifications").invokeMethod("clearAll");
   // <<< CLEAR NOTIFICATIONS
 
+  // ------------------ Hive (MINIMUM) ------------------
+  // await Hive.initFlutter();
+  // await Hive.openBox('appSettings');
+
+  // ------------------ System UI ------------------
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   SystemChrome.setSystemUIOverlayStyle(
@@ -155,43 +138,36 @@ Future<void> main() async {
     ),
   );
 
+  // ------------------ Theme ------------------
   final savedTheme = Hive.box('appSettings').get('themeMode', defaultValue: 0);
-
   themeNotifier.value = ThemeMode.values[savedTheme];
 
-  // 5) Start app
-  runApp(MyApp());
-}
+  runApp(
+    BlocProvider(
+      create: (_) {
+        final box = Hive.box<BudgetItem>('itemsBox');
+        final settingsBox = Hive.box("appSettings");
+        final repository = BudgetRepository(box,settingsBox);
+        final bloc = BudgetBloc(repository);
+        bloc.add(LoadBudget());
 
-// Future<void> main() async {
-//     WidgetsFlutterBinding.ensureInitialized();
+        // ✅ AUTO-REENABLE SYNC IF USER IS LOGGED IN
+        // if (FirebaseAuth.instance.currentUser != null) {
+        //   bloc.add(SignInToGoogle());
+        // }
+        // 🔥 STARTUP SYNC FIX (THIS WAS MISSING)
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          repository.currentUserData().then((_) {
+            repository.startSync();
+          });
+        }
 
-//   await Firebase.initializeApp(
-//     options: DefaultFirebaseOptions.currentPlatform,
-//   );
-//   await overlayEntryPoint(); // important: shared with background engine
-
-// //   final path = await getExternalHivePath();
-// // Hive.init(path);
-
-// // Hive.registerAdapter(BudgetItemAdapter());
-// // await Hive.openBox<BudgetItem>('itemsBox');
-
-//   runApp(MyApp());
-// }
-
-Future<String> getExternalHivePath() async {
-  // final dir = await getExternalStorageDirectory();
-  // /storage/emulated/0/Android/data/<package>/files
-  final hiveDir = Directory(
-    "/storage/emulated/0/Android/media/com.kobi.budget_book/hive",
+        return bloc;
+      },
+      child: const MyApp(),
+    ),
   );
-
-  if (!hiveDir.existsSync()) {
-    hiveDir.createSync(recursive: true);
-  }
-
-  return hiveDir.path;
 }
 
 class MyApp extends StatelessWidget {
@@ -206,41 +182,13 @@ class MyApp extends StatelessWidget {
           scaffoldMessengerKey: scaffoldMessengerKey,
 
           title: 'Budget Book',
-          // theme: ThemeData(
-          //   textTheme: GoogleFonts.workSansTextTheme().apply(
-          //     bodyColor: const Color.fromARGB(179, 151, 0, 0),
-          //     displayColor: const Color.fromARGB(255, 182, 58, 58),
-          //   ),
-          //   appBarTheme: AppBarTheme(
-          //     backgroundColor: const Color.fromRGBO(250, 243, 225, 1.000),
-          //     titleTextStyle: GoogleFonts.workSans(
-          //       color: const Color.fromARGB(255, 34, 0, 0),
-          //       fontWeight: FontWeight.bold,
-          //       fontSize: 24,
-          //     ),
-          //   ),
-          // ),
           theme: MyAppTheme.lightTheme,
           darkTheme: MyAppTheme.darkTheme,
           themeMode: themeMode,
 
-          home: Homescreen(),
+          home: HomeScreen(),
         );
       },
     );
   }
 }
-
-// class RootApp extends StatefulWidget {
-//   const RootApp({super.key});
-
-//   @override
-//   State<RootApp> createState() => _RootAppState();
-// }
-
-// class _RootAppState extends State<RootApp> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MyApp();
-//   }
-// }
