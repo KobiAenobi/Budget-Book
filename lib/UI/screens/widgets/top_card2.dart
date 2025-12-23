@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:animations/animations.dart';
 import 'package:budget_book_app/UI/screens/Homescreen.dart';
+import 'package:budget_book_app/UI/screens/top_expenses_screen.dart';
+import 'package:budget_book_app/blocs/budgets/models/budget_item.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -24,96 +26,96 @@ class TopCard2 extends StatefulWidget {
 
 class _TopCard2State extends State<TopCard2> {
   /// Hive box reference
-  // final itemsBox = Hive.box<BudgetItem>('itemsBox');
+  final itemsBox = Hive.box<BudgetItem>('itemsBox');
   List<MapEntry<String, int>> sortedExpenseList = [];
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _prepareData();
-  //   itemsBox.listenable().addListener(_onItemsChanged);
-  // }
+  @override
+  void initState() {
+    super.initState();
+    _prepareData();
+    itemsBox.listenable().addListener(_onItemsChanged);
+  }
 
-  // void _onItemsChanged() {
-  //   setState(() {
-  //     _prepareData();
-  //   });
-  // }
+  void _onItemsChanged() {
+    setState(() {
+      _prepareData();
+    });
+  }
 
-  // @override
-  // void dispose() {
-  //   itemsBox.listenable().removeListener(_onItemsChanged);
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    itemsBox.listenable().removeListener(_onItemsChanged);
+    super.dispose();
+  }
 
-  // void _prepareData() {
-  //   // ---------------------------------------------------------
-  //   // Convert Hive box to list & sort newest → oldest
-  //   // ---------------------------------------------------------
-  //   final items = itemsBox.values.toList()
-  //     ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
+  void _prepareData() {
+    // ---------------------------------------------------------
+    // Convert Hive box to list & sort newest → oldest
+    // ---------------------------------------------------------
+    final items = itemsBox.values.toList()
+      ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
 
-  //   final currMont = DateTime.now().month;
+    final currMont = DateTime.now().month;
 
-  //   final Map<String, int> totalSpentByItem = {};
+    final Map<String, int> totalSpentByItem = {};
 
-  //   for (final item in items) {
-  //     if (item.dateTime.month == currMont) {
-  //       totalSpentByItem[item.name] =
-  //           (totalSpentByItem[item.name] ?? 0) + (item.price * item.quantity);
-  //     }
-  //   }
+    for (final item in items) {
+      if (item.dateTime.month == currMont) {
+        totalSpentByItem[item.name] =
+            (totalSpentByItem[item.name] ?? 0) + (item.price * item.quantity);
+      }
+    }
 
-  //   // final topEntry = totalSpentByItem.entries.reduce(
-  //   //   (a, b) => a.value >= b.value ? a : b,
-  //   // );
+    // final topEntry = totalSpentByItem.entries.reduce(
+    //   (a, b) => a.value >= b.value ? a : b,
+    // );
 
-  //   // final SortedEntries = totalSpentByItem.entries.toList()
-  //   //   ..sort((a, b) => b.value.compareTo(a.value));
+    // final SortedEntries = totalSpentByItem.entries.toList()
+    //   ..sort((a, b) => b.value.compareTo(a.value));
 
-  //   // if (SortedEntries.isNotEmpty) {
-  //   //   log("top ex: ${SortedEntries[0].key} ,${SortedEntries[0].value}");
-  //   // }
+    // if (SortedEntries.isNotEmpty) {
+    //   log("top ex: ${SortedEntries[0].key} ,${SortedEntries[0].value}");
+    // }
 
-  //   sortedExpenseList = totalSpentByItem.entries.toList()
-  //     ..sort((a, b) => b.value.compareTo(a.value));
+    sortedExpenseList = totalSpentByItem.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
 
-  //   // final List<BudgetItem> sortedByExpense = items.where((item) {
-  //   //   return item.dateTime.month == currMont;
-  //   // }).toList();
+    // final List<BudgetItem> sortedByExpense = items.where((item) {
+    //   return item.dateTime.month == currMont;
+    // }).toList();
 
-  //   // sortedByExpense.sort((a, b) {
-  //   //   return (b.price * b.quantity).compareTo(a.price * a.quantity);
-  //   // });
+    // sortedByExpense.sort((a, b) {
+    //   return (b.price * b.quantity).compareTo(a.price * a.quantity);
+    // });
 
-  //   // log("top expense: ${sortedByExpense[0].quantity}");
-  //   // final topItem = sortedByExpense[0];
-  //   // log(
-  //   //   "top expense: ₹${topItem.price * topItem.quantity} "
-  //   //   "(price=${topItem.price}, qty=${topItem.quantity})",
-  //   // );
+    // log("top expense: ${sortedByExpense[0].quantity}");
+    // final topItem = sortedByExpense[0];
+    // log(
+    //   "top expense: ₹${topItem.price * topItem.quantity} "
+    //   "(price=${topItem.price}, qty=${topItem.quantity})",
+    // );
 
-  //   // final List<BudgetItem> sortedByExpense =items.where((item)=>item.dateTime.month==currMont).toList();
+    // final List<BudgetItem> sortedByExpense =items.where((item)=>item.dateTime.month==currMont).toList();
 
-  //   // sortedByExpense.sort((a, b){
-  //   //   return (b.price*b.quantity).compareTo(a.price*a.quantity);
-  //   // });
+    // sortedByExpense.sort((a, b){
+    //   return (b.price*b.quantity).compareTo(a.price*a.quantity);
+    // });
 
-  //   //
-  //   // final Map<String, int> topExpenseItems;
+    //
+    // final Map<String, int> topExpenseItems;
 
-  //   // items.forEach(){
+    // items.forEach(){
 
-  //   // }
+    // }
 
-  //   // ---------------------------------------------------------
-  //   // Calculate Grand Total
-  //   // ---------------------------------------------------------
-  //   int grandTotal = 0;
-  //   for (var item in items) {
-  //     grandTotal += item.price * item.quantity;
-  //   }
-  // }
+    //   // ---------------------------------------------------------
+    //   // Calculate Grand Total
+    //   // ---------------------------------------------------------
+    //   int grandTotal = 0;
+    //   for (var item in items) {
+    //     grandTotal += item.price * item.quantity;
+    //   }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -251,11 +253,11 @@ class _TopCard2State extends State<TopCard2> {
                   );
                 },
                 openBuilder: (context, action) {
-                  return HomeScreen();
-                  // return TopExpensesScreen(
-                  //   containerHeight: MediaQuery.of(context).size.height,
-                  //   containerWidth: MediaQuery.of(context).size.width,
-                  // );
+                  // return HomeScreen();
+                  return TopExpensesScreen(
+                    containerHeight: MediaQuery.of(context).size.height,
+                    containerWidth: MediaQuery.of(context).size.width,
+                  );
                 },
               ),
             ),

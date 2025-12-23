@@ -1,9 +1,12 @@
 import 'dart:developer' show log;
 import 'dart:math' hide log;
 
+import 'package:animations/animations.dart';
 import 'package:budget_book_app/UI/helper/api.dart';
+import 'package:budget_book_app/UI/screens/itemDataScreen.dart';
 import 'package:budget_book_app/UI/screens/permissions_screen.dart';
 import 'package:budget_book_app/UI/screens/theme_select_screeen.dart';
+import 'package:budget_book_app/UI/screens/top_expenses_screen.dart';
 import 'package:budget_book_app/UI/screens/widgets/account_settings_dialog.dart';
 import 'package:budget_book_app/UI/screens/widgets/add_item_dialog_box.dart';
 import 'package:budget_book_app/UI/screens/widgets/item_card.dart';
@@ -14,6 +17,7 @@ import 'package:budget_book_app/UI/screens/widgets/top_card2.dart';
 import 'package:budget_book_app/blocs/budgets/budget_bloc.dart';
 import 'package:budget_book_app/blocs/budgets/budget_event.dart';
 import 'package:budget_book_app/blocs/budgets/budget_state.dart';
+import 'package:budget_book_app/blocs/budgets/models/budget_input.dart';
 import 'package:budget_book_app/blocs/budgets/models/budget_item.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +39,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int monthlyBudget = 0;
+  int weeklyBudget = 0;
+  int dailyBudget = 0;
   //Page view controller
   final _pageViewController = PageController();
   //Menu Drawer
@@ -443,19 +449,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                 setState(() {
                                   isRight = !isRight;
                                 });
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (_) => TopExpensesScreen(
-                                //       containerHeight: MediaQuery.of(
-                                //         context,
-                                //       ).size.height,
-                                //       containerWidth: MediaQuery.of(
-                                //         context,
-                                //       ).size.width,
-                                //     ),
-                                //   ),
-                                // );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => TopExpensesScreen(
+                                      containerHeight: MediaQuery.of(
+                                        context,
+                                      ).size.height,
+                                      containerWidth: MediaQuery.of(
+                                        context,
+                                      ).size.width,
+                                    ),
+                                  ),
+                                );
                               },
                               child: Container(
                                 alignment: Alignment.centerLeft,
@@ -484,7 +490,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       FittedBox(
                                         child: SingleChildScrollView(
                                           child: Text(
-                                            "Top Expense",
+                                            "Top Expenses",
                                             maxLines: 1,
                                             // style: myThemeVar.textTheme.bodyLarge,
                                             style: TextStyle(
@@ -976,6 +982,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       : null,
                   child: Scaffold(
                     appBar: AppBar(
+                      toolbarHeight: kToolbarHeight - 15,
                       systemOverlayStyle: const SystemUiOverlayStyle(
                         systemNavigationBarColor: Colors.transparent,
                       ), //transparent system navigation bar
@@ -1047,6 +1054,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       listener: (context, state) {
                         if (state is BudgetLoaded) {
                           monthlyBudget = state.budgetThisMonth;
+                          weeklyBudget = state.budgetThisWeek;
+                          dailyBudget = state.budgetThisDay;
                           log("from: HomeScreen.dart - Rebuilddddd");
                           // optional: Snackbar, animation, etc.
                         }
@@ -1065,6 +1074,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           // final thisMonthTotal = state
                           //     .monthlyTotal['${DateTime.now().year}-${DateTime.now().month}'];
                           final thisMonthTotal = state.thisMonthTotal;
+                          final thisWeekTotal = state.thisWeekTotal;
+                          final thisDayTotal = state.thisDayTotal;
 
                           // final x = displayList[index];
 
@@ -1151,18 +1162,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 TopCard1(
                                                   containeHeight: 600,
                                                   containeWidth: 250,
-                                                  monthBudget:
-                                                      state.budgetThisMonth,
-                                                  currMonthTotal: thisMonthTotal
-                                                      .toInt(),
+
                                                   onEditBudget: () async {
-                                                    int?
+                                                    BudgetInput
                                                     bnudget = await showDialog(
                                                       context: context,
                                                       builder: (_) =>
                                                           SetBudgetDialogBox(
-                                                            currentBudget:
+                                                            currentMonthlyBudget:
                                                                 monthlyBudget,
+                                                            currentWeeklyBudget:
+                                                                weeklyBudget,
+                                                            currentDailyBudget:
+                                                                dailyBudget,
                                                           ),
                                                     );
 
@@ -1170,12 +1182,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       context
                                                           .read<BudgetBloc>()
                                                           .add(
-                                                            setMonthlyBudget(
-                                                              bnudget,
+                                                            SetBudgets(
+                                                              bnudget.month,
+                                                              bnudget.week,
+                                                              bnudget.day,
                                                             ),
                                                           );
                                                     }
                                                   },
+
+                                                  //budgets
+                                                  monthBudget:
+                                                      state.budgetThisMonth,
+                                                  weekBudget:
+                                                      state.budgetThisWeek,
+                                                  dayBudget:
+                                                      state.budgetThisDay,
+
+                                                  //total expenses
+                                                  currMonthTotal: thisMonthTotal
+                                                      .toInt(),
+                                                  currWeekTotal: thisWeekTotal
+                                                      .toInt(),
+                                                  currDayTotal: thisDayTotal
+                                                      .toInt(),
                                                 ),
                                                 TopCard2(
                                                   containerHeight:
@@ -1394,20 +1424,52 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     BorderRadiusGeometry.circular(
                                                       0,
                                                     ),
-                                                child: ItemCard(
-                                                  name: item.name,
-                                                  date: item.dateTime,
-                                                  quantity: item.quantity,
-                                                  price: item.price,
-                                                  onEdit: () {},
-                                                  containerHeight:
-                                                      MediaQuery.of(
-                                                        context,
-                                                      ).size.height,
-                                                  containerWidth: MediaQuery.of(
-                                                    context,
-                                                  ).size.width,
-                                                  isRight: isRight,
+                                                child: OpenContainer(
+                                                  closedElevation:
+                                                      0, // remove shadow in closed state
+                                                  openElevation:
+                                                      0, // remove shadow when opening
+                                                  closedColor:
+                                                      Colors.transparent,
+                                                  transitionDuration:
+                                                      const Duration(
+                                                        milliseconds: 500,
+                                                      ),
+                                                  closedBuilder:
+                                                      (context, action) {
+                                                        return ItemCard(
+                                                          name: item.name,
+                                                          date: item.dateTime,
+                                                          quantity:
+                                                              item.quantity,
+                                                          price: item.price,
+                                                          onEdit: () {},
+                                                          containerHeight:
+                                                              MediaQuery.of(
+                                                                context,
+                                                              ).size.height,
+                                                          containerWidth:
+                                                              MediaQuery.of(
+                                                                context,
+                                                              ).size.width,
+                                                          isRight: isRight,
+                                                        );
+                                                      },
+                                                  openBuilder:
+                                                      (context, action) {
+                                                        return Itemdatascreen(
+                                                          containerHeight:
+                                                              MediaQuery.of(
+                                                                context,
+                                                              ).size.height,
+                                                          containerWidth:
+                                                              MediaQuery.of(
+                                                                context,
+                                                              ).size.width,
+                                                          itemName:
+                                                              item.name ?? "",
+                                                        );
+                                                      },
                                                 ),
                                               ),
                                             );
@@ -1453,16 +1515,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           onTap: () async {
                             log("set budget Pressed");
 
-                            int? bnudget = await showDialog(
+                            BudgetInput? bnudget = await showDialog(
                               context: context,
                               builder: (_) => SetBudgetDialogBox(
-                                currentBudget: monthlyBudget,
+                                currentMonthlyBudget: monthlyBudget,
+                                currentWeeklyBudget: weeklyBudget,
+                                currentDailyBudget: dailyBudget,
                               ),
                             );
 
                             if (bnudget != null) {
                               context.read<BudgetBloc>().add(
-                                setMonthlyBudget(bnudget),
+                                SetBudgets(
+                                  bnudget.month,
+                                  bnudget.week,
+                                  bnudget.day,
+                                ),
                               );
                             }
                           },

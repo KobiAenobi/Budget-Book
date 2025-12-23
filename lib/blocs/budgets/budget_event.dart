@@ -17,9 +17,11 @@ class DeleteBudgetItem extends BudgetEvent {
   DeleteBudgetItem(this.itemId);
 }
 
-class setMonthlyBudget extends BudgetEvent {
-  final int budget;
-  setMonthlyBudget(this.budget);
+class SetBudgets extends BudgetEvent {
+  final int monthBudget;
+  final int weekBudget;
+  final int dayBudget;
+  SetBudgets(this.monthBudget, this.weekBudget, this.dayBudget);
 }
 
 class RefreshBudget extends BudgetEvent {}

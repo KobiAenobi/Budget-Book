@@ -86,7 +86,7 @@ class MyAppTheme {
     // GLOBAL BACKGROUND COLORS
     // Mathematically inverted: 255 - LightValue
     // R:255-209=46, G:255-199=56, B:255-191=64
-    scaffoldBackgroundColor: const Color.fromARGB(255, 17, 17, 17),
+    scaffoldBackgroundColor:  Color.fromRGBO(44,16,16,1.000),
 
     // COLOR SCHEME
     colorScheme: const ColorScheme.dark(
@@ -117,7 +117,7 @@ class MyAppTheme {
 
     // CARD THEME
     // Inverted from Cream (231, 222, 190) to Dark Blue (24, 33, 65)
-    cardColor: const Color.fromARGB(255, 34, 34, 34),
+    cardColor:  Color.fromRGBO(24,8,2,1.000),
     shadowColor: const Color.fromARGB(255, 58, 58, 58),
 
     dividerColor: const Color.fromARGB(

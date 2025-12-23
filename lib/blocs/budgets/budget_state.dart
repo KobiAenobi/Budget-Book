@@ -26,14 +26,23 @@ class BudgetLoaded extends BudgetState {
   final Map<String, int> monthlyTotal;
 
   final int thisMonthTotal;
+  final int thisWeekTotal;
+  final int thisDayTotal;
 
   final int budgetThisMonth;
+  final int budgetThisWeek;
+  final int budgetThisDay;
 
   BudgetLoaded({
     required this.displayList,
     required this.monthlyTotal,
     required this.thisMonthTotal,
+    required this.thisWeekTotal,
+    required this.thisDayTotal,
+
     required this.budgetThisMonth,
+    required this.budgetThisWeek,
+    required this.budgetThisDay,
   });
 }
 

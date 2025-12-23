@@ -57,12 +57,19 @@ class BudgetRepository {
     await box.delete(id);
   }
 
-  Future<void> setBudget(int newBudget) async {
-    await settingsBox.put('monthlyBudget', newBudget);
+  Future<void> setBudget(int monthBudget, int weekBudget, int dayBudget) async {
+    await settingsBox.put('monthlyBudget', monthBudget);
+    await settingsBox.put('weeklyBudget', weekBudget);
+    await settingsBox.put('dailyBudget', dayBudget);
   }
-  int get monthlyBudget =>
-    settingsBox.get('monthlyBudget', defaultValue: 0) as int;
 
+  int get monthlyBudget =>
+      settingsBox.get('monthlyBudget', defaultValue: 0) as int;
+
+  int get weeklyBudget =>
+      settingsBox.get('weeklyBudget', defaultValue: 0) as int;
+
+  int get dailyBudget => settingsBox.get('dailyBudget', defaultValue: 0) as int;
 
   Future<void> currentUserData() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -268,8 +275,6 @@ class BudgetRepository {
 
     log("from budget_repository.dart: 🛑 Firebase sync STOPPED");
   }
-
-  
 
   // Future<void> disableCloudSync() async {
   //   log("from budget_repository.dart: ☁️ Disabling cloud sync...");

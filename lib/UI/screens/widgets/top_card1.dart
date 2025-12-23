@@ -1,12 +1,8 @@
-// import 'dart:nativewrappers/_internal/vm/lib/math_patch.dart';
-
 import 'package:budget_book_app/UI/helper/measureSize.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/adapters.dart';
 import 'package:lottie/lottie.dart';
 import 'dart:developer' show log;
 
@@ -14,14 +10,22 @@ class TopCard1 extends StatefulWidget {
   final double containeHeight;
   final double containeWidth;
   final int monthBudget;
+  final int weekBudget;
+  final int dayBudget;
   final int currMonthTotal;
+  final int currWeekTotal;
+  final int currDayTotal;
   final VoidCallback onEditBudget;
   const TopCard1({
     super.key,
     required this.containeHeight,
     required this.containeWidth,
     required this.monthBudget,
+    required this.weekBudget,
+    required this.dayBudget,
     required this.currMonthTotal,
+    required this.currWeekTotal,
+    required this.currDayTotal,
     required this.onEditBudget,
   });
 
@@ -30,10 +34,16 @@ class TopCard1 extends StatefulWidget {
 }
 
 class _TopCard1State extends State<TopCard1> {
+  late ThemeData myThemeVar;
+
   Size? expenseContSize;
   Size? expenseFittedBoxSize;
   Size? grandTotalSize;
   Size? mainContainerSize;
+
+  String? grandTotalDuration = "Monthly";
+
+  final grandTotalDurationItems = ["Monthly", "Weekly", "Daily"];
 
   // final itemsBox = Hive.box<BudgetItem>('itemsBox');
 
@@ -53,8 +63,14 @@ class _TopCard1State extends State<TopCard1> {
   ];
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    myThemeVar = Theme.of(context);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final myThemeVar = Theme.of(context);
+    // final myThemeVar = Theme.of(context);
     // final items = itemsBox.values.toList()
     //   ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
 
@@ -68,8 +84,23 @@ class _TopCard1State extends State<TopCard1> {
     //   }
     // }
 
-    final int budget = widget.monthBudget;
-    double percentUsed = budget == 0 ? 0 : widget.currMonthTotal / budget;
+    final int monthlyBudget = widget.monthBudget;
+    final int weeklyBudget = widget.weekBudget;
+    final int dailyBudget = widget.dayBudget;
+
+    int displayBudget() {
+      switch (grandTotalDuration) {
+        case "Weekly":
+          return weeklyBudget;
+        case "Daily":
+          return dailyBudget;
+        default:
+          return monthlyBudget;
+      }
+    }
+
+    final int budget = displayBudget();
+    double percentUsed = budget == 0 ? 0 : displayGrandTotalAmount() / budget;
 
     Color getBudgetColor(double percent) {
       if (percent < 0.5) return Color.fromARGB(255, 19, 173, 99);
@@ -101,31 +132,35 @@ class _TopCard1State extends State<TopCard1> {
         child: Stack(
           children: [
             //
-            //LAYER 1  The Mood Lottie
+            // bottommost layer - LAYER 1  The Mood Man Lottie
             Positioned(
               // top: mainContainerSize == null
               //     ? 0
               //     : mainContainerSize!.height - 400,
               child: Align(
                 alignment: Alignment.topRight,
-                child: Container(
-                  // alignment: Alignment.topRight,
-                  // height: 250.5,
-                  // height: mainContainerSize == null
-                  //     ? 0
-                  //     : mainContainerSize!.height * 0.65,
-                  // color: Colors.green,
-                  child: Lottie.asset(
-                    getMood(percentUsed),
-                    height: mainContainerSize == null
-                        ? 0
-                        : mainContainerSize!.height * 0.75,
-                  ),
+                child: Stack(
+                  children: [
+                    Container(
+                      // alignment: Alignment.topRight,
+                      // height: 250.5,
+                      // height: mainContainerSize == null
+                      //     ? 0
+                      //     : mainContainerSize!.height * 0.65,
+                      // color: Colors.green,
+                      child: Lottie.asset(
+                        getMood(percentUsed),
+                        height: mainContainerSize == null
+                            ? 0
+                            : mainContainerSize!.height * 0.75,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
 
-            //TOTAL TEXT ABOVE
+            //TOTAL TEXT layer 2 - behind the cat
             Column(
               children: [
                 //TOTAL
@@ -213,33 +248,7 @@ class _TopCard1State extends State<TopCard1> {
 
             //LAYER 3 4 & 5
 
-            //layer 3
-            // Positioned(
-            //   bottom: expenseFittedBoxSize == null
-            //       ? 0
-            //       : expenseFittedBoxSize!.height / 1.6,
-            //   // right: expenseContSize == null ? 0 : expenseContSize!.width,
-            //   child: Container(
-            //     alignment: Alignment.centerLeft,
-            //     width: expenseFittedBoxSize == null
-            //         ? 0
-            //         : expenseFittedBoxSize!.width,
-            //     height: mainContainerSize == null
-            //         ? 0
-            //         : mainContainerSize!.height * 0.32,
-            //     // color: Colors.white38,
-            //     child: percentUsed < 0.5
-            //         ? Lottie.asset(
-            //             "assets/lottie/cat_playing.json",
-            //             // height: expenseFittedBoxSize == null
-            //             //     ? 0
-            //             //     : expenseFittedBoxSize!.height / 1.5,
-            //           )
-            //         : Text(""),
-            //   ),
-            // ),
-
-            //WORRIED CAT
+            //Layer 3 - WORRIED CAT - if(expense is more than 50%)
             Positioned(
               bottom: expenseFittedBoxSize == null
                   ? 0
@@ -264,7 +273,7 @@ class _TopCard1State extends State<TopCard1> {
               ),
             ),
 
-            //ANGRY CAT
+            //Layer 3 - ANGRY CAT - if (expense is more than 80%)
             Positioned(
               bottom: expenseFittedBoxSize == null
                   ? 0
@@ -295,10 +304,9 @@ class _TopCard1State extends State<TopCard1> {
               ),
             ),
 
-            //LAYER 4 TOTAL EXPENSE & GRAND TOTAL TEXT
+            //LAYER 4 - "EXPENSE" Text & GRAND TOTAL TEXT
             Column(
               children: [
-                //TOTAL
                 Flexible(
                   child: Align(
                     alignment: Alignment.topLeft,
@@ -317,11 +325,10 @@ class _TopCard1State extends State<TopCard1> {
                   ),
                 ),
 
-                //EXPENSE AND GRAND TOTAL
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    //EXPENSE
+                    //EXPENSE text
                     MeasureSize(
                       onChange: (size) {
                         if (expenseContSize != size) {
@@ -332,7 +339,7 @@ class _TopCard1State extends State<TopCard1> {
                         }
                       },
                       child: Container(
-                        // color: Colors.green,
+                        // color: const Color.fromARGB(223, 43, 78, 44),
                         // alignment: Alignment.bottomCenter,
                         height: mainContainerSize == null
                             ? 0
@@ -390,7 +397,7 @@ class _TopCard1State extends State<TopCard1> {
                     //GRAND TOTAL
                     Flexible(
                       child: Container(
-                        // color: Colors.amber,
+                        // color: const Color.fromARGB(221, 227, 255, 66),
                         padding: EdgeInsets.only(
                           left: 5,
                           top: 0,
@@ -414,7 +421,7 @@ class _TopCard1State extends State<TopCard1> {
                                 child: Stack(
                                   children: [
                                     Text(
-                                      "₹${widget.currMonthTotal}",
+                                      "₹${displayGrandTotalAmount()}",
                                       style: TextStyle(
                                         fontFamily:
                                             GoogleFonts.poppins().fontFamily,
@@ -428,8 +435,9 @@ class _TopCard1State extends State<TopCard1> {
                                               myThemeVar.colorScheme.primary,
                                       ),
                                     ),
+
                                     Text(
-                                      "₹${widget.currMonthTotal}",
+                                      "₹${displayGrandTotalAmount()}",
                                       style: TextStyle(
                                         color: getBudgetColor(percentUsed),
                                         fontFamily:
@@ -441,6 +449,39 @@ class _TopCard1State extends State<TopCard1> {
                                     ),
                                   ],
                                 ),
+                                // Stack(
+                                //     children: [
+                                //       Text(
+                                //         "₹ ho ho ho",
+                                //         style: TextStyle(
+                                //           fontFamily: GoogleFonts.poppins()
+                                //               .fontFamily,
+
+                                //           fontWeight: FontWeight.w900,
+                                //           fontSize: 1000,
+                                //           foreground: Paint()
+                                //             ..style = PaintingStyle.stroke
+                                //             ..strokeWidth = 0.5
+                                //             ..color = myThemeVar
+                                //                 .colorScheme
+                                //                 .primary,
+                                //         ),
+                                //       ),
+                                //       Text(
+                                //         "₹ ho ho ho",
+                                //         style: TextStyle(
+                                //           color: getBudgetColor(
+                                //             percentUsed,
+                                //           ),
+                                //           fontFamily: GoogleFonts.poppins()
+                                //               .fontFamily,
+
+                                //           fontWeight: FontWeight.w900,
+                                //           fontSize: 1000,
+                                //         ),
+                                //       ),
+                                //     ],
+                                //   ),
                               ),
                             ),
 
@@ -562,89 +603,129 @@ class _TopCard1State extends State<TopCard1> {
               ),
             ),
 
-            //LAYER 3 4 & 5
-            //TOP LAYERS START CAT LOTTIES
+            //drop down menu to select the time of expense
+            Container(
+              alignment: Alignment.topRight,
+              // color: const Color.fromARGB(255, 155, 39, 176),
+              width: MediaQuery.of(context).size.width,
+              height: 22,
+              child: DropdownButton2<String>(
+                value: grandTotalDuration,
+                items: grandTotalDurationItems
+                    .map(
+                      (e) => DropdownMenuItem<String>(value: e, child: Text(e)),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  setState(() => grandTotalDuration = value!);
+                },
 
-            //   //CHILL CAT
-            //   Positioned(
-            //     bottom: expenseFittedBoxSize == null
-            //         ? 0
-            //         : expenseFittedBoxSize!.height / 1.6,
-            //     // right: expenseContSize == null ? 0 : expenseContSize!.width,
-            //     child: Container(
-            //       alignment: Alignment.centerLeft,
-            //       width: expenseFittedBoxSize == null
-            //           ? 0
-            //           : expenseFittedBoxSize!.width,
-            //       height: mainContainerSize == null
-            //           ? 0
-            //           : mainContainerSize!.height * 0.32,
-            //       // color: Colors.white38,
-            //       child: percentUsed < 0.5
-            //           ? Lottie.asset(
-            //               "assets/lottie/cat_playing.json",
-            //               // height: expenseFittedBoxSize == null
-            //               //     ? 0
-            //               //     : expenseFittedBoxSize!.height / 1.5,
-            //             )
-            //           : Text(""),
-            //     ),
-            //   ),
+                // BUTTON STYLE
+                buttonStyleData: ButtonStyleData(
+                  height: 22,
+                  // width: MediaQuery.of(context).size.width * 0.2,
+                  decoration: BoxDecoration(
+                    color: myThemeVar.cardColor,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(5),
+                    ),
 
-            //   //WORRIED CAT
-            //   Positioned(
-            //     bottom: expenseFittedBoxSize == null
-            //         ? 0
-            //         : expenseFittedBoxSize!.height / 2,
-            //     child: Container(
-            //       alignment: Alignment.centerRight,
-            //       width: expenseFittedBoxSize == null
-            //           ? 0
-            //           : expenseFittedBoxSize!.width,
-            //       height: mainContainerSize == null
-            //           ? 0
-            //           : mainContainerSize!.height * 0.5,
-            //       // color: Colors.white38,
-            //       child: percentUsed >= 0.5 && percentUsed < 0.8
-            //           ? Lottie.asset(
-            //               "assets/lottie/worried_cat.json",
-            //               // height: expenseFittedBoxSize == null
-            //               //     ? 0
-            //               //     : expenseFittedBoxSize!.height,
-            //             )
-            //           : Text(""),
-            //     ),
-            //   ),
+                    // border: Border.all(
+                    //   color: myThemeVar.dividerColor,
+                    //   width: 1,
+                    // ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color.fromARGB(
+                          32,
+                          51,
+                          51,
+                          51,
+                        ), // ✅ REAL control
+                        blurRadius: 5,
+                        spreadRadius: 1,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  elevation: 1,
+                ),
 
-            //   //ANGRY CAT
-            //   Positioned(
-            //     bottom: expenseFittedBoxSize == null
-            //         ? 0
-            //         : expenseFittedBoxSize!.height / 1.5,
-            //     //  -
-            //     //       (expenseContSize!.height -
-            //     //           expenseFittedBoxSize!.height),
-            //     child: Container(
-            //       alignment: Alignment.centerRight,
-            //       width: expenseFittedBoxSize == null
-            //           ? 0
-            //           : expenseFittedBoxSize!.width,
-            //       height: mainContainerSize == null
-            //           ? 0
-            //           : mainContainerSize!.height * 0.4,
+                // DROPDOWN MENU STYLE (THIS IS WHAT YOU WANT)
+                dropdownStyleData: DropdownStyleData(
+                  elevation: 6,
 
-            //       // color: Colors.white38,
-            //       child: percentUsed >= 0.8
-            //           ? Lottie.asset(
-            //               "assets/lottie/angry_cat.json",
-            //               // height: 207
-            //             )
-            //           : Text(""),
-            //     ),
-            //   ),
+                  decoration: BoxDecoration(
+                    color: myThemeVar.cardColor,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(5),
+                    ),
+                    // border: Border.all(
+                    //   color: myThemeVar.dividerColor,
+                    //   width: 1,
+                    // ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color.fromARGB(
+                          33,
+                          0,
+                          0,
+                          0,
+                        ), // ✅ REAL control
+                        blurRadius: 12,
+                        spreadRadius: 1,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                ),
+
+                underline: const SizedBox(), // remove underline
+              ),
+
+              // Material(
+              //   borderRadius: BorderRadius.circular(5),
+              //   elevation: 1,
+              //   color: myThemeVar.cardColor,
+              //   child: DropdownButtonHideUnderline(
+              //     child: DropdownButton<String>(
+              //       dropdownColor: myThemeVar.cardColor,
+              //       // alignment: Alignment.topRight,
+              //       value: grandTotalDuration,
+              //       items: grandTotalDurationItems.map(buildMenuItems).toList(),
+              //       onChanged: (value) =>
+              //           setState(() => grandTotalDuration = value),
+              //     ),
+              //   ),
+              // ),
+            ),
           ],
         ),
       ),
     );
   }
+
+  int displayGrandTotalAmount() {
+    switch (grandTotalDuration) {
+      case "Weekly":
+        return widget.currWeekTotal;
+      case "Daily":
+        return widget.currDayTotal;
+      default:
+        return widget.currMonthTotal;
+    }
+  }
+
+  DropdownMenuItem<String> buildMenuItems(grandTotalDurationItems) =>
+      DropdownMenuItem(
+        value: grandTotalDurationItems,
+        child: Text(
+          grandTotalDurationItems,
+          style: TextStyle(
+            color: myThemeVar.colorScheme.primary,
+            fontSize: 12,
+            fontFamily: GoogleFonts.workSans().fontFamily,
+          ),
+        ),
+      );
 }

@@ -45,10 +45,16 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
       await repository.deleteItem(event.itemId);
     });
 
-    on<setMonthlyBudget>((event, _) async {
-      await repository.setBudget(event.budget);
+    on<SetBudgets>((event, _) async {
+      await repository.setBudget(
+        event.monthBudget,
+        event.weekBudget,
+        event.dayBudget,
+      );
 
-      log("budget from BudgetBloc.dart: ${event.budget}");
+      log(
+        "budget from BudgetBloc.dart: month: ${event.monthBudget}, week: ${event.weekBudget}, day: ${event.dayBudget}",
+      );
 
       // emit(BudgetSet(budgetThisMonth: event.budget));
     });
@@ -60,6 +66,9 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
       await repository.currentUserData();
       await repository.initialSync();
       await repository.syncLocalItemsToCloud();
+
+
+      await repository.startSync();
     });
 
     on<SignOutRequested>((event, emit) async {
@@ -107,6 +116,34 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
         )
         .fold<int>(0, (sum, item) => sum + (item.price * item.quantity));
 
+    final currentDayTotal = items
+        .where(
+          (item) =>
+              item.dateTime.year == now.year &&
+              item.dateTime.month == now.month &&
+              item.dateTime.day == now.day,
+        )
+        .fold<int>(0, (sum, item) => sum + (item.price * item.quantity));
+
+    //Calculating start and end of this week
+    final startOfWeek = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    ).subtract(Duration(days: now.weekday - 1));
+
+    final endOfWeek = startOfWeek.add(const Duration(days: 7));
+
+    final currentWeekTotal = items
+        .where((item) {
+          final date = item.dateTime;
+          return date.isAfter(
+                startOfWeek.subtract(const Duration(seconds: 1)),
+              ) &&
+              date.isBefore(endOfWeek);
+        })
+        .fold<int>(0, (sum, item) => sum + (item.price * item.quantity));
+
     log(
       "TopCard1 total (current month): ₹$currentMonthTotal",
       name: "BudgetBloc",
@@ -121,7 +158,11 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
         displayList: result['displayList'],
         monthlyTotal: result['monthlyTotal'],
         thisMonthTotal: currentMonthTotal,
+        thisWeekTotal: currentWeekTotal,
+        thisDayTotal: currentDayTotal,
         budgetThisMonth: repository.monthlyBudget,
+        budgetThisWeek: repository.weeklyBudget,
+        budgetThisDay: repository.dailyBudget,
       ),
     );
   }
